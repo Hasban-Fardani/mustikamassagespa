@@ -117,6 +117,37 @@ const heroSecondaryLabel = readString(heroNode?.secondaryCtaLabel, "Lihat ritual
 const heroSecondaryUrl = readString(heroNode?.secondaryCtaUrl, "#rituals");
 const bookingNumber = readString(bookingNode?.phone, fallbackBookingNumber);
 
+const heroSlides = [
+	{
+		desktopSrc: "/images/mustika/hero-01-amber-spa.webp",
+		mobileSrc: "/images/mustika/hero-01-amber-spa-720.webp",
+		label: "Suasana relaksasi",
+		detail: "Cahaya hangat untuk memulai jeda.",
+		alt: "Interior spa dengan cahaya amber dan dua meja perawatan",
+	},
+	{
+		desktopSrc: "/images/mustika/hero-02-candle-massage.webp",
+		mobileSrc: "/images/mustika/hero-02-candle-massage-720.webp",
+		label: "Ritual perawatan",
+		detail: "Perawatan profesional tanpa terburu-buru.",
+		alt: "Dua pelanggan menikmati pijat di ruang bercahaya hangat",
+	},
+	{
+		desktopSrc: "/images/mustika/hero-03-aroma-ritual.webp",
+		mobileSrc: "/images/mustika/hero-03-aroma-ritual-720.webp",
+		label: "Aroma & linen",
+		detail: "Detail kecil yang menenangkan indera.",
+		alt: "Minyak aromaterapi, lilin, linen, dan bunga kering di atas nampan kayu",
+	},
+	{
+		desktopSrc: "/images/mustika/hero-04-traditional-care.webp",
+		mobileSrc: "/images/mustika/hero-04-traditional-care-720.webp",
+		label: "Sentuhan tradisional",
+		detail: "Perhatian yang terasa personal.",
+		alt: "Terapis memberikan pijat bahu di ruang perawatan bernuansa merah dan emas",
+	},
+];
+
 const introHeadline = readString(introNode?.headline, "Tubuh tidak selalu minta lebih.");
 const introEmphasis = readString(introNode?.emphasis, "Kadang ia minta jeda.");
 const introBody = readString(
@@ -133,10 +164,10 @@ const introLinkUrl = readString(introNode?.linkUrl, "#rituals");
 
 const rawServices = readMustikaRecords(servicesNode?.features);
 const serviceImagePaths = [
-	"/images/mustika/mustika-hero.webp",
-	"/images/mustika/mustika-aroma.webp",
-	"/images/mustika/mustika-space.webp",
-	"/images/mustika/mustika-reflex.webp",
+	"/images/mustika/service-traditional.webp",
+	"/images/mustika/service-aromatherapy.webp",
+	"/images/mustika/service-full-body.webp",
+	"/images/mustika/service-wellness.webp",
 ];
 const services = rawServices.length
 	? rawServices.map((service, index) => ({
@@ -150,8 +181,9 @@ const services = rawServices.length
 		...service,
 		imageSrc: serviceImagePaths[index],
 	}));
+const previewService = services[0] ?? fallbackServices[0];
 
-	const experienceHeadline = readString(experienceNode?.headline, "Datang dengan lelah.");
+const experienceHeadline = readString(experienceNode?.headline, "Datang dengan lelah.");
 const experienceEmphasis = readString(experienceNode?.emphasis, "Pulang lebih ringan.");
 const experienceBody = readString(
 	experienceNode?.body,
@@ -196,7 +228,7 @@ const bookingBody = readString(
 	bookingNode?.body,
 	"Chat Mustika untuk memilih sesi dan waktu yang sesuai di Bandung.",
 );
-	const bookingCtaLabel = readString(bookingNode?.ctaLabel, "Booking via WhatsApp");
+const bookingCtaLabel = readString(bookingNode?.ctaLabel, "Booking via WhatsApp");
 const bookingCtaUrl = readString(bookingNode?.ctaUrl, bookingHref);
 const heroLocation = readString(heroNode?.location, "Bandung, Jawa Barat");
 const heroAudience = readString(heroNode?.audienceLabel, "Untuk pelanggan umum dan keluarga");
@@ -252,31 +284,50 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 					</div>
 				</div>
 
-				<figure class="hero-visual" data-hero-stage aria-label="Suasana pijat dan wellness di Mustika">
+				<figure class="hero-visual" data-hero-stage aria-label="Galeri suasana pijat dan wellness">
 					<div class="hero-visual-frame" data-hero-paper>
 						<div class="hero-visual-meta">
-							<span>Ruang perawatan</span>
-							<span>01 / 04</span>
+							<span data-hero-slide-label>{heroSlides[0].label}</span>
+							<span class="hero-visual-nav">
+								<button type="button" data-hero-prev aria-label="Lihat foto sebelumnya">←</button>
+								<span data-hero-counter aria-live="polite">01 / {String(heroSlides.length).padStart(2, "0")}</span>
+								<button type="button" data-hero-next aria-label="Lihat foto berikutnya">→</button>
+							</span>
 						</div>
 						<div class="hero-visual-rule" data-hero-sheet-rule aria-hidden="true"></div>
-						<div class="hero-visual-image" data-hero-image-wrap>
-							<picture>
-								<source media="(max-width: 760px)" srcset="/images/mustika/mustika-hero-720.webp" />
-								<img
-									src="/images/mustika/mustika-hero.webp"
-									alt="Terapis memberikan pijat relaksasi pada pelanggan di ruang wellness"
-									width="1600"
-									height="1067"
-									sizes="(max-width: 760px) calc(100vw - 60px), 560px"
-									loading="eager"
-									fetchpriority="high"
-									decoding="async"
-								/>
-							</picture>
+						<div
+							class="hero-visual-image"
+							data-hero-image-wrap
+							tabindex="0"
+							role="group"
+							aria-roledescription="carousel"
+							aria-label="Empat suasana spa"
+						>
+							{heroSlides.map((slide, index) => (
+								<picture
+									data-hero-slide
+									data-active={index === 0 ? "true" : "false"}
+									data-label={slide.label}
+									data-detail={slide.detail}
+									aria-hidden={index === 0 ? "false" : "true"}
+								>
+									<source media="(max-width: 760px)" srcset={slide.mobileSrc} />
+									<img
+										src={slide.desktopSrc}
+										alt={slide.alt}
+										width="1200"
+										height="900"
+										sizes="(max-width: 760px) calc(100vw - 60px), 560px"
+										loading={index === 0 ? "eager" : "lazy"}
+										fetchpriority={index === 0 ? "high" : "auto"}
+										decoding="async"
+									/>
+								</picture>
+							))}
 						</div>
 						<div class="hero-visual-detail" data-hero-visual-detail>
-							<span class="hero-visual-detail-index">01</span>
-							<p>Ruang tenang untuk melepas pegal.</p>
+							<span class="hero-visual-detail-index" data-hero-detail-index>01</span>
+							<p data-hero-detail>{heroSlides[0].detail}</p>
 						</div>
 					</div>
 				</figure>
@@ -286,10 +337,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		<div class="ledger-hero-exit" data-hero-exit>
 			<div class="hero-exit-visual" data-hero-exit-visual aria-hidden="true">
 				<img
-					src="/images/mustika/mustika-reflex.webp"
+					src="/images/mustika/hero-exit-traditional.webp"
 					alt=""
-					width="600"
-					height="901"
+					width="1000"
+					height="1250"
 					sizes="(max-width: 1000px) 34vw, 32rem"
 					loading="lazy"
 					decoding="async"
@@ -347,14 +398,21 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 			<div class="service-ledger" data-service-list>
 				{services.map((service) => (
-					<article class="service-row" data-service-item>
+					<article
+						class="service-row"
+						data-service-item
+						data-service-image={service.imageSrc}
+						data-service-title={service.title}
+						data-service-number={service.number}
+						data-service-tag={service.tag}
+					>
 						<div class="service-row-top">
 							<span class="service-number">{service.number}</span>
 							<span class="service-tag">{service.tag}</span>
 					</div>
 					<div class="service-row-copy">
 						<div class="service-row-media">
-							<img src={service.imageSrc} alt={`Ilustrasi editorial untuk ${service.title}`} width="600" height="901" sizes="(max-width: 760px) 92px, 180px" loading="lazy" decoding="async" />
+							<img src={service.imageSrc} alt={`Suasana ${service.title}`} width="900" height="1125" sizes="(max-width: 760px) 92px, 180px" loading="lazy" decoding="async" />
 						</div>
 						<div class="service-row-text">
 							<h3 data-word-reveal>{service.title}</h3>
@@ -367,6 +425,29 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 						</div>
 					</article>
 				))}
+			</div>
+			<div class="service-hover-preview" data-service-preview aria-hidden="true">
+				<div class="service-hover-preview-frame">
+					<div class="service-hover-preview-topline">
+						<span data-service-preview-number>{previewService.number}</span>
+						<span>Detail ritual</span>
+					</div>
+					<div class="service-hover-preview-media">
+						<img
+							data-service-preview-image
+							src={previewService.imageSrc}
+							alt={`Detail suasana ${previewService.title}`}
+							width="900"
+							height="1125"
+							loading="lazy"
+							decoding="async"
+						/>
+					</div>
+					<div class="service-hover-preview-caption">
+						<strong data-service-preview-title>{previewService.title}</strong>
+						<span data-service-preview-tag>{previewService.tag}</span>
+					</div>
+				</div>
 			</div>
 			<div class="ritual-footer" data-reveal>
 				<span>Belum yakin harus memilih yang mana?</span>
@@ -467,7 +548,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	<section class="ledger-book" id="book" aria-labelledby="book-title">
 		<div class="book-visual" data-reveal data-book-visual aria-hidden="true">
-			<img src="/images/mustika/mustika-space.webp" alt="" width="1200" height="801" sizes="(max-width: 760px) 70vw, 34rem" loading="lazy" decoding="async" />
+			<img src="/images/mustika/booking-amber-linen.webp" alt="" width="1000" height="1250" sizes="(max-width: 760px) 70vw, 34rem" loading="lazy" decoding="async" />
 			<span class="book-visual-wash"></span>
 		</div>
 		<div class="shell book-layout">
@@ -793,6 +874,39 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: var(--ledger-oxide);
 	}
 
+	.hero-visual-nav {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		white-space: nowrap;
+	}
+
+	.hero-visual-nav button {
+		display: grid;
+		width: 1.8rem;
+		height: 1.8rem;
+		border: 0;
+		background: transparent;
+		color: var(--ledger-muted);
+		font: inherit;
+		line-height: 1;
+		place-items: center;
+		transition: color 180ms ease, transform 260ms var(--ease-out-quint);
+	}
+
+	.hero-visual-nav button:hover,
+	.hero-visual-nav button:focus-visible {
+		color: var(--ledger-oxide);
+	}
+
+	.hero-visual-nav button:first-child:hover {
+		transform: translateX(-2px);
+	}
+
+	.hero-visual-nav button:last-child:hover {
+		transform: translateX(2px);
+	}
+
 	.hero-visual-rule {
 		width: 100%;
 		height: 1px;
@@ -808,6 +922,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		overflow: hidden;
 		background: var(--ledger-ink);
 		isolation: isolate;
+		outline: none;
+	}
+
+	.hero-visual-image:focus-visible {
+		box-shadow: 0 0 0 2px var(--ledger-paper), 0 0 0 4px var(--ledger-oxide);
 	}
 
 	.hero-visual-image::before,
@@ -832,7 +951,20 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		border-right: 1px solid var(--ledger-gold);
 	}
 
-	.hero-visual-image picture,
+	.hero-visual-image picture {
+		position: absolute;
+		inset: 0;
+		display: block;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 650ms ease, visibility 650ms ease;
+	}
+
+	.hero-visual-image picture[data-active="true"] {
+		opacity: 1;
+		visibility: visible;
+	}
+
 	.hero-visual-image img {
 		display: block;
 		width: 100%;
@@ -869,6 +1001,17 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		font-weight: 700;
 		letter-spacing: 0.02em;
 		line-height: 1.45;
+	}
+
+	@media (max-width: 480px) {
+		.hero-visual-nav {
+			gap: 0.2rem;
+		}
+
+		.hero-visual-nav button {
+			width: 1.55rem;
+			height: 1.55rem;
+		}
 	}
 
 	.ledger-hero-exit {
@@ -1087,6 +1230,90 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.service-row:hover {
 		background: rgba(240, 233, 221, 0.055);
+	}
+
+	.service-hover-preview {
+		--preview-paper: #f8f4ec;
+		--preview-ink: #1c201a;
+		--preview-gold: #c49a4e;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 120;
+		width: min(27vw, 390px);
+		min-width: 270px;
+		pointer-events: none;
+		visibility: hidden;
+		opacity: 0;
+		will-change: transform, opacity;
+	}
+
+	.service-hover-preview-frame {
+		padding: 0.7rem;
+		border: 1px solid rgba(248, 244, 236, 0.3);
+		background: var(--preview-paper);
+		box-shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+		color: var(--preview-ink);
+	}
+
+	.service-hover-preview-topline,
+	.service-hover-preview-caption {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.service-hover-preview-topline {
+		padding: 0.15rem 0.1rem 0.65rem;
+		color: rgba(28, 32, 26, 0.58);
+		font-size: 0.62rem;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.service-hover-preview-topline span:first-child {
+		color: var(--preview-gold);
+	}
+
+	.service-hover-preview-media {
+		aspect-ratio: 0.8;
+		overflow: hidden;
+		background: #2d352d;
+	}
+
+	.service-hover-preview-media img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: saturate(0.92) contrast(1.03);
+		will-change: transform;
+	}
+
+	.service-hover-preview-caption {
+		align-items: flex-end;
+		padding: 0.75rem 0.1rem 0.05rem;
+	}
+
+	.service-hover-preview-caption strong {
+		font-family: var(--font-heading);
+		font-size: clamp(1.15rem, 1.8vw, 1.7rem);
+		font-weight: 500;
+		letter-spacing: -0.04em;
+		line-height: 0.95;
+	}
+
+	.service-hover-preview-caption span {
+		max-width: 12ch;
+		color: rgba(28, 32, 26, 0.58);
+		font-size: 0.62rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		line-height: 1.25;
+		text-align: right;
+		text-transform: uppercase;
 	}
 
 	.service-row-top {
@@ -1681,6 +1908,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		.service-row {
 			grid-template-columns: minmax(90px, 0.28fr) minmax(0, 1.3fr) minmax(70px, 0.3fr);
 		}
+
+		.service-hover-preview {
+			width: 300px;
+			min-width: 0;
+		}
 	}
 
 	@media (max-width: 760px) {
@@ -2010,6 +2242,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	@media (hover: none) {
 		.ledger-hero {
 			margin-bottom: 0;
+		}
+
+		.service-hover-preview {
+			display: none;
 		}
 	}
 </style>
