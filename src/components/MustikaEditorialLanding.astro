@@ -1536,14 +1536,16 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.book-visual {
 		position: absolute;
 		z-index: 0;
-		top: 10%;
-		right: 4%;
-		width: min(34vw, 34rem);
-		height: 76%;
+		top: 12%;
+		right: 3%;
+		width: min(25vw, 30rem);
+		height: 72%;
 		overflow: hidden;
-		border: 1px solid rgba(196, 154, 78, 0.32);
+		border: 1px solid rgba(196, 154, 78, 0.5);
 		background: var(--ledger-ink-soft);
-		transform: rotate(5deg);
+		box-shadow: 16px 18px 0 rgba(196, 154, 78, 0.08);
+		transform: rotate(1.5deg);
+		pointer-events: none;
 		will-change: transform, opacity;
 	}
 
@@ -1558,12 +1560,12 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.book-visual img {
 		display: block;
 		object-fit: cover;
-		filter: saturate(0.62) contrast(1.08);
-		transform: scale(1.05);
+		filter: saturate(0.86) contrast(1.02) brightness(0.92);
+		transform: scale(1.03);
 	}
 
 	.book-visual-wash {
-		background: linear-gradient(180deg, rgba(28, 32, 26, 0.22), rgba(28, 32, 26, 0.76)), linear-gradient(90deg, rgba(28, 32, 26, 0.72), rgba(28, 32, 26, 0.08));
+		background: linear-gradient(180deg, rgba(28, 32, 26, 0.04), rgba(28, 32, 26, 0.3)), linear-gradient(90deg, rgba(28, 32, 26, 0.72) 0%, rgba(28, 32, 26, 0.22) 24%, rgba(28, 32, 26, 0) 54%);
 	}
 
 	.ledger-book::before,
@@ -1574,21 +1576,16 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.ledger-book::before {
-		top: 12%;
-		right: 4%;
-		width: min(34vw, 34rem);
-		height: 76%;
-		border: 1px solid rgba(196, 154, 78, 0.32);
-		transform: rotate(7deg);
+		top: 10%;
+		right: 2.5%;
+		width: min(25vw, 30rem);
+		height: 72%;
+		border: 1px solid rgba(196, 154, 78, 0.24);
+		transform: rotate(3.5deg);
 	}
 
 	.ledger-book::after {
-		top: 18%;
-		right: 11%;
-		width: min(24vw, 24rem);
-		height: 60%;
-		border: 1px solid rgba(240, 233, 221, 0.14);
-		transform: rotate(-8deg);
+		display: none;
 	}
 
 	.book-layout {
@@ -1611,9 +1608,13 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: var(--ledger-gold);
 	}
 
+	.book-copy {
+		max-width: min(100%, clamp(26rem, 35vw, 42rem));
+	}
+
 	.book-copy h2 {
 		max-width: 11ch;
-		font-size: clamp(3.7rem, 7vw, 8rem);
+		font-size: clamp(3.7rem, 6.2vw, 7.4rem);
 		letter-spacing: -0.045em;
 		line-height: 0.84;
 	}
@@ -1623,7 +1624,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.book-copy > p {
-		max-width: 38ch;
+		max-width: 32ch;
 		margin-top: 1.8rem;
 		color: rgba(240, 233, 221, 0.66);
 		font-size: 0.92rem;
@@ -1876,26 +1877,20 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			gap: 3rem;
 		}
 
+		.book-copy {
+			max-width: 100%;
+		}
+
 		.ledger-book::before {
-			top: 8%;
-			right: -12%;
-			width: 70vw;
-			height: 48%;
+			display: none;
 		}
 
 		.ledger-book::after {
-			top: 12%;
-			right: -6%;
-			width: 52vw;
-			height: 40%;
+			display: none;
 		}
 
 		.book-visual {
-			top: 8%;
-			right: -12%;
-			width: 70vw;
-			height: 48%;
-			opacity: 0.72;
+			display: none;
 		}
 	}
 
