@@ -137,3 +137,27 @@ To re-brand, the highest-leverage moves are:
 - Don't enable the gradient on every interactive element. The CTA gradient is the signal; if it's on every button, it stops signalling.
 - Don't add a hero block followed immediately by another hero block. One hero, then features / testimonials / pricing / FAQ in some order.
 - Don't replace the `marketing.pricing` block with a hand-coded table. The block is the data shape downstream renderers expect.
+
+## Design Context
+
+### Users
+
+Mustika serves people in Bandung who need a professional massage or wellness session, including individuals, families, and people looking for reflexology. The primary task is simple: understand whether Mustika feels trustworthy, find a suitable treatment, and start a WhatsApp booking without friction.
+
+### Brand Personality
+
+Warm, professional, restorative. The experience should feel like modern wellness hospitality: calm enough to lower the user's pace, precise enough to build trust, and human enough to avoid spa clichés.
+
+### Aesthetic Direction
+
+Quiet editorial hospitality with rich local photography, generous bone-coloured space, deep botanical green, restrained oxide, and small amounts of brass/gold. Use typography as the primary composition and photography as a real anchor. The visual reference is a considered wellness magazine or boutique hotel service page—not a collection of floating cards, decorative labels, or generic Awwwards effects.
+
+Avoid: arbitrary rotated frames, repeated metadata, filler copy, gradient/glow effects, oversized hero treatment that pushes the booking action below the fold, and motion that exposes intermediate layout states as empty gaps or overlapping layers.
+
+### Design Principles
+
+1. Every visible word must help a visitor understand Mustika or take the next step.
+2. One clear story per viewport: headline, supporting proof, and one primary action.
+3. Photography should feel tactile and honest; framing is structural, not ornamental.
+4. Motion should choreograph a handoff between sections, never reveal unfinished states.
+5. Premium comes from proportion, restraint, and consistency—not from adding more decoration.

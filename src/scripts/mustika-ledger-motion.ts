@@ -137,11 +137,10 @@ function animateHero(
 	const heroWords = document.querySelectorAll<HTMLElement>("[data-hero-word]");
 	const heroReveal = document.querySelectorAll<HTMLElement>("[data-hero-main] [data-reveal]");
 	const heroTop = document.querySelector<HTMLElement>("[data-hero-top]");
-	const heroFooter = document.querySelector<HTMLElement>("[data-hero-footer]");
 	const heroExit = document.querySelector<HTMLElement>("[data-hero-exit]");
+	const heroExitInner = document.querySelector<HTMLElement>("[data-hero-exit-inner]");
 	const heroExitVisual = document.querySelector<HTMLElement>("[data-hero-exit-visual]");
 	const heroExitWords = document.querySelectorAll<HTMLElement>("[data-hero-exit-word]");
-	const heroAnnotations = document.querySelectorAll<HTMLElement>("[data-hero-annotation]");
 	const heroSheetRule = document.querySelector<HTMLElement>("[data-hero-sheet-rule]");
 	const heroVisualDetail = document.querySelector<HTMLElement>("[data-hero-visual-detail]");
 
@@ -151,40 +150,39 @@ function animateHero(
 	gsap.set(heroPaper, {
 		clipPath: "inset(0 0 0 100%)",
 		x: 28,
-		rotate: 7,
+		rotate: 0,
 		transformOrigin: "50% 50%",
 	});
-	gsap.set(heroStage, { y: 24, rotate: -2, transformOrigin: "50% 50%" });
+	gsap.set(heroStage, { y: 24, rotate: 0, transformOrigin: "50% 50%" });
 	gsap.set(heroImageWrap, { scale: 1.16, xPercent: 4, transformOrigin: "50% 50%" });
 	if (heroImage) gsap.set(heroImage, { scale: 1.08, transformOrigin: "50% 50%" });
-	gsap.set(heroExit, { yPercent: 100, autoAlpha: 0 });
+	gsap.set(heroExit, { yPercent: 0, autoAlpha: 0 });
 	gsap.set(heroExitWords, { yPercent: 120, opacity: 0, rotate: 2, transformOrigin: "left bottom" });
 	if (heroExitVisual) {
 		gsap.set(heroExitVisual, {
-			xPercent: 18,
-			rotate: 8,
+			xPercent: 8,
+			rotate: 1.5,
+			opacity: 0,
 			clipPath: "inset(0 0 0 100%)",
 			transformOrigin: "50% 50%",
 		});
 	}
-	gsap.set(heroAnnotations, { x: -12, opacity: 0 });
+	gsap.set(heroExitInner, { opacity: 0 });
 	gsap.set(heroSheetRule, { scaleX: 0, transformOrigin: "left center" });
 	gsap.set(heroVisualDetail, { y: 16, opacity: 0 });
-	gsap.set([heroTop, heroFooter], { y: 18, opacity: 0 });
+	gsap.set(heroTop, { y: 18, opacity: 0 });
 	gsap.set(heroReveal, { y: 24, opacity: 0 });
 
 	const intro = gsap.timeline({ defaults: { ease: "expo.out" } });
 	intro
 		.to(heroTop, { y: 0, opacity: 1, duration: 0.72 }, 0)
-		.to(heroPaper, { clipPath: "inset(0 0 0 0%)", x: 0, rotate: 2.4, duration: 1.2 }, 0.12)
+		.to(heroPaper, { clipPath: "inset(0 0 0 0%)", x: 0, rotate: 0, duration: 1.2 }, 0.12)
 		.to(heroStage, { y: 0, rotate: 0, duration: 1.2 }, 0.12)
 		.to(heroSheetRule, { scaleX: 1, duration: 0.6 }, 0.38)
 		.to(heroImageWrap, { scale: 1, xPercent: 0, duration: 1.05 }, 0.24)
 		.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.88, stagger: 0.055 }, 0.34)
-		.to(heroAnnotations, { x: 0, opacity: 1, duration: 0.55, stagger: 0.1 }, 0.55)
 		.to(heroVisualDetail, { y: 0, opacity: 1, duration: 0.6 }, 0.62)
-		.to(heroReveal, { y: 0, opacity: 1, duration: 0.66, stagger: 0.07 }, 0.68)
-		.to(heroFooter, { y: 0, opacity: 1, duration: 0.62 }, 1.02);
+		.to(heroReveal, { y: 0, opacity: 1, duration: 0.66, stagger: 0.07 }, 0.68);
 
 	if (heroImage) intro.to(heroImage, { scale: 1, duration: 1.1 }, 0.2);
 
@@ -219,15 +217,16 @@ function animateHero(
 	});
 
 	scrollScene
-		.to(heroMain, { yPercent: -96, ease: "none" }, 0)
-		.to(heroCopy, { xPercent: -9, yPercent: -18, ease: "none" }, 0)
-		.to(heroStage, { xPercent: -18, yPercent: -12, rotate: -7, ease: "none" }, 0)
-		.to(heroImageWrap, { scale: 1.28, ease: "none" }, 0.04)
-		.to(heroExit, { yPercent: 0, autoAlpha: 1, ease: "none" }, 0.1);
+		.to(heroMain, { yPercent: -4, scale: 0.99, autoAlpha: 0, ease: "none" }, 0)
+		.to(heroCopy, { xPercent: -2, yPercent: -4, ease: "none" }, 0)
+		.to(heroStage, { xPercent: -6, yPercent: -4, rotate: -1.5, ease: "none" }, 0)
+		.to(heroImageWrap, { scale: 1.1, ease: "none" }, 0.04)
+		.to(heroExit, { autoAlpha: 1, ease: "none" }, 0.08);
 	if (heroExitVisual) {
-		scrollScene.to(heroExitVisual, { xPercent: 0, rotate: 5, clipPath: "inset(0 0 0 0%)", ease: "none" }, 0.14);
+		scrollScene.to(heroExitVisual, { xPercent: 0, rotate: 0, opacity: 1, clipPath: "inset(0 0 0 0%)", ease: "none" }, 0.46);
 	}
-	scrollScene.to(heroExitWords, { yPercent: 0, opacity: 1, rotate: 0, stagger: 0.06, ease: "none" }, 0.2);
+	scrollScene.to(heroExitInner, { opacity: 1, ease: "none" }, 0.38);
+	scrollScene.to(heroExitWords, { yPercent: 0, opacity: 1, rotate: 0, stagger: 0.06, ease: "none" }, 0.42);
 
 	const stageX = gsap.quickTo(heroStage, "x", { duration: 1.15, ease: "power3.out" });
 	const stageY = gsap.quickTo(heroStage, "y", { duration: 1.15, ease: "power3.out" });
