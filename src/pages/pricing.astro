@@ -1,0 +1,240 @@
+---
+import { getEmDashEntry, getSiteSettings } from "emdash";
+import { getSeoMeta } from "emdash/seo";
+import Base from "../layouts/Base.astro";
+import {
+	findMustikaCmsNode,
+	getMustikaCmsNodes,
+	readMustikaRecords,
+	readMustikaString,
+} from "../lib/mustika-content";
+import { MUSTIKA_SEO } from "../lib/mustika-seo";
+
+const { entry: pricing, error, cacheHint } = await getEmDashEntry("pages", "pricing");
+
+if (error) {
+	return new Response("Unable to load Mustika rituals.", { status: 500 });
+}
+
+if (!pricing) {
+	return Astro.redirect("/404");
+}
+
+Astro.cache.set(cacheHint);
+
+const settings = await getSiteSettings();
+const seo = getSeoMeta(pricing, {
+	siteTitle: settings.title || "Mustika Massage Spa",
+	siteUrl: Astro.url.origin,
+	path: "/pricing",
+	defaultTitle: MUSTIKA_SEO.pricing.title,
+	defaultDescription: MUSTIKA_SEO.pricing.description,
+	defaultOgImage: "/images/mustika/mustika-hero.webp",
+});
+
+const nodes = getMustikaCmsNodes(pricing.data.content);
+const heroNode = findMustikaCmsNode(nodes, "mustika.hero", "marketing.hero");
+const servicesNode = findMustikaCmsNode(nodes, "mustika.services", "marketing.features");
+const bookingHref = readMustikaString(
+	heroNode?.primaryCtaUrl,
+	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20tanya%20tentang%20layanan%20massage.",
+);
+const heroHeadline = readMustikaString(heroNode?.headline, "Pilih sesi yang sesuai");
+const heroEmphasis = readMustikaString(heroNode?.emphasis, "untuk hari ini.");
+const heroSubheadline = readMustikaString(
+	heroNode?.subheadline,
+	"Belum yakin harus memilih yang mana? Ceritakan kebutuhan lewat WhatsApp. Admin membantu mengecek pilihan dan jadwal.",
+);
+const listHeadline = readMustikaString(servicesNode?.headline, "Pilihan perawatan");
+const listEmphasis = readMustikaString(servicesNode?.emphasis);
+const listSubheadline = readMustikaString(
+	servicesNode?.subheadline,
+	"Mulai dari bagian tubuh yang paling ingin diistirahatkan.",
+);
+const fallbackRituals = [
+	{ title: "Traditional Massage", description: "Pijat tradisional untuk melepas pegal setelah hari yang panjang." },
+	{ title: "Aromatherapy Massage", description: "Sentuhan lembut dengan aroma yang membantu suasana terasa lebih tenang." },
+	{ title: "Full Body Massage", description: "Pijat seluruh tubuh ketika rasanya semua bagian perlu diperhatikan." },
+	{ title: "Wellness Therapy", description: "Sesi yang disesuaikan dengan kebutuhan tubuh." },
+];
+const rawRituals = readMustikaRecords(servicesNode?.features);
+const rituals = rawRituals.length
+	? rawRituals.map((ritual, index) => ({
+			number: String(index + 1).padStart(2, "0"),
+			title: readMustikaString(ritual.title, fallbackRituals[index]?.title || "Massage & wellness"),
+			description: readMustikaString(ritual.description, fallbackRituals[index]?.description || ""),
+		}))
+	: fallbackRituals.map((ritual, index) => ({ ...ritual, number: String(index + 1).padStart(2, "0") }));
+---
+
+<Base
+	title={pricing.data.title}
+	pageTitle={pricing.data.title}
+	description={seo.description ?? undefined}
+	image={seo.ogImage ?? "/images/mustika/mustika-hero.webp"}
+	seo={seo}
+	content={{ collection: "pages", id: pricing.data.id, slug: pricing.id }}
+>
+	<div class="ritual-page">
+		<section class="ritual-hero" aria-labelledby="ritual-title">
+			<div class="container ritual-hero-inner">
+				<h1 id="ritual-title">{heroHeadline} <em>{heroEmphasis}</em></h1>
+				<p>{heroSubheadline}</p>
+				<a class="btn btn-primary btn-lg" href={bookingHref} target="_blank" rel="noopener noreferrer">Tanya via WhatsApp <span aria-hidden="true">↗</span></a>
+			</div>
+		</section>
+		<section class="ritual-list-section" aria-labelledby="ritual-list-title">
+			<div class="container">
+				<div class="ritual-list-heading">
+					<h2 id="ritual-list-title">{listHeadline}{listEmphasis && <> <em>{listEmphasis}</em></>}</h2>
+					<p>{listSubheadline}</p>
+				</div>
+				<div class="ritual-options">
+					{rituals.map((ritual) => (
+						<article>
+							<span>{ritual.number}</span>
+							<h3>{ritual.title}</h3>
+							<p>{ritual.description}</p>
+							<a href={bookingHref} target="_blank" rel="noopener noreferrer" aria-label={`Tanya admin, ${ritual.title}`}>Tanya admin <span aria-hidden="true">↗</span></a>
+						</article>
+					))}
+				</div>
+			</div>
+		</section>
+	</div>
+</Base>
+
+<style>
+	.ritual-page {
+		background: var(--paper);
+	}
+
+	.ritual-hero {
+		padding: clamp(10rem, 19vw, 15rem) 0 clamp(5rem, 10vw, 9rem);
+		background: var(--forest);
+		color: var(--ivory);
+	}
+
+	.ritual-hero-inner {
+		max-width: 940px;
+	}
+
+	.ritual-hero h1 {
+		max-width: 13ch;
+		margin-top: 0;
+		font-size: clamp(3.8rem, 7vw, 7rem);
+		letter-spacing: -0.035em;
+		line-height: 0.92;
+	}
+
+	.ritual-hero h1 em {
+		color: var(--gold-light);
+		font-style: italic;
+	}
+
+	.ritual-hero p:not(.section-kicker) {
+		max-width: 39ch;
+		margin-top: 2rem;
+		color: color-mix(in srgb, var(--ivory) 72%, transparent);
+	}
+
+	.ritual-hero .btn {
+		margin-top: 2rem;
+	}
+
+	.ritual-list-section {
+		padding: clamp(5rem, 10vw, 10rem) 0;
+	}
+
+	.ritual-list-heading h2 {
+		max-width: 13ch;
+		margin-top: 0;
+		font-size: clamp(3rem, 6vw, 6rem);
+		letter-spacing: -0.035em;
+	}
+
+	.ritual-list-heading h2 em {
+		color: var(--forest-light);
+		font-style: italic;
+	}
+
+	.ritual-list-heading p {
+		max-width: 42ch;
+		margin-top: 1.25rem;
+		color: var(--color-muted);
+	}
+
+	.ritual-options {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		margin-top: clamp(3rem, 6vw, 5rem);
+		border-top: 1px solid var(--line);
+	}
+
+	.ritual-options article {
+		display: grid;
+		min-height: 300px;
+		align-content: start;
+		padding: 2rem 2rem 2.25rem 0;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.ritual-options article:nth-child(odd) {
+		padding-right: clamp(2rem, 7vw, 7rem);
+		border-right: 1px solid var(--line);
+	}
+
+	.ritual-options article:nth-child(even) {
+		padding-left: clamp(2rem, 7vw, 7rem);
+	}
+
+	.ritual-options article > span {
+		color: var(--gold-ink);
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.12em;
+	}
+
+	.ritual-options h3 {
+		margin-top: 2.5rem;
+		font-size: clamp(1.9rem, 3.3vw, 3.2rem);
+		letter-spacing: -0.03em;
+	}
+
+	.ritual-options p {
+		max-width: 34ch;
+		margin-top: 0.8rem;
+		color: var(--color-muted);
+		font-size: 0.9rem;
+	}
+
+	.ritual-options a {
+		width: fit-content;
+		margin-top: 2rem;
+		padding-bottom: 0.35rem;
+		border-bottom: 1px solid currentColor;
+		color: var(--forest);
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.ritual-options a:hover {
+		color: var(--gold);
+	}
+
+	@media (max-width: 640px) {
+		.ritual-options {
+			grid-template-columns: 1fr;
+		}
+
+		.ritual-options article,
+		.ritual-options article:nth-child(odd),
+		.ritual-options article:nth-child(even) {
+			min-height: 0;
+			padding: 1.6rem 0 2rem;
+			border-right: 0;
+		}
+	}
+</style>

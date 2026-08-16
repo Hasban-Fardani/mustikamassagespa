@@ -1,0 +1,2055 @@
+---
+import {
+	findMustikaCmsNode,
+	getMustikaCmsNodes,
+	readMustikaRecords,
+	readMustikaString,
+	readMustikaStringList,
+} from "../lib/mustika-content";
+
+interface Props {
+	page?: {
+		data?: {
+			content?: unknown;
+		};
+	};
+}
+
+const { page } = Astro.props;
+
+const fallbackBookingHref =
+	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.";
+const fallbackBookingNumber = "0812 2273 9180";
+
+const fallbackServices = [
+	{
+		number: "01",
+		title: "Traditional Massage",
+		description: "Pijat tradisional untuk melepas pegal setelah hari yang panjang.",
+		tag: "Untuk badan yang pegal",
+	},
+	{
+		number: "02",
+		title: "Aromatherapy Massage",
+		description: "Sentuhan lembut dengan aroma yang membantu suasana terasa lebih tenang.",
+		tag: "Untuk suasana yang tenang",
+	},
+	{
+		number: "03",
+		title: "Full Body Massage",
+		description: "Pijat seluruh tubuh ketika rasanya semua bagian perlu diperhatikan.",
+		tag: "Untuk perhatian menyeluruh",
+	},
+	{
+		number: "04",
+		title: "Wellness Therapy",
+		description: "Sesi yang disesuaikan dengan kebutuhan tubuh.",
+		tag: "Untuk kebutuhan yang lebih personal",
+	},
+];
+
+const fallbackExperienceSteps = [
+	{
+		number: "01",
+		title: "Ceritakan kebutuhan",
+		text: "Ceritakan bagian tubuh yang terasa paling membutuhkan perhatian.",
+	},
+	{
+		number: "02",
+		title: "Kami sesuaikan sesi",
+		text: "Terapis membantu menyesuaikan pilihan perawatan dengan kebutuhan.",
+	},
+	{
+		number: "03",
+		title: "Nikmati waktu setelahnya",
+		text: "Selesai sesi, beri tubuh waktu untuk beristirahat sebelum kembali beraktivitas.",
+	},
+];
+
+const fallbackStandards = [
+	"Terapis profesional",
+	"Pengalaman yang personal",
+	"Ruang bersih dan nyaman",
+	"Untuk tubuh dan pikiran",
+];
+
+const fallbackFaqs = [
+	{
+		question: "Bagaimana cara melakukan booking?",
+		answer: "Chat WhatsApp Mustika di 0812 2273 9180. Tulis layanan dan waktu yang diinginkan; admin akan mengecek ketersediaannya.",
+	},
+	{
+		question: "Siapa yang bisa datang ke Mustika?",
+		answer: "Mustika terbuka untuk pelanggan umum dan keluarga yang membutuhkan pijat, refleksi, atau waktu untuk beristirahat. Ceritakan kebutuhan khusus saat booking.",
+	},
+	{
+		question: "Layanan apa saja yang tersedia?",
+		answer: "Mustika menyediakan pijat tradisional, pijat aromaterapi, pijat seluruh tubuh, dan wellness therapy. Admin dapat membantu memilihkan sesi sesuai kebutuhan.",
+	},
+	{
+		question: "Di mana lokasi Mustika?",
+		answer: "Mustika Massage Spa berada di Bandung, Jawa Barat. Detail lokasi dan arahan perjalanan dapat dikonfirmasi langsung melalui WhatsApp saat melakukan booking.",
+	},
+];
+
+const nodes = getMustikaCmsNodes(page?.data?.content);
+const findNode = (...types: string[]) => findMustikaCmsNode(nodes, ...types);
+const readString = readMustikaString;
+const readStringList = readMustikaStringList;
+
+const heroNode = findNode("mustika.hero", "marketing.hero");
+const introNode = findNode("mustika.intro");
+const servicesNode = findNode("mustika.services", "marketing.features");
+const experienceNode = findNode("mustika.experience");
+const standardsNode = findNode("mustika.standards");
+const faqNode = findNode("mustika.faq", "marketing.faq");
+const bookingNode = findNode("mustika.booking");
+
+const heroHeadline = readString(heroNode?.headline, "Pijat profesional untuk");
+const heroEmphasis = readString(heroNode?.emphasis, "tubuh yang butuh jeda.");
+const heroSubheadline = readString(
+	heroNode?.subheadline,
+	"Sampaikan bagian tubuh yang terasa pegal. Kami bantu pilihkan sesi yang sesuai di Bandung.",
+);
+const bookingHref = readString(heroNode?.primaryCtaUrl, fallbackBookingHref);
+const bookingLabel = readString(heroNode?.primaryCtaLabel, "Booking via WhatsApp");
+const heroSecondaryLabel = readString(heroNode?.secondaryCtaLabel, "Lihat ritual kami");
+const heroSecondaryUrl = readString(heroNode?.secondaryCtaUrl, "#rituals");
+const bookingNumber = readString(bookingNode?.phone, fallbackBookingNumber);
+
+const introHeadline = readString(introNode?.headline, "Tubuh tidak selalu minta lebih.");
+const introEmphasis = readString(introNode?.emphasis, "Kadang ia minta jeda.");
+const introBody = readString(
+	introNode?.body,
+	"Mustika memberi ruang untuk melepas pegal dan menenangkan pikiran. Pilih sesi yang sesuai, lalu biarkan tubuh beristirahat.",
+);
+const introAudience = readStringList(introNode?.audience, [
+	"Badan terasa pegal setelah aktivitas",
+	"Ingin istirahat tanpa terburu-buru",
+	"Mencari sesi untuk keluarga",
+]);
+const introLinkLabel = readString(introNode?.linkLabel, "Kenali pengalaman Mustika");
+const introLinkUrl = readString(introNode?.linkUrl, "#experience");
+
+const rawServices = readMustikaRecords(servicesNode?.features);
+const serviceImagePaths = [
+	"/images/mustika/mustika-hero.webp",
+	"/images/mustika/mustika-aroma.webp",
+	"/images/mustika/mustika-space.webp",
+	"/images/mustika/mustika-reflex.webp",
+];
+const services = rawServices.length
+	? rawServices.map((service, index) => ({
+			number: String(index + 1).padStart(2, "0"),
+			title: readString(service.title, fallbackServices[index]?.title || "Massage & wellness"),
+			description: readString(service.description),
+			tag: readString(service.tag, fallbackServices[index]?.tag || "Untuk kebutuhan tubuh"),
+			imageSrc: serviceImagePaths[index % serviceImagePaths.length],
+		}))
+	: fallbackServices.map((service, index) => ({
+		...service,
+		imageSrc: serviceImagePaths[index],
+	}));
+
+	const experienceHeadline = readString(experienceNode?.headline, "Datang dengan lelah.");
+const experienceEmphasis = readString(experienceNode?.emphasis, "Pulang lebih ringan.");
+const experienceBody = readString(
+	experienceNode?.body,
+	"Ceritakan bagian tubuh yang terasa pegal. Terapis menyesuaikan sesi dan fokus perawatan dengan kebutuhan.",
+);
+const rawExperienceSteps = readMustikaRecords(experienceNode?.steps);
+const experienceSteps = rawExperienceSteps.length
+	? rawExperienceSteps.map((step, index) => ({
+			number: readString(step.number, String(index + 1).padStart(2, "0")),
+			title: readString(step.title),
+			text: readString(step.text),
+		}))
+	: fallbackExperienceSteps;
+
+const standardsHeadline = readString(standardsNode?.headline, "Hal kecil yang kami perhatikan");
+const standardsEmphasis = readString(standardsNode?.emphasis, "sejak awal.");
+const standardsBody = readString(
+	standardsNode?.body,
+	"Dari sapaan pertama hingga waktu untuk pulang, kami ingin sesi terasa tenang dan personal.",
+);
+const standardsQuote = readString(
+	standardsNode?.quote,
+	"Kalau ada bagian yang terasa kurang nyaman, beri tahu kami. Sesi bisa disesuaikan.",
+);
+const standards = readStringList(standardsNode?.items, fallbackStandards);
+
+const rawFaqs = readMustikaRecords(faqNode?.items);
+const faqs = rawFaqs.length
+	? rawFaqs.map((faq) => ({ question: readString(faq.question), answer: readString(faq.answer) }))
+	: fallbackFaqs;
+const faqHeadline = readString(faqNode?.headline, "Ruang untuk semua pertanyaan.");
+
+const bookingHeadline = readString(bookingNode?.headline, "Satu pesan kecil.");
+const bookingEmphasis = readString(bookingNode?.emphasis, "Waktu untuk beristirahat.");
+const bookingBody = readString(
+	bookingNode?.body,
+	"Chat Mustika untuk memilih sesi dan waktu yang sesuai di Bandung.",
+);
+	const bookingCtaLabel = readString(bookingNode?.ctaLabel, "Booking via WhatsApp");
+const bookingCtaUrl = readString(bookingNode?.ctaUrl, bookingHref);
+const heroLocation = readString(heroNode?.location, "Bandung, Jawa Barat");
+const heroAudience = readString(heroNode?.audienceLabel, "Untuk pelanggan umum dan keluarga");
+
+const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
+---
+
+<div class="mustika-page mustika-ledger">
+	<div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
+
+	<section class="ledger-hero" data-ledger-hero aria-labelledby="hero-title">
+		<div class="ledger-hero-main" data-hero-main>
+			<div class="shell ledger-hero-top" data-hero-top>
+				<span class="ledger-overline">Mustika / Massage Spa</span>
+				<span class="ledger-top-note">Bandung · ruang jeda untuk tubuh yang bergerak</span>
+			</div>
+
+			<div class="shell ledger-hero-grid" data-hero-scene>
+				<div class="ledger-copy" data-hero-copy>
+					<h1 id="hero-title" class="ledger-title">
+						<span class="ledger-title-line" data-hero-line>
+							{splitWords(heroHeadline).map((word) => (
+								<span class="hero-word-mask"><span data-hero-word>{word}</span></span>
+							))}
+						</span>
+						<span class="ledger-title-line ledger-title-line-accent" data-hero-line>
+							<em>
+								{splitWords(heroEmphasis).map((word) => (
+									<span class="hero-word-mask"><span data-hero-word>{word}</span></span>
+								))}
+							</em>
+						</span>
+					</h1>
+					<div class="ledger-index" data-reveal>
+						<span class="ledger-index-number" data-hero-index>01</span>
+						<span class="ledger-index-rule" aria-hidden="true"></span>
+						<span>Ritual pertama</span>
+					</div>
+					<p class="ledger-lede" data-reveal>{heroSubheadline}</p>
+					<div class="ledger-actions" data-reveal>
+						<a class="ledger-button magnetic" href={bookingHref} target="_blank" rel="noopener noreferrer">
+							<span>{bookingLabel}</span>
+							<span class="btn-arrow" aria-hidden="true">↗</span>
+						</a>
+						<a class="ledger-text-link" href={heroSecondaryUrl}>
+							<span>{heroSecondaryLabel}</span>
+							<span aria-hidden="true">↓</span>
+						</a>
+					</div>
+					<div class="ledger-meta" data-reveal>
+						<span>{heroLocation}</span>
+						<span class="ledger-meta-separator" aria-hidden="true">/</span>
+						<span>{heroAudience}</span>
+					</div>
+				</div>
+
+				<figure class="hero-visual" data-hero-stage aria-label="Suasana pijat dan wellness di Mustika">
+					<div class="hero-visual-frame" data-hero-paper>
+						<div class="hero-visual-meta">
+							<span>Ruang perawatan</span>
+							<span>01 / 04</span>
+						</div>
+						<div class="hero-visual-rule" data-hero-sheet-rule aria-hidden="true"></div>
+						<div class="hero-visual-image" data-hero-image-wrap>
+							<picture>
+								<source media="(max-width: 760px)" srcset="/images/mustika/mustika-hero-720.webp" />
+								<img
+									src="/images/mustika/mustika-hero.webp"
+									alt="Terapis memberikan pijat relaksasi pada pelanggan di ruang wellness"
+									width="1600"
+									height="1067"
+									sizes="(max-width: 760px) calc(100vw - 60px), 560px"
+									loading="eager"
+									fetchpriority="high"
+									decoding="async"
+								/>
+							</picture>
+							<span class="hero-visual-image-wash" aria-hidden="true"></span>
+							<span class="hero-visual-image-caption">Sentuhan · terukur · personal</span>
+						</div>
+						<div class="hero-visual-detail" data-hero-visual-detail>
+							<span class="hero-visual-detail-index">01</span>
+							<p>Ruang yang memberi tubuh waktu untuk kembali tenang.</p>
+						</div>
+					</div>
+					<span class="hero-visual-note hero-visual-note-top" data-hero-annotation>Massage · Refleksi · Wellness</span>
+					<span class="hero-visual-note hero-visual-note-bottom" data-hero-annotation>Dengan reservasi / Bandung</span>
+				</figure>
+			</div>
+
+			<div class="shell ledger-hero-footer" data-hero-footer>
+				<span class="hero-footer-line"><span class="hero-footer-dot" aria-hidden="true"></span> Lihat pilihan perawatan</span>
+				<span class="hero-footer-contact">Booking melalui WhatsApp · {bookingNumber}</span>
+			</div>
+		</div>
+
+		<div class="ledger-hero-exit" data-hero-exit>
+			<div class="hero-exit-visual" data-hero-exit-visual aria-hidden="true">
+				<img
+					src="/images/mustika/mustika-reflex.webp"
+					alt=""
+					width="600"
+					height="901"
+					sizes="(max-width: 1000px) 34vw, 32rem"
+					loading="lazy"
+					decoding="async"
+				/>
+				<span class="hero-exit-visual-wash"></span>
+			</div>
+			<div class="shell hero-exit-inner">
+				<span class="ledger-overline ledger-overline-light">02 / Masuk ke ritual</span>
+				<h2>
+					<span class="hero-exit-line">
+						<span class="hero-word-mask"><span data-hero-exit-word>Sisihkan</span></span>
+						<span class="hero-word-mask"><span data-hero-exit-word>sebentar.</span></span>
+					</span>
+					<br />
+					<em class="hero-exit-line">
+						<span class="hero-word-mask"><span data-hero-exit-word>Rasakan</span></span>
+						<span class="hero-word-mask"><span data-hero-exit-word>bedanya.</span></span>
+					</em>
+				</h2>
+				<a class="hero-exit-link" href="#rituals"><span>Temukan layanan Mustika</span><span aria-hidden="true">↓</span></a>
+			</div>
+		</div>
+	</section>
+
+	<section class="ledger-intro section" aria-labelledby="intro-title">
+		<div class="shell ledger-intro-grid">
+			<div class="section-marker" data-reveal>
+				<span>01</span>
+				<span>Ruang untuk jeda</span>
+			</div>
+			<div class="ledger-intro-content">
+				<h2 id="intro-title" data-word-reveal>{introHeadline} <em>{introEmphasis}</em></h2>
+				<div class="ledger-intro-detail" data-reveal>
+					<p data-word-reveal>{introBody}</p>
+					<div class="intro-side-column">
+						<span class="detail-label">Cocok untuk</span>
+						<ul class="intro-audience" aria-label="Cocok untuk">
+							{introAudience.map((audience) => <li>{audience}</li>)}
+						</ul>
+						<a class="ledger-inline-link" href={introLinkUrl}><span>{introLinkLabel}</span><span aria-hidden="true">↘</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="ledger-rituals section" id="rituals" aria-labelledby="rituals-title">
+		<div class="shell">
+			<div class="section-bar section-bar-light" data-reveal>
+				<span>02 / Ritual</span>
+				<span>Empat cara untuk mulai merasa lebih baik</span>
+			</div>
+			<div class="rituals-heading">
+				<h2 id="rituals-title" data-word-reveal>{readString(servicesNode?.headline, "Temukan cara tubuh ingin")} <em>{readString(servicesNode?.emphasis, "dipulihkan.")}</em></h2>
+				<p data-word-reveal>{readString(servicesNode?.subheadline, "Pilih yang terasa paling dekat dengan kebutuhan tubuh hari ini.")}</p>
+			</div>
+
+			<div class="service-ledger" data-service-list>
+				{services.map((service) => (
+					<article class="service-row" data-service-item>
+						<div class="service-row-top">
+							<span class="service-number">{service.number}</span>
+							<span class="service-tag">{service.tag}</span>
+					</div>
+					<div class="service-row-copy">
+						<div class="service-row-media">
+							<img src={service.imageSrc} alt={`Ilustrasi editorial untuk ${service.title}`} width="600" height="901" sizes="(max-width: 760px) 92px, 180px" loading="lazy" decoding="async" />
+						</div>
+						<div class="service-row-text">
+							<h3 data-word-reveal>{service.title}</h3>
+							<p data-word-reveal>{service.description}</p>
+						</div>
+					</div>
+						<div class="service-row-end">
+							<span class="service-hover-line" aria-hidden="true"></span>
+							<span class="service-arrow" aria-hidden="true">↗</span>
+						</div>
+					</article>
+				))}
+			</div>
+			<div class="ritual-footer" data-reveal>
+				<span>Belum yakin harus memilih yang mana?</span>
+				<a class="ledger-inline-link ledger-inline-link-light" href={bookingHref} target="_blank" rel="noopener noreferrer"><span>Tanya admin Mustika</span><span aria-hidden="true">↗</span></a>
+			</div>
+		</div>
+	</section>
+
+	<section class="ledger-experience section" id="experience" aria-labelledby="experience-title">
+		<div class="shell">
+			<div class="section-bar" data-reveal>
+					<span>03 / Pengalaman</span>
+					<span>Pendekatan yang mengikuti kebutuhan tubuh</span>
+			</div>
+			<div class="experience-heading">
+				<h2 id="experience-title" data-word-reveal>{experienceHeadline}<br /><em>{experienceEmphasis}</em></h2>
+				<p data-word-reveal>{experienceBody}</p>
+			</div>
+			<ol class="journey-track" data-journey-list>
+				{experienceSteps.map((step) => (
+					<li data-journey-step>
+						<span class="journey-step-number">{step.number}</span>
+						<span class="journey-step-line" aria-hidden="true"></span>
+						<h3 data-word-reveal>{step.title}</h3>
+						<p data-word-reveal>{step.text}</p>
+					</li>
+				))}
+			</ol>
+		</div>
+	</section>
+
+	<section class="ledger-standards section" id="standards" aria-labelledby="standards-title">
+		<div class="shell standards-layout">
+			<div class="section-bar" data-reveal>
+				<span>04 / Mengapa Mustika</span>
+				<span>Detail yang kami jaga</span>
+			</div>
+			<div class="standards-grid">
+				<div class="standards-copy">
+					<h2 id="standards-title" data-word-reveal>{standardsHeadline} <em>{standardsEmphasis}</em></h2>
+					<p class="standards-lede" data-word-reveal>{standardsBody}</p>
+					<div class="standard-quote" data-reveal>
+						<span class="quote-mark" aria-hidden="true">“</span>
+						<p data-word-reveal>{standardsQuote}</p>
+					</div>
+				</div>
+				<ul class="standard-ledger" data-standard-list>
+					{standards.map((standard, index) => (
+						<li data-standard-item>
+							<span class="standard-index">0{index + 1}</span>
+							<span>{standard}</span>
+							<span class="standard-check" aria-hidden="true">↗</span>
+						</li>
+					))}
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class="ledger-faq section" id="faq" aria-labelledby="faq-title">
+		<div class="shell faq-layout">
+			<div class="faq-heading">
+				<div class="section-bar" data-reveal>
+					<span>05 / FAQ</span>
+					<span>Jawaban singkat sebelum datang</span>
+				</div>
+				<h2 id="faq-title" data-word-reveal>{faqHeadline}</h2>
+				<p data-word-reveal>Jika belum menemukan jawabannya, admin Mustika siap membantu lewat WhatsApp.</p>
+				<a class="ledger-inline-link" href={bookingHref} target="_blank" rel="noopener noreferrer" data-reveal><span>Chat dengan admin</span><span aria-hidden="true">↗</span></a>
+			</div>
+			<div class="faq-ledger" data-faq-list>
+				{faqs.map((faq, index) => (
+					<article class="faq-row" data-faq-item>
+						<div class="faq-row-heading">
+							<span class="faq-index">0{index + 1}</span>
+							<p class="faq-question" role="heading" aria-level="3" data-word-reveal>{faq.question}</p>
+						</div>
+						<p data-word-reveal>{faq.answer}</p>
+					</article>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="ledger-book" id="book" aria-labelledby="book-title">
+		<div class="book-visual" data-reveal data-book-visual aria-hidden="true">
+			<img src="/images/mustika/mustika-space.webp" alt="" width="1200" height="801" sizes="(max-width: 760px) 70vw, 34rem" loading="lazy" decoding="async" />
+			<span class="book-visual-wash"></span>
+		</div>
+		<div class="shell book-layout">
+			<div class="book-index" data-reveal>
+					<span>Booking Mustika</span>
+				<span>Mustika / Bandung</span>
+			</div>
+			<div class="book-copy">
+				<h2 id="book-title" data-word-reveal>{bookingHeadline}<br /><em>{bookingEmphasis}</em></h2>
+				<p data-word-reveal>{bookingBody}</p>
+				<a class="ledger-button ledger-button-light magnetic" href={bookingCtaUrl} target="_blank" rel="noopener noreferrer" data-reveal>
+					<span>{bookingCtaLabel}</span>
+					<span class="btn-arrow" aria-hidden="true">↗</span>
+				</a>
+				<span class="book-phone" data-reveal>WhatsApp · {bookingNumber}</span>
+			</div>
+		</div>
+	</section>
+</div>
+
+<script>
+	import { initMustikaLedgerMotion } from "../scripts/mustika-ledger-motion";
+
+	initMustikaLedgerMotion();
+</script>
+
+<style>
+	.mustika-ledger {
+		--ledger-bone: #f0e9dd;
+		--ledger-paper: #f8f4ec;
+		--ledger-sage: #d6ded0;
+		--ledger-ink: #1c201a;
+		--ledger-ink-soft: #2d352d;
+		--ledger-oxide: #a94e3b;
+		--ledger-oxide-deep: #873c31;
+		--ledger-gold: #c49a4e;
+		--ledger-muted: #4f5a4f;
+		--ledger-line: rgba(28, 32, 26, 0.18);
+		--ledger-line-light: rgba(240, 233, 221, 0.26);
+		background: var(--ledger-bone);
+		color: var(--ledger-ink);
+		overflow: clip;
+	}
+
+	.mustika-ledger .scroll-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 110;
+		width: 100%;
+		height: 2px;
+		background: var(--ledger-oxide);
+		transform: scaleX(0);
+		transform-origin: left center;
+	}
+
+	.mustika-ledger .section {
+		position: relative;
+		padding-block: clamp(5rem, 9vw, 9rem);
+	}
+
+	.mustika-ledger > section:not(.ledger-hero) {
+		z-index: 1;
+	}
+
+	.ledger-hero {
+		position: relative;
+		height: max(620px, calc(100svh - 86px));
+		min-height: 620px;
+		margin-bottom: max(0px, calc(20svh + 86px));
+		background: var(--ledger-bone);
+		isolation: isolate;
+	}
+
+	.ledger-hero.is-pinned {
+		z-index: 20;
+	}
+
+	.ledger-hero.is-released {
+		visibility: hidden;
+	}
+
+	.ledger-hero-main {
+		position: relative;
+		height: 100%;
+		z-index: 1;
+	}
+
+	.ledger-hero-top {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-top: clamp(6.8rem, 10vw, 8.8rem);
+		color: var(--ledger-muted);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		line-height: 1.3;
+		text-transform: uppercase;
+	}
+
+	.ledger-overline {
+		color: var(--ledger-oxide);
+	}
+
+	.ledger-top-note {
+		text-align: right;
+	}
+
+	.ledger-hero-grid {
+		display: grid;
+		height: calc(100% - 158px);
+		grid-template-columns: minmax(0, 1.02fr) minmax(300px, 0.98fr);
+		align-items: center;
+		gap: clamp(2.5rem, 7vw, 8rem);
+	}
+
+	.ledger-copy {
+		position: relative;
+		z-index: 2;
+		max-width: 640px;
+	}
+
+	.ledger-index,
+	.section-marker,
+	.section-bar,
+	.book-index {
+		display: flex;
+		align-items: center;
+		gap: 0.8rem;
+		color: var(--ledger-muted);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.15em;
+		line-height: 1.3;
+		text-transform: uppercase;
+	}
+
+	.ledger-index {
+		margin-top: 1rem;
+	}
+
+	.ledger-index-number,
+	.section-marker > span:first-child,
+	.section-bar > span:first-child {
+		color: var(--ledger-oxide);
+	}
+
+	.ledger-index-rule {
+		width: 2.8rem;
+		height: 1px;
+		background: var(--ledger-gold);
+	}
+
+	.ledger-title {
+		max-width: 15ch;
+		margin-top: 1rem;
+		font-size: clamp(3.1rem, 4.3vw, 5.1rem);
+		letter-spacing: -0.045em;
+		line-height: 0.91;
+		text-wrap: balance;
+	}
+
+	.ledger-title-line {
+		display: block;
+	}
+
+	.hero-word-mask {
+		display: inline-block;
+		overflow: clip;
+		margin-right: 0.16em;
+		padding-bottom: 0.07em;
+		vertical-align: bottom;
+	}
+
+	.scroll-word-mask {
+		display: inline-block;
+		overflow: hidden;
+		padding-bottom: 0.08em;
+		vertical-align: bottom;
+	}
+
+	[data-scroll-word-inner] {
+		display: inline-block;
+		will-change: transform, opacity;
+	}
+
+	.ledger-title-line-accent {
+		color: var(--ledger-oxide);
+	}
+
+	.ledger-title em,
+	.ledger-intro h2 em,
+	.rituals-heading h2 em,
+	.experience-heading h2 em,
+	.standards-copy h2 em,
+	.ledger-book h2 em,
+	.hero-exit-inner h2 em {
+		font-style: italic;
+	}
+
+	.ledger-lede {
+		max-width: 38ch;
+		margin-top: 1.8rem;
+		color: var(--ledger-muted);
+		font-size: 0.97rem;
+		line-height: 1.6;
+	}
+
+	.ledger-actions {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 1.25rem;
+		margin-top: 1.9rem;
+	}
+
+	.ledger-button {
+		display: inline-flex;
+		min-height: 50px;
+		align-items: center;
+		justify-content: center;
+		gap: 0.85rem;
+		padding: 0 1.25rem;
+		border: 1px solid var(--ledger-oxide);
+		background: var(--ledger-oxide);
+		color: var(--ledger-paper);
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		line-height: 1;
+		text-transform: uppercase;
+		transition: background-color 220ms ease, border-color 220ms ease, color 220ms ease;
+	}
+
+	.ledger-button:hover {
+		border-color: var(--ledger-oxide-deep);
+		background: var(--ledger-oxide-deep);
+	}
+
+	.ledger-text-link,
+	.ledger-inline-link,
+	.hero-exit-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.65rem;
+		width: fit-content;
+		border-bottom: 1px solid currentColor;
+		padding-bottom: 0.32rem;
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		line-height: 1.3;
+		text-transform: uppercase;
+		transition: color 220ms ease, gap 320ms var(--ease-out-quint);
+	}
+
+	.ledger-text-link:hover,
+	.ledger-inline-link:hover,
+	.hero-exit-link:hover {
+		gap: 0.95rem;
+	}
+
+	.ledger-text-link,
+	.ledger-inline-link {
+		color: var(--ledger-ink);
+	}
+
+	.ledger-meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin-top: 2.6rem;
+		color: var(--ledger-muted);
+		font-size: 0.7rem;
+		letter-spacing: 0.04em;
+	}
+
+	.ledger-meta-separator {
+		color: var(--ledger-gold);
+	}
+
+	.hero-visual {
+		position: relative;
+		width: min(100%, 560px);
+		aspect-ratio: 1.04;
+		justify-self: end;
+		margin: 0;
+		perspective: 1200px;
+	}
+
+	.hero-visual-frame {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		grid-template-rows: auto 1px minmax(0, 1fr) auto;
+		padding: clamp(0.95rem, 1.8vw, 1.35rem);
+		border: 1px solid var(--ledger-line);
+		background: var(--ledger-paper);
+		box-shadow: 22px 24px 0 rgba(196, 154, 78, 0.16);
+		transform: rotate(2.4deg);
+		transform-origin: 50% 50%;
+	}
+
+	.hero-visual-meta,
+	.hero-visual-detail {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		color: var(--ledger-muted);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		line-height: 1.35;
+		text-transform: uppercase;
+	}
+
+	.hero-visual-meta span:first-child {
+		color: var(--ledger-oxide);
+	}
+
+	.hero-visual-rule {
+		width: 100%;
+		height: 1px;
+		margin-top: 0.8rem;
+		background: var(--ledger-line);
+		transform-origin: left center;
+	}
+
+	.hero-visual-image {
+		position: relative;
+		min-height: 0;
+		margin-block: 0.95rem 1rem;
+		overflow: hidden;
+		background: var(--ledger-ink);
+		isolation: isolate;
+	}
+
+	.hero-visual-image::before,
+	.hero-visual-image::after {
+		position: absolute;
+		z-index: 3;
+		content: "";
+		pointer-events: none;
+	}
+
+	.hero-visual-image::before {
+		inset: 0;
+		border: 1px solid rgba(240, 233, 221, 0.3);
+	}
+
+	.hero-visual-image::after {
+		top: 1rem;
+		right: 1rem;
+		width: 3.2rem;
+		height: 3.2rem;
+		border-top: 1px solid var(--ledger-gold);
+		border-right: 1px solid var(--ledger-gold);
+	}
+
+	.hero-visual-image picture,
+	.hero-visual-image img {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.hero-visual-image img {
+		object-fit: cover;
+		object-position: 48% 48%;
+		transform: scale(1.04);
+		will-change: transform;
+	}
+
+	.hero-visual-image-wash {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background: linear-gradient(180deg, rgba(18, 28, 25, 0.08) 0%, rgba(18, 28, 25, 0.02) 42%, rgba(18, 28, 25, 0.64) 100%);
+		pointer-events: none;
+	}
+
+	.hero-visual-image-caption {
+		position: absolute;
+		z-index: 2;
+		bottom: 1rem;
+		left: 1rem;
+		color: var(--ledger-paper);
+		font-size: 0.68rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		line-height: 1.3;
+		text-transform: uppercase;
+	}
+
+	.hero-visual-detail {
+		align-items: flex-start;
+		justify-content: flex-start;
+		color: var(--ledger-ink);
+		text-transform: none;
+	}
+
+	.hero-visual-detail-index {
+		color: var(--ledger-oxide);
+		font-family: var(--font-heading);
+		font-size: 1.7rem;
+		font-weight: 400;
+		letter-spacing: -0.04em;
+		line-height: 0.9;
+	}
+
+	.hero-visual-detail p {
+		max-width: 28ch;
+		margin: 0;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		line-height: 1.45;
+	}
+
+	.hero-visual-note {
+		position: absolute;
+		z-index: 2;
+		color: var(--ledger-oxide);
+		font-size: 0.7rem;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		line-height: 1.3;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.hero-visual-note-top {
+		top: 12%;
+		left: -3rem;
+		writing-mode: vertical-rl;
+		transform: rotate(180deg);
+	}
+
+	.hero-visual-note-bottom {
+		right: -2.6rem;
+		bottom: 13%;
+		writing-mode: vertical-rl;
+	}
+
+	.ledger-hero-footer {
+		position: absolute;
+		right: 5%;
+		bottom: 1.25rem;
+		left: 5%;
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		border-top: 1px solid var(--ledger-line);
+		padding-top: 0.8rem;
+		color: var(--ledger-muted);
+		font-size: 0.72rem;
+		letter-spacing: 0.03em;
+}
+
+	.hero-footer-line {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+	}
+
+	.hero-footer-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--ledger-oxide);
+	}
+
+	.hero-footer-contact {
+		color: var(--ledger-oxide);
+		font-weight: 700;
+	}
+
+	.ledger-hero-exit {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		align-items: center;
+		background: var(--ledger-ink);
+		color: var(--ledger-paper);
+		pointer-events: none;
+	}
+
+	.hero-exit-visual {
+		position: absolute;
+		z-index: 1;
+		top: 12%;
+		right: 6%;
+		width: min(33vw, 32rem);
+		height: 76%;
+		overflow: hidden;
+		border: 1px solid rgba(196, 154, 78, 0.34);
+		background: var(--ledger-ink-soft);
+		box-shadow: 1.25rem 1.25rem 0 rgba(196, 154, 78, 0.1);
+		transform: rotate(5deg);
+		transform-origin: 50% 50%;
+		will-change: transform, clip-path, opacity;
+	}
+
+	.hero-exit-visual::before {
+		position: absolute;
+		inset: 0.85rem;
+		z-index: 2;
+		border: 1px solid rgba(240, 233, 221, 0.2);
+		content: "";
+		pointer-events: none;
+	}
+
+	.hero-exit-visual img,
+	.hero-exit-visual-wash {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.hero-exit-visual img {
+		display: block;
+		object-fit: cover;
+		object-position: center;
+		filter: saturate(0.7) contrast(1.05);
+		transform: scale(1.06);
+	}
+
+	.hero-exit-visual-wash {
+		z-index: 1;
+		background: linear-gradient(180deg, rgba(28, 32, 26, 0.1), rgba(28, 32, 26, 0.68)), linear-gradient(90deg, rgba(28, 32, 26, 0.55), rgba(28, 32, 26, 0.08));
+	}
+
+	:global(html.js) .ledger-hero-exit {
+		opacity: 0;
+	}
+
+	.hero-exit-inner {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		align-content: center;
+		min-height: 100%;
+		padding-block: 7rem;
+	}
+
+	.ledger-overline-light {
+		color: var(--ledger-gold);
+	}
+
+	.hero-exit-inner h2 {
+		max-width: 11ch;
+		margin-top: 1.2rem;
+		font-size: clamp(3.8rem, 7.5vw, 8.5rem);
+		letter-spacing: -0.045em;
+		line-height: 0.86;
+	}
+
+	.hero-exit-inner h2 em {
+		color: var(--ledger-oxide);
+	}
+
+	.hero-exit-link {
+		margin-top: 2rem;
+		color: var(--ledger-paper);
+	}
+
+	.ledger-intro {
+		background: var(--ledger-sage);
+	}
+
+	.ledger-intro-grid {
+		display: grid;
+		grid-template-columns: minmax(150px, 0.33fr) minmax(0, 1.67fr);
+		gap: clamp(2rem, 7vw, 9rem);
+	}
+
+	.section-marker {
+		align-self: start;
+		padding-top: 0.6rem;
+		border-top: 1px solid var(--ledger-line);
+	}
+
+	.section-marker > span:last-child {
+		max-width: 12ch;
+	}
+
+	.ledger-intro-content h2 {
+		max-width: 13ch;
+		font-size: clamp(3.3rem, 6.2vw, 7rem);
+		letter-spacing: -0.045em;
+		line-height: 0.9;
+	}
+
+	.ledger-intro-content h2 em {
+		color: var(--ledger-oxide);
+	}
+
+	.ledger-intro-detail {
+		display: grid;
+		grid-template-columns: minmax(0, 0.88fr) minmax(180px, 0.55fr);
+		gap: clamp(2rem, 8vw, 9rem);
+		align-items: end;
+		margin-top: clamp(3rem, 7vw, 6.5rem);
+		border-top: 1px solid var(--ledger-line);
+		padding-top: 1.2rem;
+	}
+
+	.ledger-intro-detail > p {
+		max-width: 37ch;
+		color: var(--ledger-ink-soft);
+		font-size: 0.95rem;
+	}
+
+	.intro-side-column {
+		display: grid;
+		gap: 1.15rem;
+	}
+
+	.detail-label {
+		color: var(--ledger-oxide);
+		font-size: 0.7rem;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.intro-audience {
+		display: grid;
+		gap: 0.4rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.79rem;
+		font-weight: 700;
+	}
+
+	.intro-audience li::before {
+		margin-right: 0.65rem;
+		color: var(--ledger-oxide);
+		content: "•";
+	}
+
+	.ledger-inline-link-light {
+		color: var(--ledger-paper);
+	}
+
+	.ledger-rituals {
+		background: var(--ledger-ink);
+		color: var(--ledger-paper);
+	}
+
+	.section-bar {
+		justify-content: space-between;
+		border-bottom: 1px solid var(--ledger-line);
+		padding-bottom: 0.75rem;
+	}
+
+	.section-bar-light {
+		border-color: var(--ledger-line-light);
+		color: rgba(240, 233, 221, 0.7);
+	}
+
+	.section-bar-light > span:first-child {
+		color: var(--ledger-gold);
+	}
+
+	.rituals-heading {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(200px, 0.4fr);
+		gap: 2rem;
+		align-items: end;
+		margin-block: clamp(3.25rem, 6vw, 6rem) clamp(3rem, 5vw, 4rem);
+	}
+
+	.rituals-heading h2 {
+		max-width: 11ch;
+		font-size: clamp(3.4rem, 6.5vw, 7.4rem);
+		letter-spacing: -0.045em;
+		line-height: 0.88;
+	}
+
+	.rituals-heading h2 em {
+		color: var(--ledger-gold);
+	}
+
+	.rituals-heading > p {
+		max-width: 28ch;
+		justify-self: end;
+		color: rgba(240, 233, 221, 0.68);
+		font-size: 0.9rem;
+	}
+
+	.service-ledger {
+		border-top: 1px solid var(--ledger-line-light);
+	}
+
+	.service-row {
+		display: grid;
+		grid-template-columns: minmax(115px, 0.3fr) minmax(0, 1.4fr) minmax(100px, 0.3fr);
+		gap: 1.5rem;
+		align-items: stretch;
+		min-height: 142px;
+		border-bottom: 1px solid var(--ledger-line-light);
+		transition: background-color 300ms ease;
+	}
+
+	.service-row:hover {
+		background: rgba(240, 233, 221, 0.055);
+	}
+
+	.service-row-top {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding-block: 1.2rem 1rem;
+	}
+
+	.service-number,
+	.standard-index,
+	.faq-index,
+	.journey-step-number {
+		color: var(--ledger-gold);
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+	}
+
+	.service-tag {
+		max-width: 15ch;
+		color: rgba(240, 233, 221, 0.52);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		line-height: 1.35;
+		text-transform: uppercase;
+	}
+
+	.service-row-copy {
+		display: grid;
+		grid-template-columns: minmax(88px, 0.28fr) minmax(0, 1fr);
+		gap: clamp(1rem, 3vw, 2.2rem);
+		align-items: center;
+		align-self: center;
+		padding-block: 1.15rem;
+	}
+
+	.service-row-media {
+		position: relative;
+		aspect-ratio: 1.15;
+		min-height: 88px;
+		overflow: hidden;
+		background: var(--ledger-ink-soft);
+		isolation: isolate;
+	}
+
+	.service-row-media::after {
+		position: absolute;
+		inset: 0;
+		border: 1px solid rgba(240, 233, 221, 0.2);
+		content: "";
+		pointer-events: none;
+	}
+
+	.service-row-media img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: saturate(0.78) contrast(0.98);
+		transform: scale(1.03);
+		transition: filter 600ms ease, transform 700ms var(--ease-out-quint);
+		will-change: transform;
+	}
+
+	.service-row:hover .service-row-media img {
+		filter: saturate(1) contrast(1.02);
+		transform: scale(1.09);
+	}
+
+	.service-row-text {
+		min-width: 0;
+	}
+
+	.service-row-copy h3 {
+		font-size: clamp(1.9rem, 3.8vw, 4.2rem);
+		letter-spacing: -0.045em;
+		line-height: 0.95;
+	}
+
+	.service-row-copy p {
+		max-width: 42ch;
+		margin-top: 0.7rem;
+		color: rgba(240, 233, 221, 0.61);
+		font-size: 0.82rem;
+		line-height: 1.5;
+	}
+
+	.service-row-end {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 1rem;
+	}
+
+	.service-hover-line {
+		width: min(8vw, 5rem);
+		height: 1px;
+		background: var(--ledger-oxide);
+		transform: scaleX(0);
+		transform-origin: right center;
+	}
+
+	.service-arrow {
+		display: grid;
+		width: 38px;
+		height: 38px;
+		place-items: center;
+		border: 1px solid var(--ledger-line-light);
+		border-radius: 50%;
+		color: var(--ledger-gold);
+		font-size: 1.05rem;
+	}
+
+	.ritual-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-top: 1.2rem;
+		color: rgba(240, 233, 221, 0.55);
+		font-size: 0.76rem;
+	}
+
+	.ledger-experience {
+		background: var(--ledger-oxide);
+		color: var(--ledger-paper);
+	}
+
+	.ledger-experience .section-bar,
+	.ledger-experience .journey-step-line {
+		border-color: rgba(248, 244, 236, 0.28);
+	}
+
+	.ledger-experience .section-bar {
+		color: rgba(248, 244, 236, 0.75);
+	}
+
+	.ledger-experience .section-bar > span:first-child,
+	.journey-step-number {
+		color: var(--ledger-ink);
+	}
+
+	.experience-heading {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(220px, 0.45fr);
+		gap: 2rem;
+		align-items: end;
+		margin-block: clamp(3rem, 6vw, 6rem);
+	}
+
+	.experience-heading h2 {
+		max-width: 11ch;
+		font-size: clamp(3.6rem, 7vw, 8rem);
+		letter-spacing: -0.045em;
+		line-height: 0.85;
+	}
+
+	.experience-heading h2 em {
+		color: var(--ledger-ink);
+	}
+
+	.experience-heading > p {
+		max-width: 31ch;
+		justify-self: end;
+		color: rgba(248, 244, 236, 0.72);
+		font-size: 0.91rem;
+	}
+
+	.journey-track {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.journey-track li {
+		position: relative;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 1rem;
+		padding: 1.2rem clamp(1rem, 3vw, 2.2rem) 0 0;
+	}
+
+	.journey-track li:not(:last-child) {
+		margin-right: clamp(1rem, 4vw, 4rem);
+	}
+
+	.journey-step-line {
+		position: absolute;
+		top: 1.56rem;
+		right: 0;
+		left: 3.3rem;
+		height: 1px;
+		border-top: 1px solid rgba(248, 244, 236, 0.28);
+		transform-origin: left center;
+	}
+
+	.journey-track li:last-child .journey-step-line {
+		display: none;
+	}
+
+	.journey-track h3 {
+		grid-column: 1 / -1;
+		margin-top: 2.75rem;
+		font-size: clamp(1.65rem, 2.7vw, 2.8rem);
+		letter-spacing: -0.04em;
+		line-height: 0.95;
+	}
+
+	.journey-track p {
+		grid-column: 1 / -1;
+		max-width: 25ch;
+		margin-top: 0.2rem;
+		color: rgba(248, 244, 236, 0.68);
+		font-size: 0.83rem;
+	}
+
+	.ledger-standards {
+		background: var(--ledger-bone);
+	}
+
+	.standards-layout > .section-bar,
+	.faq-heading .section-bar {
+		margin-bottom: clamp(3rem, 6vw, 6rem);
+	}
+
+	.standards-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.92fr) minmax(300px, 0.72fr);
+		gap: clamp(3rem, 10vw, 10rem);
+		align-items: start;
+	}
+
+	.standards-copy h2 {
+		max-width: 12ch;
+		font-size: clamp(3.25rem, 6.1vw, 7rem);
+		letter-spacing: -0.045em;
+		line-height: 0.87;
+	}
+
+	.standards-copy h2 em {
+		color: var(--ledger-oxide);
+	}
+
+	.standards-lede {
+		max-width: 37ch;
+		margin-top: 1.8rem;
+		color: var(--ledger-muted);
+		font-size: 0.93rem;
+	}
+
+	.standard-quote {
+		display: grid;
+		grid-template-columns: 2rem minmax(0, 1fr);
+		gap: 0.75rem;
+		max-width: 35rem;
+		margin-top: clamp(3rem, 6vw, 5rem);
+		border-top: 1px solid var(--ledger-line);
+		padding-top: 1.1rem;
+	}
+
+	.quote-mark {
+		color: var(--ledger-oxide);
+		font-family: var(--font-heading);
+		font-size: 2.7rem;
+		line-height: 0.72;
+	}
+
+	.standard-quote p {
+		max-width: 23ch;
+		font-family: var(--font-heading);
+		font-size: clamp(1.35rem, 2.1vw, 2rem);
+		line-height: 1.35;
+	}
+
+	.standard-ledger,
+	.faq-ledger {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		border-top: 1px solid var(--ledger-line);
+	}
+
+	.standard-ledger li {
+		display: grid;
+		grid-template-columns: 3rem minmax(0, 1fr) auto;
+		gap: 1rem;
+		align-items: center;
+		min-height: 92px;
+		border-bottom: 1px solid var(--ledger-line);
+		font-family: var(--font-heading);
+		font-size: clamp(1.45rem, 2.45vw, 2.65rem);
+		letter-spacing: -0.045em;
+		line-height: 0.95;
+	}
+
+	.standard-check {
+		color: var(--ledger-oxide);
+		font-family: var(--font-body);
+		font-size: 1rem;
+	}
+
+	.ledger-faq {
+		background: var(--ledger-sage);
+	}
+
+	.faq-layout {
+		display: grid;
+		grid-template-columns: minmax(230px, 0.6fr) minmax(0, 1fr);
+		gap: clamp(3rem, 9vw, 9rem);
+		align-items: start;
+	}
+
+	.faq-heading h2 {
+		max-width: 11ch;
+		font-size: clamp(3.2rem, 5.4vw, 6.4rem);
+		letter-spacing: -0.045em;
+		line-height: 0.88;
+	}
+
+	.faq-heading > p {
+		max-width: 29ch;
+		margin-top: 1.8rem;
+		color: var(--ledger-muted);
+		font-size: 0.9rem;
+	}
+
+	.faq-heading > .ledger-inline-link {
+		margin-top: 1.7rem;
+	}
+
+	.faq-row {
+		display: grid;
+		gap: 0.8rem;
+		padding: 2.2rem 0 0.8rem;
+		border-bottom: 1px solid var(--ledger-line);
+	}
+
+	.faq-row-heading {
+		display: grid;
+		grid-template-columns: 3rem minmax(0, 1fr);
+		gap: 1rem;
+		align-items: start;
+	}
+
+	.faq-row .faq-question {
+		font-family: var(--font-heading);
+		font-size: clamp(1.35rem, 2vw, 2rem);
+		letter-spacing: -0.035em;
+		line-height: 1;
+	}
+
+	.faq-row > p {
+		grid-column: 2;
+		max-width: 55ch;
+		color: var(--ledger-muted);
+		font-size: 0.87rem;
+		line-height: 1.55;
+	}
+
+	.ledger-book {
+		position: relative;
+		background: var(--ledger-ink);
+		color: var(--ledger-paper);
+		isolation: isolate;
+	}
+
+	.book-visual {
+		position: absolute;
+		z-index: 0;
+		top: 10%;
+		right: 4%;
+		width: min(34vw, 34rem);
+		height: 76%;
+		overflow: hidden;
+		border: 1px solid rgba(196, 154, 78, 0.32);
+		background: var(--ledger-ink-soft);
+		transform: rotate(5deg);
+		will-change: transform, opacity;
+	}
+
+	.book-visual img,
+	.book-visual-wash {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.book-visual img {
+		display: block;
+		object-fit: cover;
+		filter: saturate(0.62) contrast(1.08);
+		transform: scale(1.05);
+	}
+
+	.book-visual-wash {
+		background: linear-gradient(180deg, rgba(28, 32, 26, 0.22), rgba(28, 32, 26, 0.76)), linear-gradient(90deg, rgba(28, 32, 26, 0.72), rgba(28, 32, 26, 0.08));
+	}
+
+	.ledger-book::before,
+	.ledger-book::after {
+		position: absolute;
+		content: "";
+		pointer-events: none;
+	}
+
+	.ledger-book::before {
+		top: 12%;
+		right: 4%;
+		width: min(34vw, 34rem);
+		height: 76%;
+		border: 1px solid rgba(196, 154, 78, 0.32);
+		transform: rotate(7deg);
+	}
+
+	.ledger-book::after {
+		top: 18%;
+		right: 11%;
+		width: min(24vw, 24rem);
+		height: 60%;
+		border: 1px solid rgba(240, 233, 221, 0.14);
+		transform: rotate(-8deg);
+	}
+
+	.book-layout {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		grid-template-columns: minmax(170px, 0.38fr) minmax(0, 1fr);
+		gap: clamp(2rem, 9vw, 9rem);
+		align-items: start;
+		padding-block: clamp(5rem, 10vw, 10rem);
+	}
+
+	.book-index {
+		align-items: flex-start;
+		flex-direction: column;
+		color: rgba(240, 233, 221, 0.55);
+	}
+
+	.book-index span:first-child {
+		color: var(--ledger-gold);
+	}
+
+	.book-copy h2 {
+		max-width: 11ch;
+		font-size: clamp(3.7rem, 7vw, 8rem);
+		letter-spacing: -0.045em;
+		line-height: 0.84;
+	}
+
+	.book-copy h2 em {
+		color: var(--ledger-oxide);
+	}
+
+	.book-copy > p {
+		max-width: 38ch;
+		margin-top: 1.8rem;
+		color: rgba(240, 233, 221, 0.66);
+		font-size: 0.92rem;
+	}
+
+	.ledger-button-light {
+		margin-top: 2rem;
+		border-color: var(--ledger-gold);
+		background: var(--ledger-gold);
+		color: var(--ledger-ink);
+	}
+
+	.ledger-button-light:hover {
+		border-color: var(--ledger-paper);
+		background: var(--ledger-paper);
+		color: var(--ledger-ink);
+	}
+
+	.book-phone {
+		display: block;
+		margin-top: 1rem;
+		color: rgba(240, 233, 221, 0.48);
+		font-size: 0.7rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	@media (max-width: 1000px) {
+		.ledger-hero-grid {
+			gap: 2.5rem;
+		}
+
+		.hero-visual {
+			width: min(100%, 520px);
+		}
+
+		.service-row {
+			grid-template-columns: minmax(90px, 0.28fr) minmax(0, 1.3fr) minmax(70px, 0.3fr);
+		}
+	}
+
+	@media (max-width: 760px) {
+		.ledger-hero {
+			height: auto;
+			min-height: 0;
+			margin-bottom: 0;
+			padding-bottom: 1.2rem;
+		}
+
+		.ledger-hero-main {
+			height: auto;
+		}
+
+		.ledger-hero-top {
+			padding-top: 5.8rem;
+		}
+
+		.ledger-top-note {
+			max-width: 15ch;
+		}
+
+		.ledger-hero-grid,
+		.ledger-intro-grid,
+		.standards-grid,
+		.faq-layout,
+		.book-layout {
+			height: auto;
+			grid-template-columns: 1fr;
+		}
+
+		.ledger-hero-grid {
+			gap: 3rem;
+			align-items: start;
+			padding-top: 2.6rem;
+		}
+
+		.ledger-title {
+			max-width: 14ch;
+			font-size: clamp(2.9rem, 12vw, 4.7rem);
+		}
+
+		.ledger-lede {
+			max-width: 34ch;
+			margin-top: 1.45rem;
+		}
+
+		.ledger-actions {
+			margin-top: 1.5rem;
+		}
+
+		.ledger-meta {
+			margin-top: 1.85rem;
+		}
+
+		.hero-visual {
+			width: min(100%, 520px);
+			aspect-ratio: 1.02;
+			justify-self: center;
+			order: -1;
+		}
+
+		.hero-visual-note-top {
+			left: -1.8rem;
+		}
+
+		.hero-visual-note-bottom {
+			right: -1.4rem;
+		}
+
+		.ledger-hero-footer {
+			position: relative;
+			right: auto;
+			bottom: auto;
+			left: auto;
+			align-items: flex-start;
+			flex-direction: column;
+			margin-top: 2rem;
+		}
+
+		.ledger-hero-exit {
+			display: none;
+		}
+
+		.hero-exit-inner {
+			min-height: 440px;
+			padding-block: 4.5rem;
+		}
+
+		.ledger-intro-detail,
+		.rituals-heading,
+		.experience-heading {
+			grid-template-columns: 1fr;
+		}
+
+		.ledger-intro-detail {
+			gap: 2.2rem;
+		}
+
+		.section-marker {
+			padding-top: 0;
+			border-top: 0;
+		}
+
+		.ledger-intro-content h2,
+		.rituals-heading h2,
+		.experience-heading h2,
+		.standards-copy h2,
+		.faq-heading h2,
+		.book-copy h2 {
+			max-width: 11ch;
+			font-size: clamp(3.25rem, 14vw, 5.7rem);
+		}
+
+		.rituals-heading > p,
+		.experience-heading > p {
+			justify-self: start;
+		}
+
+		.service-row {
+			grid-template-columns: 2.5rem minmax(0, 1fr) 2.2rem;
+			gap: 0.8rem;
+			min-height: 0;
+		}
+
+		.service-row-top {
+			grid-column: 1;
+			grid-row: 1;
+			padding-block: 1.2rem;
+		}
+
+		.service-tag {
+			display: none;
+		}
+
+		.service-row-copy {
+			grid-column: 2;
+			grid-row: 1;
+			grid-template-columns: minmax(68px, 0.34fr) minmax(0, 1fr);
+			gap: 0.75rem;
+			padding-block: 1rem;
+		}
+
+		.service-row-media {
+			min-height: 76px;
+		}
+
+		.service-row-copy h3 {
+			font-size: clamp(1.7rem, 7vw, 2.7rem);
+		}
+
+		.service-row-end {
+			grid-column: 3;
+			grid-row: 1;
+		}
+
+		.service-hover-line {
+			display: none;
+		}
+
+		.journey-track {
+			display: block;
+		}
+
+		.journey-track li,
+		.journey-track li:not(:last-child) {
+			grid-template-columns: 2.5rem 1fr;
+			margin: 0;
+			padding: 1.4rem 0 1.7rem;
+			border-bottom: 1px solid rgba(248, 244, 236, 0.28);
+		}
+
+		.journey-step-line {
+			top: 2rem;
+			right: auto;
+			left: 3rem;
+			width: 2rem;
+		}
+
+		.journey-track h3,
+		.journey-track p {
+			grid-column: 2;
+		}
+
+		.journey-track h3 {
+			margin-top: 0;
+		}
+
+		.journey-track p {
+			margin-top: 0.2rem;
+		}
+
+		.standard-ledger li {
+			grid-template-columns: 2.35rem minmax(0, 1fr) auto;
+			font-size: 1.55rem;
+		}
+
+		.faq-layout {
+			gap: 3.5rem;
+		}
+
+		.faq-row-heading {
+			grid-template-columns: 2.35rem minmax(0, 1fr);
+			gap: 0.8rem;
+		}
+
+		.faq-row > p {
+			grid-column: 2;
+		}
+
+		.book-layout {
+			gap: 3rem;
+		}
+
+		.ledger-book::before {
+			top: 8%;
+			right: -12%;
+			width: 70vw;
+			height: 48%;
+		}
+
+		.ledger-book::after {
+			top: 12%;
+			right: -6%;
+			width: 52vw;
+			height: 40%;
+		}
+
+		.book-visual {
+			top: 8%;
+			right: -12%;
+			width: 70vw;
+			height: 48%;
+			opacity: 0.72;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.ledger-hero-top,
+		.ledger-hero-footer,
+		.section-bar,
+		.ritual-footer {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.ledger-top-note {
+			max-width: 20ch;
+			text-align: left;
+		}
+
+		.ledger-actions {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.ledger-button,
+		.ledger-text-link {
+			width: fit-content;
+		}
+
+		.hero-visual {
+			width: calc(100% - 1.35rem);
+		}
+
+		.hero-visual-note {
+			font-size: 0.55rem;
+		}
+
+		.hero-visual-note-top {
+			left: -1.45rem;
+		}
+
+		.hero-visual-note-bottom {
+			right: -1.25rem;
+		}
+
+		.hero-exit-inner h2 {
+			font-size: clamp(3.5rem, 16vw, 5.6rem);
+		}
+
+		.ledger-intro-content h2,
+		.rituals-heading h2,
+		.experience-heading h2,
+		.standards-copy h2,
+		.faq-heading h2,
+		.book-copy h2 {
+			font-size: clamp(3rem, 15vw, 5rem);
+		}
+	}
+
+	/* The index system stays editorial, but never sacrifices readable UI text. */
+	.ledger-hero-top,
+	.ledger-index,
+	.section-marker,
+	.section-bar,
+	.book-index,
+	.ledger-button,
+	.ledger-text-link,
+	.ledger-inline-link,
+	.hero-exit-link,
+	.ledger-meta,
+	.hero-visual-meta,
+	.hero-visual-detail,
+	.hero-visual-note,
+	.ledger-hero-footer,
+	.service-number,
+	.standard-index,
+	.faq-index,
+	.journey-step-number,
+	.detail-label,
+	.service-tag,
+	.book-phone {
+		font-size: 0.75rem;
+	}
+
+	.ledger-hero-top,
+	.section-bar,
+	.hero-visual-detail {
+		text-transform: none;
+		letter-spacing: 0.04em;
+	}
+
+	.ledger-hero-top .ledger-overline,
+	.section-bar > span:first-child {
+		text-transform: uppercase;
+		letter-spacing: 0.15em;
+	}
+
+	.ledger-top-note {
+		text-transform: none;
+		letter-spacing: 0.04em;
+	}
+
+	.faq-index {
+		color: var(--ledger-oxide-deep);
+	}
+
+	.ledger-intro .section-marker > span:first-child,
+	.ledger-intro .detail-label,
+	.ledger-intro .intro-audience li::before,
+	.ledger-faq .section-bar > span:first-child,
+	.ledger-standards .standard-index {
+		color: var(--ledger-oxide-deep);
+	}
+
+	.ledger-experience .section-bar,
+	.ledger-experience .section-bar > span:first-child,
+	.ledger-experience .experience-heading > p,
+	.ledger-experience .journey-step-number,
+	.ledger-experience .journey-track p {
+		color: var(--ledger-paper);
+	}
+
+	.ledger-book .book-phone {
+		color: rgba(240, 233, 221, 0.72);
+	}
+
+	.faq-row .faq-question {
+		line-height: 1.3;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.ledger-hero {
+			margin-bottom: 0;
+		}
+
+		:global(html.js) .ledger-hero-exit {
+			opacity: 0;
+			visibility: hidden;
+			transform: none;
+		}
+	}
+
+	@media (hover: none) {
+		.ledger-hero {
+			margin-bottom: 0;
+		}
+	}
+</style>

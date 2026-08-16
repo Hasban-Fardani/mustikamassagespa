@@ -1,0 +1,46 @@
+---
+import { getEmDashEntry, getSiteSettings } from "emdash";
+import { getSeoMeta } from "emdash/seo";
+import Base from "../layouts/Base.astro";
+import MustikaLanding from "../components/MustikaEditorialLanding.astro";
+import { MUSTIKA_SEO } from "../lib/mustika-seo";
+
+const { entry: home, error, cacheHint } = await getEmDashEntry("pages", "home");
+
+if (error) {
+	return new Response("Unable to load the Mustika homepage.", { status: 500 });
+}
+
+if (!home) {
+	return Astro.redirect("/404");
+}
+
+Astro.cache.set(cacheHint);
+
+const settings = await getSiteSettings();
+const siteTitle = settings.title || "Mustika Massage Spa";
+const homeSeoTitle = (home.data as typeof home.data & { seo?: { title?: unknown } }).seo?.title;
+const editorialTitle =
+	typeof homeSeoTitle === "string" && homeSeoTitle.trim()
+		? homeSeoTitle
+		: home.data.title;
+const seo = getSeoMeta(home, {
+	siteTitle: editorialTitle === siteTitle ? undefined : siteTitle,
+	siteUrl: Astro.url.origin,
+	path: "/",
+	defaultTitle: MUSTIKA_SEO.home.title,
+	defaultDescription: MUSTIKA_SEO.home.description,
+	defaultOgImage: "/images/mustika/mustika-hero.webp",
+});
+---
+
+<Base
+	title={home.data.title}
+	pageTitle={home.data.title}
+	description={seo.description ?? undefined}
+	image={seo.ogImage ?? "/images/mustika/mustika-hero.webp"}
+	seo={seo}
+	content={{ collection: "pages", id: home.data.id, slug: home.id }}
+>
+	<MustikaLanding page={home} />
+</Base>

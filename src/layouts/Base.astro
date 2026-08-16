@@ -1,0 +1,269 @@
+---
+import { getMenu, getSiteSettings } from "emdash";
+import { EmDashBodyEnd, EmDashBodyStart, EmDashHead } from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import {
+	MUSTIKA_PHONE,
+	MUSTIKA_SITE_DESCRIPTION,
+	MUSTIKA_WHATSAPP_URL,
+	toAbsoluteUrl,
+} from "../lib/mustika-seo";
+import "../styles/tokens.css";
+import "../styles/theme.css";
+
+interface Props {
+	title?: string;
+	pageTitle?: string;
+	description?: string;
+	image?: string;
+	content?: {
+		collection: string;
+		id: string;
+		slug?: string | null;
+	};
+	seo?: {
+		title?: string;
+		ogTitle?: string | null;
+		ogDescription?: string | null;
+		description?: string | null;
+		canonical?: string | null;
+		ogImage?: string | null;
+		robots?: string | null;
+	};
+}
+
+const { title, pageTitle, description, image, content, seo } = Astro.props;
+const [settings, primaryMenu, footerProduct, footerCompany, footerSupport] = await Promise.all([
+	getSiteSettings(),
+	getMenu("primary"),
+	getMenu("footer_product"),
+	getMenu("footer_company"),
+	getMenu("footer_support"),
+]);
+
+const siteTitle = settings.title || "Mustika Massage Spa";
+const legacySiteDescription =
+	"Professional massage & wellness service untuk relaksasi, kesehatan, dan keseimbangan tubuh Anda.";
+const siteDescription =
+	settings.tagline && settings.tagline !== legacySiteDescription
+		? settings.tagline
+		: MUSTIKA_SITE_DESCRIPTION;
+const fallbackBookingHref = MUSTIKA_WHATSAPP_URL;
+const supportItems = footerSupport?.items ?? [];
+const bookingItem = supportItems.find((item) => /booking|whatsapp|chat/i.test(item.label));
+const bookingHref = bookingItem?.url || fallbackBookingHref;
+const logoSrc = settings.logo?.url || "/images/mustika-logo-160.webp";
+const logoAlt = settings.logo?.alt || siteTitle;
+const faviconSrc = settings.favicon?.url || "/images/mustika-logo-160.webp";
+const fullTitle = seo?.title || (title ? `${title} | ${siteTitle}` : siteTitle);
+const resolvedDescription = seo?.description || description || siteDescription;
+const canonical = seo?.canonical || new URL(Astro.url.pathname, Astro.url.origin).href;
+const resolvedImage = seo?.ogImage || image;
+const absoluteImage = resolvedImage ? toAbsoluteUrl(resolvedImage, Astro.url) : undefined;
+type FooterMenu = NonNullable<typeof footerProduct>;
+type FooterMenuGroup = { menu: FooterMenu; label: string };
+const footerMenus: FooterMenuGroup[] = [
+	{ menu: footerProduct, label: "Layanan" },
+	{ menu: footerCompany, label: "Tentang Mustika" },
+	{ menu: footerSupport, label: "Hubungi" },
+].filter((group): group is FooterMenuGroup => Boolean(group.menu));
+
+const businessUrl = toAbsoluteUrl("/", Astro.url);
+const businessId = `${businessUrl}#business`;
+const structuredData = {
+	"@context": "https://schema.org",
+	"@graph": [
+		{
+			"@type": ["LocalBusiness", "HealthAndBeautyBusiness"],
+			"@id": businessId,
+			name: siteTitle,
+			description: siteDescription,
+			url: businessUrl,
+			image: absoluteImage || toAbsoluteUrl(logoSrc, Astro.url),
+			logo: toAbsoluteUrl(logoSrc, Astro.url),
+			telephone: MUSTIKA_PHONE,
+			address: {
+				"@type": "PostalAddress",
+				addressLocality: "Bandung",
+				addressRegion: "Jawa Barat",
+				addressCountry: "ID",
+			},
+			areaServed: {
+				"@type": "City",
+				name: "Bandung",
+			},
+			availableLanguage: "Indonesian",
+		},
+		{
+			"@type": "WebSite",
+			"@id": `${businessUrl}#website`,
+			url: businessUrl,
+			name: siteTitle,
+			inLanguage: "id-ID",
+			publisher: { "@id": businessId },
+		},
+	],
+};
+
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType: content ? "page" : "website",
+	title: fullTitle,
+	pageTitle: pageTitle ?? title ?? siteTitle,
+	description: resolvedDescription,
+	canonical,
+	image: absoluteImage,
+	content,
+	seo: {
+		ogTitle: seo?.ogTitle || fullTitle,
+		ogDescription: seo?.ogDescription || resolvedDescription,
+		ogImage: absoluteImage,
+		robots: seo?.robots,
+	},
+	siteName: siteTitle,
+	siteUrl: Astro.url.origin,
+});
+---
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#f0e9dd" />
+		<meta name="format-detection" content="telephone=yes" />
+		<meta property="og:locale" content="id_ID" />
+		<link rel="icon" type="image/webp" href={faviconSrc} />
+		<title>{fullTitle}</title>
+		{seo?.robots && <meta name="robots" content={seo.robots} />}
+		<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
+		<EmDashHead page={pageCtx} />
+		<script is:inline>
+			document.documentElement.classList.add("js");
+		</script>
+	</head>
+	<body>
+		<EmDashBodyStart page={pageCtx} />
+		<header class="site-header" data-site-header>
+			<div class="shell nav-shell">
+				<a href="/" class="site-brand">
+					<span class="site-brand-mark">
+						<img
+							src={logoSrc}
+							alt={logoAlt}
+							width="160"
+							height="160"
+							decoding="async"
+						/>
+					</span>
+					<span class="site-brand-copy">
+						<strong>Mustika</strong>
+						<span>Massage Spa</span>
+					</span>
+				</a>
+
+				<nav class="site-nav" id="site-nav" data-site-nav aria-label="Navigasi utama">
+					{primaryMenu?.items.map((item) => (
+						<a href={item.url} target={item.target}>{item.label}</a>
+					))}
+				</nav>
+
+				<div class="site-nav-actions">
+					<a
+						class="nav-booking"
+						href={bookingHref}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={bookingItem?.label || "Booking melalui WhatsApp"}>
+						<span>{bookingItem?.label || "Booking"}</span>
+						<span aria-hidden="true">↗</span>
+					</a>
+					<button
+						type="button"
+						class="menu-toggle"
+						data-menu-toggle
+						aria-controls="site-nav"
+						aria-expanded="false"
+						aria-label="Buka navigasi">
+						<span></span>
+						<span></span>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<main>
+			<slot />
+		</main>
+
+		<footer class="site-footer">
+			<div class="shell footer-main">
+				<div class="footer-intro">
+					<a href="/" class="footer-brand">
+						<span class="footer-brand-mark">
+							<img
+								src={logoSrc}
+								alt={logoAlt}
+								width="160"
+								height="160"
+								loading="lazy"
+								decoding="async"
+							/>
+						</span>
+						<span>
+							<strong>Mustika</strong>
+							<small>Massage Spa</small>
+						</span>
+					</a>
+					<p>{siteDescription}</p>
+				</div>
+				<div class="footer-nav-group">
+					{footerMenus.map(({ menu, label }) => (
+						<div>
+							<h2 class="footer-label">{label}</h2>
+							{menu.items.map((item) => (
+								<a href={item.url} target={item.target}>{item.label}</a>
+							))}
+						</div>
+					))}
+				</div>
+			</div>
+			<div class="shell footer-bottom">
+				<span>© {new Date().getFullYear()} {siteTitle}</span>
+				<a href={bookingHref} target="_blank" rel="noopener noreferrer">Booking via WhatsApp <span aria-hidden="true">↗</span></a>
+			</div>
+		</footer>
+
+		<script>
+			const menuToggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+			const siteNav = document.querySelector<HTMLElement>("[data-site-nav]");
+			const siteHeader = document.querySelector<HTMLElement>("[data-site-header]");
+
+			function setMenu(open: boolean) {
+				if (!menuToggle || !siteNav) return;
+				siteNav.classList.toggle("is-open", open);
+				menuToggle.setAttribute("aria-expanded", String(open));
+				menuToggle.setAttribute("aria-label", open ? "Tutup navigasi" : "Buka navigasi");
+				document.body.classList.toggle("menu-open", open);
+			}
+
+			menuToggle?.addEventListener("click", () => {
+				setMenu(!siteNav?.classList.contains("is-open"));
+			});
+
+			siteNav?.querySelectorAll("a").forEach((link) => {
+				link.addEventListener("click", () => setMenu(false));
+			});
+
+			document.addEventListener("keydown", (event) => {
+				if (event.key === "Escape") setMenu(false);
+			});
+
+			const updateHeader = () => siteHeader?.classList.toggle("is-scrolled", window.scrollY > 16);
+			updateHeader();
+			window.addEventListener("scroll", updateHeader, { passive: true });
+		</script>
+		<EmDashBodyEnd page={pageCtx} />
+	</body>
+</html>

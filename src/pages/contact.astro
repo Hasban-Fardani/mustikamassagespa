@@ -1,0 +1,317 @@
+---
+import { getEmDashEntry, getMenu, getSiteSettings } from "emdash";
+import { getSeoMeta } from "emdash/seo";
+import Base from "../layouts/Base.astro";
+import { findMustikaCmsNode, getMustikaCmsNodes, readMustikaString } from "../lib/mustika-content";
+import { MUSTIKA_SEO } from "../lib/mustika-seo";
+
+const [{ entry: contact, error, cacheHint }, settings, supportMenu] = await Promise.all([
+	getEmDashEntry("pages", "contact"),
+	getSiteSettings(),
+	getMenu("footer_support"),
+]);
+
+if (error) {
+	return new Response("Unable to load Mustika booking page.", { status: 500 });
+}
+
+if (!contact) {
+	return Astro.redirect("/404");
+}
+
+Astro.cache.set(cacheHint);
+
+const seo = getSeoMeta(contact, {
+	siteTitle: settings.title || "Mustika Massage Spa",
+	siteUrl: Astro.url.origin,
+	path: "/contact",
+	defaultTitle: MUSTIKA_SEO.contact.title,
+	defaultDescription: MUSTIKA_SEO.contact.description,
+	defaultOgImage: "/images/mustika/mustika-hero.webp",
+});
+
+const nodes = getMustikaCmsNodes(contact.data.content);
+const heroNode = findMustikaCmsNode(nodes, "mustika.hero", "marketing.hero");
+const whatsappItem = supportMenu?.items.find((item) => /wa\.me/i.test(item.url));
+const phoneItem = supportMenu?.items.find((item) => /^tel:/i.test(item.url));
+const whatsappNumber = whatsappItem?.url.match(/wa\.me\/(\d+)/i)?.[1] || "6281222739180";
+const whatsappDisplay = phoneItem?.label.replace(/^Telepon\s+/i, "") || "0812 2273 9180";
+const bookingHref = readMustikaString(heroNode?.primaryCtaUrl, `https://wa.me/${whatsappNumber}`);
+const heroHeadline = readMustikaString(heroNode?.headline, "Mari beri tubuh waktu untuk");
+const heroEmphasis = readMustikaString(heroNode?.emphasis, "beristirahat.");
+const heroSubheadline = readMustikaString(
+	heroNode?.subheadline,
+	"Chat WhatsApp Mustika. Ceritakan kebutuhan dan waktu yang diinginkan; admin akan membantu mengecek jadwal.",
+);
+const heroCtaLabel = readMustikaString(heroNode?.primaryCtaLabel, "Chat langsung via WhatsApp");
+const heroLocation = readMustikaString(heroNode?.location, "Bandung, Jawa Barat");
+---
+
+<Base
+	title={contact.data.title}
+	pageTitle={contact.data.title}
+	description={seo.description ?? undefined}
+	image={seo.ogImage ?? "/images/mustika/mustika-hero.webp"}
+	seo={seo}
+	content={{ collection: "pages", id: contact.data.id, slug: contact.id }}
+>
+	<div class="booking-page">
+		<section class="booking-hero" aria-labelledby="booking-title">
+			<div class="container booking-hero-inner">
+				<div>
+					<h1 id="booking-title">{heroHeadline} <em>{heroEmphasis}</em></h1>
+					<p class="booking-lede">{heroSubheadline}</p>
+					<a class="btn btn-primary btn-lg" href={bookingHref} target="_blank" rel="noopener noreferrer">{heroCtaLabel} <span aria-hidden="true">↗</span></a>
+				</div>
+				<div class="booking-aside">
+					<span class="booking-aside-label">Nomor booking</span>
+					<a href={`tel:+${whatsappNumber}`} class="booking-phone">{whatsappDisplay}</a>
+					<span class="booking-aside-note">{heroLocation}<br />Detail lokasi dikonfirmasi saat booking</span>
+				</div>
+			</div>
+		</section>
+
+		<section class="booking-form-section" aria-labelledby="booking-form-title">
+			<div class="container booking-grid">
+				<div>
+					<h2 id="booking-form-title">Siapkan sesi yang tepat.</h2>
+					<p class="booking-note">Form ini akan membuka WhatsApp dengan pesan yang sudah disusun. Tidak ada data yang disimpan di website.</p>
+				</div>
+				<form class="booking-form" data-booking-form data-booking-number={whatsappNumber}>
+					<label>
+						<span>Nama</span>
+						<input name="name" type="text" autocomplete="name" placeholder="Nama lengkap" required />
+					</label>
+					<label>
+						<span>Pilihan ritual</span>
+						<select name="service" required>
+							<option value="">Pilih layanan</option>
+							<option>Traditional Massage</option>
+							<option>Aromatherapy Massage</option>
+							<option>Full Body Massage</option>
+							<option>Wellness Therapy</option>
+						</select>
+					</label>
+					<div class="booking-form-row">
+						<label>
+							<span>Tanggal yang diinginkan</span>
+							<input name="date" type="date" />
+						</label>
+						<label>
+							<span>Waktu yang diinginkan</span>
+							<input name="time" type="time" />
+						</label>
+					</div>
+					<label>
+						<span>Catatan tambahan <small>(opsional)</small></span>
+						<textarea name="note" rows="4" placeholder="Contoh: ingin fokus di bahu dan punggung"></textarea>
+					</label>
+					<button class="btn btn-primary btn-lg" type="submit">Kirim ke WhatsApp <span aria-hidden="true">↗</span></button>
+					<p class="booking-form-hint">Setelah menekan tombol, WhatsApp Mustika akan terbuka.</p>
+				<noscript><p class="booking-form-hint">JavaScript tidak aktif. Silakan chat langsung ke <a href={bookingHref}>{whatsappDisplay}</a>.</p></noscript>
+				</form>
+			</div>
+		</section>
+	</div>
+</Base>
+
+<script>
+	const bookingForm = document.querySelector<HTMLFormElement>("[data-booking-form]");
+	const bookingNumber = bookingForm?.dataset.bookingNumber || "6281222739180";
+
+	bookingForm?.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const data = new FormData(bookingForm);
+		const lines = [
+			"Halo Mustika, saya ingin booking sesi massage.",
+			`Nama: ${data.get("name") || "-"}`,
+			`Layanan: ${data.get("service") || "-"}`,
+			`Tanggal: ${data.get("date") || "Fleksibel"}`,
+			`Waktu: ${data.get("time") || "Fleksibel"}`,
+			`Catatan: ${data.get("note") || "-"}`,
+		];
+		window.open(`https://wa.me/${bookingNumber}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank", "noopener,noreferrer");
+	});
+</script>
+
+<style>
+	.booking-page {
+		background: var(--paper);
+	}
+
+	.booking-hero {
+		padding: clamp(10rem, 19vw, 15rem) 0 clamp(5rem, 9vw, 9rem);
+		background: var(--forest);
+		color: var(--ivory);
+	}
+
+	.booking-hero-inner {
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.5fr);
+		gap: 4rem;
+		align-items: end;
+	}
+
+	.booking-hero h1 {
+		max-width: 11ch;
+		margin-top: 0;
+		font-size: clamp(4rem, 8vw, 8rem);
+		letter-spacing: -0.035em;
+		line-height: 0.92;
+	}
+
+	.booking-hero h1 em {
+		color: var(--gold-light);
+		font-style: italic;
+	}
+
+	.booking-lede {
+		max-width: 40ch;
+		margin-top: 2rem;
+		color: color-mix(in srgb, var(--ivory) 72%, transparent);
+	}
+
+	.booking-hero .btn {
+		margin-top: 2rem;
+	}
+
+	.booking-aside {
+		display: grid;
+		gap: 0.75rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--line-on-dark);
+	}
+
+	.booking-aside-label,
+	.booking-aside-note {
+		color: var(--sage-on-dark);
+		font-size: 0.875rem;
+		letter-spacing: 0.04em;
+	}
+
+	.booking-phone {
+		color: var(--gold-light);
+		font-family: var(--font-heading);
+		font-size: clamp(1.6rem, 3vw, 2.5rem);
+	}
+
+	.booking-aside-note {
+		line-height: 1.5;
+	}
+
+	.booking-form-section {
+		padding: clamp(5rem, 10vw, 10rem) 0;
+	}
+
+	.booking-grid {
+		display: grid;
+		grid-template-columns: minmax(220px, 0.68fr) minmax(360px, 0.9fr);
+		gap: clamp(3rem, 10vw, 9rem);
+		align-items: start;
+	}
+
+	.booking-grid h2 {
+		max-width: 11ch;
+		margin-top: 0;
+		font-size: clamp(3rem, 6vw, 6rem);
+		letter-spacing: -0.035em;
+	}
+
+	.booking-note {
+		max-width: 32ch;
+		margin-top: 2rem;
+		color: var(--color-muted);
+	}
+
+	.booking-form {
+		display: grid;
+		gap: 1.25rem;
+		padding: clamp(1.5rem, 4vw, 3rem);
+		background: var(--sand);
+		border: 1px solid var(--line);
+	}
+
+	.booking-form label {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.booking-form label > span {
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.booking-form label small {
+		color: var(--color-muted);
+		font-size: 0.75rem;
+		font-weight: 400;
+		letter-spacing: 0;
+		text-transform: none;
+	}
+
+	.booking-form input,
+	.booking-form select,
+	.booking-form textarea {
+		width: 100%;
+		padding: 0.9rem 0.95rem;
+		border: 1px solid var(--line);
+		border-radius: 0;
+		background: var(--paper);
+		color: var(--color-text);
+		font-size: 0.9rem;
+	}
+
+	.booking-form input:focus,
+	.booking-form select:focus,
+	.booking-form textarea:focus {
+		border-color: var(--gold);
+		box-shadow: 0 0 0 3px rgba(20, 59, 51, 0.18);
+	}
+
+	.booking-form input:focus-visible,
+	.booking-form select:focus-visible,
+	.booking-form textarea:focus-visible {
+		outline: 2px solid var(--gold-ink);
+		outline-offset: 2px;
+	}
+
+	.booking-form textarea {
+		resize: vertical;
+	}
+
+	.booking-form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+
+	.booking-form-hint {
+		color: var(--color-muted);
+		line-height: 1.5;
+	}
+
+	.booking-form-hint a {
+		color: var(--forest);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	@media (max-width: 760px) {
+		.booking-hero-inner,
+		.booking-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.booking-hero-inner {
+			gap: 3rem;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.booking-form-row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
