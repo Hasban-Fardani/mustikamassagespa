@@ -99,6 +99,31 @@ function updateScrollProgress() {
 	progress.style.transform = `scaleX(${ratio})`;
 }
 
+function enableFaqAccordion() {
+	const list = document.querySelector<HTMLElement>("[data-faq-list]");
+	const page = document.querySelector<HTMLElement>(".mustika-page");
+	const rows = list ? Array.from(list.querySelectorAll<HTMLElement>("[data-faq-item]")) : [];
+	if (!page || !rows.length) return;
+
+	const setRowState = (row: HTMLElement, isOpen: boolean) => {
+		row.dataset.faqOpen = String(isOpen);
+		row.querySelector<HTMLButtonElement>("[data-faq-trigger]")?.setAttribute("aria-expanded", String(isOpen));
+		row.querySelector<HTMLElement>("[data-faq-answer]")?.setAttribute("aria-hidden", String(!isOpen));
+	};
+
+	page.classList.add("faq-ready");
+	rows.forEach((row) => {
+		const trigger = row.querySelector<HTMLButtonElement>("[data-faq-trigger]");
+		if (!trigger) return;
+
+		setRowState(row, row.dataset.faqOpen === "true");
+		trigger.addEventListener("click", () => {
+			const nextState = row.dataset.faqOpen !== "true";
+			rows.forEach((otherRow) => setRowState(otherRow, otherRow === row && nextState));
+		});
+	});
+}
+
 function enableMagneticButtons(gsap: GsapModule["default"]) {
 	document.querySelectorAll<HTMLElement>(".ledger-button.magnetic").forEach((button) => {
 		const xTo = gsap.quickTo(button, "x", { duration: 0.52, ease: "power4.out" });
@@ -431,6 +456,7 @@ export async function initMustikaLedgerMotion() {
 	if (typeof window === "undefined") return;
 
 	prepareWordReveals();
+	enableFaqAccordion();
 	updateScrollProgress();
 	window.addEventListener("scroll", updateScrollProgress, { passive: true });
 

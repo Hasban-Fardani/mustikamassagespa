@@ -174,6 +174,9 @@ const definition: PluginDefinition = {
 				description: "Frequently asked questions",
 				fields: [
 					{ type: "text_input", action_id: "headline", label: "Headline" },
+					{ type: "text_input", action_id: "body", label: "Intro copy", multiline: true },
+					{ type: "text_input", action_id: "ctaLabel", label: "CTA label" },
+					{ type: "text_input", action_id: "ctaUrl", label: "CTA URL" },
 					{
 						type: "repeater",
 						action_id: "items",

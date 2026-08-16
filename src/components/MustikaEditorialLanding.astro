@@ -75,20 +75,20 @@ const fallbackStandards = [
 
 const fallbackFaqs = [
 	{
-		question: "Bagaimana cara melakukan booking?",
-		answer: "Chat WhatsApp Mustika di 0812 2273 9180. Tulis layanan dan waktu yang diinginkan; admin akan mengecek ketersediaannya.",
+		question: "Bagaimana cara booking sesi?",
+		answer: "Kirim pesan ke WhatsApp Mustika di 0812 2273 9180. Sertakan layanan dan waktu yang Anda inginkan; admin akan mengonfirmasi ketersediaannya.",
 	},
 	{
-		question: "Siapa yang bisa datang ke Mustika?",
-		answer: "Mustika terbuka untuk pelanggan umum dan keluarga yang membutuhkan pijat, refleksi, atau waktu untuk beristirahat. Ceritakan kebutuhan khusus saat booking.",
+		question: "Apakah Mustika menerima pelanggan umum dan keluarga?",
+		answer: "Ya. Mustika melayani pelanggan umum maupun keluarga. Sampaikan kebutuhan khusus saat booking agar kami bisa membantu menyiapkan sesi yang sesuai.",
 	},
 	{
-		question: "Layanan apa saja yang tersedia?",
-		answer: "Mustika menyediakan pijat tradisional, pijat aromaterapi, pijat seluruh tubuh, dan wellness therapy. Admin dapat membantu memilihkan sesi sesuai kebutuhan.",
+		question: "Sesi apa saja yang bisa dipilih?",
+		answer: "Tersedia pijat tradisional, pijat aromaterapi, pijat seluruh tubuh, dan wellness therapy. Jika masih ragu, admin bisa membantu memilihkan sesi.",
 	},
 	{
 		question: "Di mana lokasi Mustika?",
-		answer: "Mustika Massage Spa berada di Bandung, Jawa Barat. Detail lokasi dan arahan perjalanan dapat dikonfirmasi langsung melalui WhatsApp saat melakukan booking.",
+		answer: "Mustika Massage Spa berada di Bandung, Jawa Barat. Minta detail alamat dan arah perjalanan melalui WhatsApp saat booking.",
 	},
 ];
 
@@ -182,7 +182,13 @@ const rawFaqs = readMustikaRecords(faqNode?.items);
 const faqs = rawFaqs.length
 	? rawFaqs.map((faq) => ({ question: readString(faq.question), answer: readString(faq.answer) }))
 	: fallbackFaqs;
-const faqHeadline = readString(faqNode?.headline, "Ruang untuk semua pertanyaan.");
+const faqHeadline = readString(faqNode?.headline, "Sebelum datang, simak jawabannya.");
+const faqBody = readString(
+	faqNode?.body,
+	"Belum menemukan yang Anda cari? Tanya admin Mustika melalui WhatsApp.",
+);
+const faqCtaLabel = readString(faqNode?.ctaLabel, "Tanya admin Mustika");
+const faqCtaUrl = readString(faqNode?.ctaUrl, bookingHref);
 
 const bookingHeadline = readString(bookingNode?.headline, "Satu pesan kecil.");
 const bookingEmphasis = readString(bookingNode?.emphasis, "Waktu untuk beristirahat.");
@@ -425,17 +431,34 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 					<span>05 / FAQ</span>
 				</div>
 				<h2 id="faq-title" data-word-reveal>{faqHeadline}</h2>
-				<p data-word-reveal>Jika belum menemukan jawabannya, admin Mustika siap membantu lewat WhatsApp.</p>
-				<a class="ledger-inline-link" href={bookingHref} target="_blank" rel="noopener noreferrer" data-reveal><span>Chat dengan admin</span><span aria-hidden="true">↗</span></a>
+				<p class="faq-lede" data-word-reveal>{faqBody}</p>
+				<a class="ledger-inline-link" href={faqCtaUrl} target="_blank" rel="noopener noreferrer" data-reveal><span>{faqCtaLabel}</span><span aria-hidden="true">↗</span></a>
 			</div>
 			<div class="faq-ledger" data-faq-list>
 				{faqs.map((faq, index) => (
-					<article class="faq-row" data-faq-item>
-						<div class="faq-row-heading">
-							<span class="faq-index">0{index + 1}</span>
-							<p class="faq-question" role="heading" aria-level="3" data-word-reveal>{faq.question}</p>
+					<article class="faq-row" data-faq-item data-faq-open={index === 0 ? "true" : "false"}>
+						<h3 class="faq-question-heading" id={`faq-question-${index + 1}`}>
+							<button
+								type="button"
+								class="faq-question"
+								aria-expanded={index === 0 ? "true" : "false"}
+								aria-controls={`faq-answer-${index + 1}`}
+								data-faq-trigger
+							>
+								<span class="faq-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+								<span class="faq-question-label" data-word-reveal>{faq.question}</span>
+								<span class="faq-toggle" aria-hidden="true"><span></span><span></span></span>
+							</button>
+						</h3>
+						<div
+							class="faq-answer"
+							id={`faq-answer-${index + 1}`}
+							role="region"
+							aria-labelledby={`faq-question-${index + 1}`}
+							data-faq-answer
+						>
+							<div class="faq-answer-inner"><p>{faq.answer}</p></div>
 						</div>
-						<p data-word-reveal>{faq.answer}</p>
 					</article>
 				))}
 			</div>
@@ -1397,32 +1420,121 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.faq-row {
-		display: grid;
-		gap: 0.8rem;
-		padding: 2.2rem 0 0.8rem;
+		--faq-index-column: 3rem;
 		border-bottom: 1px solid var(--ledger-line);
 	}
 
-	.faq-row-heading {
-		display: grid;
-		grid-template-columns: 3rem minmax(0, 1fr);
-		gap: 1rem;
-		align-items: start;
+	.faq-question-heading {
+		margin: 0;
 	}
 
-	.faq-row .faq-question {
+	.faq-question {
+		display: grid;
+		width: 100%;
+		grid-template-columns: var(--faq-index-column) minmax(0, 1fr) 2.25rem;
+		gap: 1rem;
+		align-items: start;
+		padding: 1.55rem 0;
+		border: 0;
+		background: transparent;
+		color: var(--ledger-ink);
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.faq-question-label {
 		font-family: var(--font-heading);
 		font-size: clamp(1.35rem, 2vw, 2rem);
 		letter-spacing: -0.035em;
-		line-height: 1;
+		line-height: 1.05;
+		transition: color 260ms ease, transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	.faq-row > p {
-		grid-column: 2;
+	.faq-question:hover .faq-question-label,
+	.faq-question:focus-visible .faq-question-label {
+		color: var(--ledger-oxide-deep);
+		transform: translateX(0.25rem);
+	}
+
+	.faq-question:focus-visible {
+		outline: 2px solid var(--ledger-oxide);
+		outline-offset: 0.4rem;
+	}
+
+	.faq-toggle {
+		position: relative;
+		display: grid;
+		width: 2.25rem;
+		height: 2.25rem;
+		place-items: center;
+		border: 1px solid var(--ledger-line);
+		border-radius: 50%;
+		color: var(--ledger-oxide-deep);
+		transition: border-color 320ms ease, background-color 320ms ease, color 320ms ease, transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.faq-toggle span {
+		position: absolute;
+		width: 0.7rem;
+		height: 1px;
+		background: currentColor;
+	}
+
+	.faq-toggle span:last-child {
+		transform: rotate(90deg);
+	}
+
+	.faq-question:hover .faq-toggle,
+	.faq-question:focus-visible .faq-toggle {
+		border-color: var(--ledger-oxide-deep);
+		background: var(--ledger-oxide-deep);
+		color: var(--ledger-paper);
+	}
+
+	.faq-row[data-faq-open="true"] .faq-toggle {
+		transform: rotate(45deg);
+	}
+
+	.faq-answer {
+		display: grid;
+		grid-template-rows: 1fr;
+		margin-left: calc(var(--faq-index-column) + 1rem);
+		padding-right: 3.25rem;
+		opacity: 1;
+		transition: grid-template-rows 520ms cubic-bezier(0.16, 1, 0.3, 1), opacity 260ms ease;
+	}
+
+	.faq-answer-inner {
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	.faq-answer p {
 		max-width: 55ch;
+		margin: 0;
+		padding: 0 0 1.55rem;
 		color: var(--ledger-muted);
-		font-size: 0.87rem;
-		line-height: 1.55;
+		font-size: 0.9rem;
+		line-height: 1.6;
+	}
+
+	.mustika-page.faq-ready .faq-answer {
+		grid-template-rows: 0fr;
+		opacity: 0;
+	}
+
+	.mustika-page.faq-ready .faq-row[data-faq-open="true"] .faq-answer {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+
+	.faq-row .faq-index {
+		padding-top: 0.25rem;
+	}
+
+	.faq-row .faq-question {
+		line-height: 1.3;
 	}
 
 	.ledger-book {
@@ -1741,13 +1853,17 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			gap: 3.5rem;
 		}
 
-		.faq-row-heading {
-			grid-template-columns: 2.35rem minmax(0, 1fr);
+		.faq-row {
+			--faq-index-column: 2.35rem;
+		}
+
+		.faq-question {
 			gap: 0.8rem;
 		}
 
-		.faq-row > p {
-			grid-column: 2;
+		.faq-answer {
+			margin-left: calc(var(--faq-index-column) + 0.8rem);
+			padding-right: 3rem;
 		}
 
 		.book-layout {
@@ -1867,10 +1983,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: rgba(240, 233, 221, 0.72);
 	}
 
-	.faq-row .faq-question {
-		line-height: 1.3;
-	}
-
 	@media (prefers-reduced-motion: reduce) {
 		.ledger-hero {
 			margin-bottom: 0;
@@ -1880,6 +1992,12 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			opacity: 0;
 			visibility: hidden;
 			transform: none;
+		}
+
+		.faq-answer,
+		.faq-question-label,
+		.faq-toggle {
+			transition: none;
 		}
 	}
 

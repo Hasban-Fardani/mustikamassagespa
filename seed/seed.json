@@ -181,23 +181,26 @@
 						{
 							"_type": "marketing.faq",
 							"_key": "home-faq",
-							"headline": "Ruang untuk semua pertanyaan.",
+							"headline": "Sebelum datang, simak jawabannya.",
+							"body": "Belum menemukan yang Anda cari? Tanya admin Mustika melalui WhatsApp.",
+							"ctaLabel": "Tanya admin Mustika",
+							"ctaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
 							"items": [
 								{
-									"question": "Bagaimana cara melakukan booking?",
-									"answer": "Chat WhatsApp Mustika di 0812 2273 9180. Tulis layanan dan waktu yang diinginkan; admin akan mengecek ketersediaannya."
+									"question": "Bagaimana cara booking sesi?",
+									"answer": "Kirim pesan ke WhatsApp Mustika di 0812 2273 9180. Sertakan layanan dan waktu yang Anda inginkan; admin akan mengonfirmasi ketersediaannya."
 								},
 								{
-									"question": "Siapa yang bisa datang ke Mustika?",
-									"answer": "Mustika terbuka untuk pelanggan umum dan keluarga yang membutuhkan pijat, refleksi, atau waktu untuk beristirahat. Ceritakan kebutuhan khusus saat booking."
+									"question": "Apakah Mustika menerima pelanggan umum dan keluarga?",
+									"answer": "Ya. Mustika melayani pelanggan umum maupun keluarga. Sampaikan kebutuhan khusus saat booking agar kami bisa membantu menyiapkan sesi yang sesuai."
 								},
 								{
-									"question": "Layanan apa saja yang tersedia?",
-									"answer": "Mustika menyediakan pijat tradisional, pijat aromaterapi, pijat seluruh tubuh, dan wellness therapy. Admin dapat membantu memilihkan sesi sesuai kebutuhan."
+									"question": "Sesi apa saja yang bisa dipilih?",
+									"answer": "Tersedia pijat tradisional, pijat aromaterapi, pijat seluruh tubuh, dan wellness therapy. Jika masih ragu, admin bisa membantu memilihkan sesi."
 								},
 								{
 									"question": "Di mana lokasi Mustika?",
-									"answer": "Mustika Massage Spa berada di Bandung, Jawa Barat. Detail lokasi dan arahan perjalanan dapat dikonfirmasi langsung melalui WhatsApp saat melakukan booking."
+									"answer": "Mustika Massage Spa berada di Bandung, Jawa Barat. Minta detail alamat dan arah perjalanan melalui WhatsApp saat booking."
 								}
 							]
 						},
