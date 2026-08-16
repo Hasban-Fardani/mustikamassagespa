@@ -537,7 +537,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		position: relative;
 		height: max(620px, calc(100svh - 86px));
 		min-height: 620px;
-		margin-bottom: max(0px, calc(20svh + 86px));
+		/* Keep the next section aligned with the end of the pinned scene.
+		 * The min-height is important on short viewports: the old fixed
+		 * compensation left a full blank band between the hero and intro. */
+		margin-bottom: max(0px, calc(120svh - max(620px, calc(100svh - 86px))));
 		background: var(--ledger-bone);
 		isolation: isolate;
 	}
