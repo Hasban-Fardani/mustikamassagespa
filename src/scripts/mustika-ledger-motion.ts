@@ -62,7 +62,7 @@ function showStaticContent() {
 		element.style.transform = "none";
 	});
 
-	document.querySelectorAll<HTMLElement>("[data-scroll-word-inner], [data-hero-exit-word]").forEach((element) => {
+	document.querySelectorAll<HTMLElement>("[data-scroll-word-inner]").forEach((element) => {
 		element.style.opacity = "1";
 		element.style.transform = "none";
 	});
@@ -77,17 +77,6 @@ function showStaticContent() {
 		element.style.transform = "none";
 	});
 
-	document.querySelectorAll<HTMLElement>("[data-hero-exit]").forEach((element) => {
-		element.style.opacity = "0";
-		element.style.visibility = "hidden";
-		element.style.transform = "none";
-	});
-
-	document.querySelectorAll<HTMLElement>("[data-hero-exit-visual]").forEach((element) => {
-		element.style.opacity = "0";
-		element.style.clipPath = "none";
-		element.style.transform = "none";
-	});
 }
 
 function updateScrollProgress() {
@@ -442,14 +431,10 @@ function animateHero(
 	const heroWords = document.querySelectorAll<HTMLElement>("[data-hero-word]");
 	const heroReveal = document.querySelectorAll<HTMLElement>("[data-hero-main] [data-reveal]");
 	const heroTop = document.querySelector<HTMLElement>("[data-hero-top]");
-	const heroExit = document.querySelector<HTMLElement>("[data-hero-exit]");
-	const heroExitInner = document.querySelector<HTMLElement>("[data-hero-exit-inner]");
-	const heroExitVisual = document.querySelector<HTMLElement>("[data-hero-exit-visual]");
-	const heroExitWords = document.querySelectorAll<HTMLElement>("[data-hero-exit-word]");
 	const heroSheetRule = document.querySelector<HTMLElement>("[data-hero-sheet-rule]");
 	const heroVisualDetail = document.querySelector<HTMLElement>("[data-hero-visual-detail]");
 
-	if (!hero || !heroMain || !heroCopy || !heroStage || !heroPaper || !heroExit) return;
+	if (!hero || !heroMain || !heroCopy || !heroStage || !heroPaper) return;
 
 	gsap.set(heroWords, { yPercent: 120, rotate: 2.5, transformOrigin: "left bottom" });
 	gsap.set(heroPaper, {
@@ -462,19 +447,6 @@ function animateHero(
 	gsap.set(heroImageWrap, { scale: 1.16, xPercent: 4, transformOrigin: "50% 50%" });
 	if (heroImage) gsap.set(heroImage, { scale: 1.08, transformOrigin: "50% 50%" });
 	gsap.set(hero, { backgroundColor: "rgba(240, 233, 221, 1)" });
-	gsap.set(heroExit, { yPercent: 0, autoAlpha: 0 });
-	gsap.set(heroExit, { backgroundColor: "rgba(28, 32, 26, 1)" });
-	gsap.set(heroExitWords, { yPercent: 120, opacity: 0, rotate: 2, transformOrigin: "left bottom" });
-	if (heroExitVisual) {
-		gsap.set(heroExitVisual, {
-			xPercent: 8,
-			rotate: 1.5,
-			opacity: 0,
-			clipPath: "inset(0 0 0 100%)",
-			transformOrigin: "50% 50%",
-		});
-	}
-	gsap.set(heroExitInner, { opacity: 0 });
 	gsap.set(heroSheetRule, { scaleX: 0, transformOrigin: "left center" });
 	gsap.set(heroVisualDetail, { y: 16, opacity: 0 });
 	gsap.set(heroTop, { y: 18, opacity: 0 });

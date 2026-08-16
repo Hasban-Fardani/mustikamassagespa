@@ -334,36 +334,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 				</figure>
 			</div>
 		</div>
-
-		<div class="ledger-hero-exit" data-hero-exit>
-			<div class="hero-exit-visual" data-hero-exit-visual aria-hidden="true">
-				<img
-					src="/images/mustika/hero-exit-traditional.webp"
-					alt=""
-					width="1000"
-					height="1250"
-					sizes="(max-width: 1000px) 34vw, 32rem"
-					loading="lazy"
-					decoding="async"
-				/>
-				<span class="hero-exit-visual-wash"></span>
-			</div>
-			<div class="shell hero-exit-inner" data-hero-exit-inner>
-				<span class="ledger-overline ledger-overline-light">02 / Masuk ke ritual</span>
-				<h2>
-					<span class="hero-exit-line">
-						<span class="hero-word-mask"><span data-hero-exit-word>Sisihkan</span></span>
-						<span class="hero-word-mask"><span data-hero-exit-word>sebentar.</span></span>
-					</span>
-					<br />
-					<em class="hero-exit-line">
-						<span class="hero-word-mask"><span data-hero-exit-word>Rasakan</span></span>
-						<span class="hero-word-mask"><span data-hero-exit-word>bedanya.</span></span>
-					</em>
-				</h2>
-				<a class="hero-exit-link" href="#rituals"><span>Temukan layanan Mustika</span><span aria-hidden="true">↓</span></a>
-			</div>
-		</div>
 	</section>
 
 	<section class="ledger-intro section" aria-labelledby="intro-title">
@@ -403,7 +373,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	<section class="ledger-rituals section" id="rituals" aria-labelledby="rituals-title">
 		<div class="shell">
 			<div class="section-bar section-bar-light" data-reveal>
-				<span>02 / Ritual</span>
+				<span>02</span>
+				<span>Ritual pilihan</span>
 			</div>
 			<div class="rituals-heading">
 				<h2 id="rituals-title" data-word-reveal>{readString(servicesNode?.headline, "Temukan cara tubuh ingin")} <em>{readString(servicesNode?.emphasis, "dipulihkan.")}</em></h2>
@@ -472,7 +443,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	<section class="ledger-experience section" id="experience" aria-labelledby="experience-title">
 		<div class="shell">
 			<div class="section-bar" data-reveal>
-				<span>03 / Pengalaman</span>
+				<span>03</span>
+				<span>Cara datang ke Mustika</span>
 			</div>
 			<div class="experience-heading">
 				<h2 id="experience-title" data-word-reveal>{experienceHeadline}<br /><em>{experienceEmphasis}</em></h2>
@@ -494,7 +466,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	<section class="ledger-standards section" id="standards" aria-labelledby="standards-title">
 		<div class="shell standards-layout">
 			<div class="section-bar" data-reveal>
-				<span>04 / Mengapa Mustika</span>
+				<span>04</span>
+				<span>Yang kami jaga</span>
 			</div>
 			<div class="standards-grid">
 				<div class="standards-copy">
@@ -522,7 +495,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		<div class="shell faq-layout">
 			<div class="faq-heading">
 				<div class="section-bar" data-reveal>
-					<span>05 / FAQ</span>
+					<span>05</span>
+					<span>Sebelum datang</span>
 				</div>
 				<h2 id="faq-title" data-word-reveal>{faqHeadline}</h2>
 				<p class="faq-lede" data-word-reveal>{faqBody}</p>
@@ -2566,12 +2540,12 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.mustika-ledger .service-row-copy {
-		grid-template-columns: 130px minmax(0, 1fr);
-		gap: clamp(1.2rem, 3vw, 2.5rem);
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
 	}
 
 	.mustika-ledger .service-row-media {
-		aspect-ratio: 1.05;
+		display: none;
 	}
 
 	.mustika-ledger .service-row-copy h3 {
@@ -2744,7 +2718,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		}
 
 		.mustika-ledger .service-row-copy {
-			grid-template-columns: 76px minmax(0, 1fr);
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.mustika-ledger .service-row-copy h3 {
@@ -2762,5 +2736,61 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			min-height: 34rem;
 			padding-block: 6rem;
 		}
+	}
+
+	/* Remove the last template fingerprints: circles and repeated mini-cards. */
+	.mustika-ledger .service-arrow {
+		width: auto;
+		height: auto;
+		border: 0;
+		border-radius: 0;
+		font-size: 1.4rem;
+		transition: color 300ms ease, transform 500ms var(--ease-out-quint);
+	}
+
+	.mustika-ledger .service-row:hover .service-arrow {
+		transform: translate(0.2rem, -0.2rem);
+	}
+
+	.mustika-ledger .section-bar > span:last-child {
+		color: inherit;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		text-transform: none;
+	}
+
+	.mustika-ledger .faq-toggle {
+		width: 1.75rem;
+		height: 1.75rem;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+	}
+
+	.mustika-ledger .faq-question:hover .faq-toggle,
+	.mustika-ledger .faq-question:focus-visible .faq-toggle {
+		border-color: transparent;
+		background: transparent;
+		color: var(--ledger-oxide-deep);
+	}
+
+	.mustika-ledger .service-hover-preview {
+		border-left: 1px solid var(--ledger-gold);
+		padding-left: 0.8rem;
+	}
+
+	.mustika-ledger .service-hover-preview-frame {
+		background: var(--ledger-ink);
+		box-shadow: 0 18px 45px rgba(0, 0, 0, 0.2);
+		color: var(--ledger-paper);
+	}
+
+	.mustika-ledger .service-hover-preview-topline {
+		color: rgba(247, 242, 233, 0.72);
+	}
+
+	.mustika-ledger .service-hover-preview-caption span {
+		color: rgba(247, 242, 233, 0.64);
 	}
 </style>
