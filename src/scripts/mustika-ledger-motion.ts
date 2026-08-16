@@ -271,6 +271,37 @@ function animateWordReveals(gsap: GsapModule["default"]) {
 	});
 }
 
+function animateMobileWordReveals() {
+	if (!("IntersectionObserver" in window)) {
+		showStaticContent();
+		return;
+	}
+
+	document.querySelectorAll<HTMLElement>("[data-word-reveal]").forEach((root) => {
+		const words = Array.from(root.querySelectorAll<HTMLElement>("[data-scroll-word-inner]"));
+		if (!words.length) return;
+
+		words.forEach((word, index) => {
+			word.style.opacity = "0";
+			word.style.transform = "translate3d(0, 112%, 0) rotate(1.5deg)";
+			word.style.transition = "transform 720ms cubic-bezier(0.16, 1, 0.3, 1), opacity 420ms ease";
+			word.style.transitionDelay = `${Math.min(index * 28, 360)}ms`;
+		});
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				const isVisible = Boolean(entry?.isIntersecting && entry.intersectionRatio > 0.1);
+				words.forEach((word) => {
+					word.style.opacity = isVisible ? "1" : "0";
+					word.style.transform = isVisible ? "translate3d(0, 0, 0) rotate(0deg)" : "translate3d(0, 112%, 0) rotate(1.5deg)";
+				});
+			},
+			{ threshold: [0, 0.1], rootMargin: "-8% 0px -18% 0px" },
+		);
+		observer.observe(root);
+	});
+}
+
 function animateServiceLedger(gsap: GsapModule["default"]) {
 	const list = document.querySelector<HTMLElement>("[data-service-list]");
 	const items = list?.querySelectorAll<HTMLElement>("[data-service-item]");
@@ -410,8 +441,10 @@ export async function initMustikaLedgerMotion() {
 	}
 
 	const supportsRichMotion = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+	const supportsMobileWordMotion = window.matchMedia("(max-width: 760px)").matches;
 	if (!supportsRichMotion) {
-		showStaticContent();
+		if (supportsMobileWordMotion) animateMobileWordReveals();
+		else showStaticContent();
 		return;
 	}
 
@@ -426,12 +459,14 @@ export async function initMustikaLedgerMotion() {
 		gsap.registerPlugin(ScrollTrigger);
 
 		const media = gsap.matchMedia();
-		media.add("(min-width: 761px) and (hover: hover) and (pointer: fine)", () => {
-			animateHero(gsap, ScrollTrigger);
-			animateServiceLedger(gsap);
-			animateSections(gsap, ScrollTrigger);
-			enableMagneticButtons(gsap);
-		});
+		if (supportsRichMotion) {
+			media.add("(min-width: 761px) and (hover: hover) and (pointer: fine)", () => {
+				animateHero(gsap, ScrollTrigger);
+				animateServiceLedger(gsap);
+				animateSections(gsap, ScrollTrigger);
+				enableMagneticButtons(gsap);
+			});
+		}
 	} catch {
 		window.clearTimeout(fallbackTimer);
 		showStaticContent();
