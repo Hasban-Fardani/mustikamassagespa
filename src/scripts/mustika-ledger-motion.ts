@@ -516,26 +516,12 @@ function animateHero(
 	});
 
 	scrollScene
-		.to(heroMain, { yPercent: -4, scale: 0.99, autoAlpha: 0, duration: 0.24 }, 0)
-		.to(heroCopy, { xPercent: -2, yPercent: -4, duration: 0.24 }, 0)
-		.to(heroStage, { xPercent: -6, yPercent: -4, rotate: -1.5, duration: 0.3 }, 0)
-		.to(heroImageWrap, { scale: 1.1, duration: 0.32 }, 0.02)
-		.to(heroExit, { autoAlpha: 1, duration: 0.12 }, 0.12)
-		.to(heroExitInner, { opacity: 1, duration: 0.18 }, 0.28);
-	if (heroExitVisual) {
-		scrollScene.to(heroExitVisual, { xPercent: 0, rotate: 0, opacity: 1, clipPath: "inset(0 0 0 0%)", duration: 0.24 }, 0.38);
-	}
-	scrollScene.to(heroExitWords, { yPercent: 0, opacity: 1, rotate: 0, duration: 0.28, stagger: 0.06 }, 0.34);
-	// Give the next section a real visual handoff instead of cutting from ink to sage.
-	scrollScene
-		.to(heroExitInner, { yPercent: -10, autoAlpha: 0, duration: 0.18 }, 0.72)
-		.to(
-			heroExitVisual,
-			{ yPercent: -8, scale: 1.04, opacity: 0, clipPath: "inset(0 0 100% 0%)", duration: 0.22 },
-			0.72,
-		)
-		.to(heroExit, { backgroundColor: "rgba(28, 32, 26, 0)", autoAlpha: 0, duration: 0.28 }, 0.72)
-		.to(hero, { backgroundColor: "rgba(240, 233, 221, 0)", duration: 0.28 }, 0.72);
+		.to(heroMain, { yPercent: -5, scale: 0.98, autoAlpha: 0.22, duration: 0.62 }, 0)
+		.to(heroCopy, { xPercent: -2, yPercent: -5, duration: 0.52 }, 0)
+		.to(heroStage, { xPercent: -3, yPercent: -2, scale: 1.03, duration: 0.58 }, 0)
+		.to(heroImageWrap, { scale: 1.08, duration: 0.58 }, 0)
+		.to(hero, { backgroundColor: "rgba(240, 233, 221, 0)", duration: 0.34 }, 0.56)
+		.to(heroMain, { autoAlpha: 0, duration: 0.25 }, 0.7);
 
 	const stageX = gsap.quickTo(heroStage, "x", { duration: 1.15, ease: "power3.out" });
 	const stageY = gsap.quickTo(heroStage, "y", { duration: 1.15, ease: "power3.out" });

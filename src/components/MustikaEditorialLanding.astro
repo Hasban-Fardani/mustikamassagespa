@@ -2325,8 +2325,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.mustika-ledger .ledger-hero-grid {
 		position: relative;
 		display: block;
-		width: 100%;
+		width: 100vw;
+		max-width: none;
 		height: 100%;
+		margin-left: calc(50% - 50vw);
 		padding-top: 0;
 	}
 
@@ -2434,6 +2436,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		z-index: 4;
 		width: min(48rem, 58vw);
 		max-width: none;
+		margin-left: max(5vw, calc((100vw - 1360px) / 2));
 		color: var(--ledger-paper);
 	}
 
@@ -2702,6 +2705,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			left: auto;
 			order: 1;
 			width: 100%;
+			margin-left: 0;
 			margin-top: -9rem;
 			padding: 0 1.25rem 2rem;
 		}
