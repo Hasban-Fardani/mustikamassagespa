@@ -55,6 +55,16 @@ pnpm dev
 pnpm deploy
 ```
 
+The deploy script links EmDash's `SESSION` binding to the existing Cloudflare
+KV namespace before uploading the Worker. If the Cloudflare account contains
+more than one session namespace, set `EMDASH_SESSION_KV_NAMESPACE_ID` in the
+deployment environment to the intended namespace ID.
+
+Cloudflare Workers Builds may keep its default deploy command
+(`npx wrangler deploy`). The `postbuild` lifecycle patches Astro's generated
+Wrangler configuration automatically, so the deploy stage reuses
+`mustikamassagespa-session` instead of trying to create it again.
+
 Or click the deploy button above to set up the project in your Cloudflare account.
 
 ## See Also

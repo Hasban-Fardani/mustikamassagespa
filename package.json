@@ -9,11 +9,13 @@
   },
   "scripts": {
     "dev": "node scripts/dev-worker.mjs",
-		"dev:astro": "astro dev",
-		"build": "astro build",
-		"test:assets": "node scripts/check-assets.mjs",
-		"preview": "astro preview",
-    "deploy": "astro build && wrangler deploy",
+    "dev:astro": "astro dev",
+    "build": "astro build",
+    "postbuild": "node scripts/prepare-cloudflare-deploy.mjs",
+    "test:assets": "node scripts/check-assets.mjs",
+    "test:cloudflare": "node scripts/test-cloudflare-session-binding.mjs",
+    "preview": "astro preview",
+    "deploy": "pnpm build && wrangler deploy dist/server/entry.mjs --config dist/server/wrangler.json",
     "typecheck": "astro check"
   },
   "dependencies": {
