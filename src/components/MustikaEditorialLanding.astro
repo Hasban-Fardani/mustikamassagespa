@@ -242,7 +242,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	<section class="ledger-hero" data-ledger-hero aria-labelledby="hero-title">
 		<div class="ledger-hero-main" data-hero-main>
 			<div class="shell ledger-hero-top" data-hero-top>
-				<span class="ledger-overline">Mustika / Massage Spa</span>
+				<span class="ledger-overline">Bandung · Jawa Barat</span>
+				<span class="ledger-top-note">Perawatan tubuh yang personal</span>
 			</div>
 
 			<div class="shell ledger-hero-grid" data-hero-scene>
@@ -264,7 +265,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 					<div class="ledger-index" data-reveal>
 						<span class="ledger-index-number" data-hero-index>01</span>
 						<span class="ledger-index-rule" aria-hidden="true"></span>
-						<span>Ritual pertama</span>
+						<span>Sesi yang bisa dipilih</span>
 					</div>
 					<p class="ledger-lede" data-reveal>{heroSubheadline}</p>
 					<div class="ledger-actions" data-reveal>
@@ -373,6 +374,18 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			</div>
 			<div class="ledger-intro-content">
 				<h2 id="intro-title" data-word-reveal>{introHeadline} <em>{introEmphasis}</em></h2>
+				<figure class="ledger-intro-media" data-reveal>
+					<img
+						src="/images/mustika/hero-03-aroma-ritual.webp"
+						alt="Ruang perawatan Mustika dengan cahaya lembut dan aroma terapi"
+						width="1200"
+						height="1500"
+						sizes="(max-width: 760px) 100vw, 30vw"
+						loading="lazy"
+						decoding="async"
+					/>
+					<figcaption>Ruang tenang untuk memulai sesi.</figcaption>
+				</figure>
 				<div class="ledger-intro-detail" data-reveal>
 					<p data-word-reveal>{introBody}</p>
 					<div class="intro-side-column">
@@ -2246,6 +2259,504 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 		.service-hover-preview {
 			display: none;
+		}
+	}
+
+	/*
+	 * Editorial arrival system
+	 *
+	 * The page is intentionally image-led: the photograph is the room, not a
+	 * card sitting beside a headline. Supporting copy behaves like a caption
+	 * rail, while the sections below use one strong gesture each.
+	 */
+	.mustika-ledger {
+		--ledger-ink: #20271f;
+		--ledger-ink-soft: #2d382e;
+		--ledger-paper: #f7f2e9;
+		--ledger-bone: #eee8dc;
+		--ledger-sage: #dfe6d9;
+		--ledger-oxide: #b4513e;
+		--ledger-oxide-deep: #873b31;
+		--ledger-gold: #c49a4e;
+		--ledger-muted: #667166;
+		--ledger-line: rgba(32, 39, 31, 0.18);
+		--ledger-line-light: rgba(247, 242, 233, 0.22);
+	}
+
+	.mustika-ledger .section {
+		padding-block: clamp(6rem, 11vw, 11rem);
+	}
+
+	/* Hero: one photographic field, one readable caption rail. */
+	.mustika-ledger .ledger-hero {
+		height: 100svh;
+		min-height: 680px;
+		margin-bottom: 0;
+		background: var(--ledger-ink);
+	}
+
+	.mustika-ledger .ledger-hero-main {
+		background: var(--ledger-ink);
+	}
+
+	.mustika-ledger .ledger-hero-top {
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		z-index: 5;
+		display: flex;
+		justify-content: space-between;
+		width: var(--site-width);
+		padding-top: clamp(6.6rem, 9vw, 8.5rem);
+		color: rgba(247, 242, 233, 0.72);
+	}
+
+	.mustika-ledger .ledger-overline {
+		color: var(--ledger-paper);
+	}
+
+	.mustika-ledger .ledger-top-note {
+		color: rgba(247, 242, 233, 0.62);
+		font-size: 0.75rem;
+		letter-spacing: 0.03em;
+	}
+
+	.mustika-ledger .ledger-hero-grid {
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+		padding-top: 0;
+	}
+
+	.mustika-ledger .hero-visual {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		max-width: none;
+		aspect-ratio: auto;
+		margin: 0;
+		perspective: none;
+	}
+
+	.mustika-ledger .hero-visual-frame {
+		position: absolute;
+		inset: 0;
+		display: block;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.mustika-ledger .hero-visual-frame::after {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		background: linear-gradient(90deg, rgba(32, 39, 31, 0.88) 0%, rgba(32, 39, 31, 0.48) 30%, rgba(32, 39, 31, 0.08) 66%), linear-gradient(0deg, rgba(32, 39, 31, 0.62) 0%, transparent 38%);
+		content: "";
+		pointer-events: none;
+	}
+
+	.mustika-ledger .hero-visual-meta {
+		position: absolute;
+		top: clamp(6.6rem, 9vw, 8.5rem);
+		right: 0;
+		left: 0;
+		z-index: 4;
+		width: var(--site-width);
+		margin-inline: auto;
+		color: var(--ledger-paper);
+	}
+
+	.mustika-ledger .hero-visual-meta span:first-child {
+		color: var(--ledger-gold);
+	}
+
+	.mustika-ledger .hero-visual-nav button {
+		color: var(--ledger-paper);
+	}
+
+	.mustika-ledger .hero-visual-rule {
+		position: absolute;
+		top: calc(clamp(6.6rem, 9vw, 8.5rem) + 2.75rem);
+		right: 0;
+		left: 0;
+		z-index: 4;
+		width: var(--site-width);
+		margin-inline: auto;
+		background: rgba(247, 242, 233, 0.27);
+	}
+
+	.mustika-ledger .hero-visual-image {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		margin: 0;
+		background: var(--ledger-ink);
+	}
+
+	.mustika-ledger .hero-visual-image::before,
+	.mustika-ledger .hero-visual-image::after {
+		display: none;
+	}
+
+	.mustika-ledger .hero-visual-image img {
+		object-position: 50% 54%;
+		transform: scale(1.02);
+		filter: saturate(0.88) contrast(1.04);
+	}
+
+	.mustika-ledger .hero-visual-detail {
+		position: absolute;
+		right: 0;
+		bottom: clamp(2rem, 5vw, 4.5rem);
+		left: 0;
+		z-index: 4;
+		width: var(--site-width);
+		margin-inline: auto;
+		color: var(--ledger-paper);
+	}
+
+	.mustika-ledger .hero-visual-detail-index {
+		color: var(--ledger-gold);
+	}
+
+	.mustika-ledger .hero-visual-detail p {
+		color: rgba(247, 242, 233, 0.82);
+	}
+
+	.mustika-ledger .ledger-copy {
+		position: absolute;
+		bottom: clamp(5.4rem, 11vw, 9.5rem);
+		left: 0;
+		z-index: 4;
+		width: min(48rem, 58vw);
+		max-width: none;
+		color: var(--ledger-paper);
+	}
+
+	.mustika-ledger .ledger-title {
+		max-width: 12ch;
+		margin-top: 0.9rem;
+		font-size: clamp(3.1rem, 6.2vw, 6.8rem);
+		line-height: 0.88;
+	}
+
+	.mustika-ledger .ledger-title-line-accent {
+		color: var(--ledger-gold);
+	}
+
+	.mustika-ledger .ledger-index {
+		margin-top: 1.7rem;
+		color: rgba(247, 242, 233, 0.78);
+	}
+
+	.mustika-ledger .ledger-index-number {
+		color: var(--ledger-gold);
+	}
+
+	.mustika-ledger .ledger-lede {
+		max-width: 35ch;
+		margin-top: 1.2rem;
+		color: rgba(247, 242, 233, 0.78);
+	}
+
+	.mustika-ledger .ledger-actions {
+		margin-top: 1.5rem;
+	}
+
+	.mustika-ledger .ledger-button {
+		border-color: var(--ledger-gold);
+		background: var(--ledger-gold);
+		color: var(--ledger-ink);
+	}
+
+	.mustika-ledger .ledger-button:hover {
+		border-color: var(--ledger-paper);
+		background: var(--ledger-paper);
+		color: var(--ledger-ink);
+	}
+
+	.mustika-ledger .ledger-text-link {
+		color: var(--ledger-paper);
+	}
+
+	.mustika-ledger .ledger-meta {
+		margin-top: 2rem;
+		color: rgba(247, 242, 233, 0.64);
+	}
+
+	.mustika-ledger .ledger-hero-exit {
+		display: none;
+	}
+
+	/* The first editorial section uses an actual image as part of the story. */
+	.mustika-ledger .ledger-intro-grid {
+		grid-template-columns: minmax(90px, 0.18fr) minmax(0, 1fr);
+		gap: clamp(2rem, 6vw, 7rem);
+	}
+
+	.mustika-ledger .ledger-intro-content {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(190px, 0.44fr);
+		column-gap: clamp(2rem, 6vw, 7rem);
+		align-items: start;
+	}
+
+	.mustika-ledger .ledger-intro-content > h2 {
+		grid-column: 1;
+		max-width: 10ch;
+	}
+
+	.mustika-ledger .ledger-intro-media {
+		grid-column: 2;
+		grid-row: 1 / span 2;
+		width: 100%;
+		margin: 0;
+	}
+
+	.mustika-ledger .ledger-intro-media img {
+		width: 100%;
+		aspect-ratio: 0.78;
+		object-fit: cover;
+		filter: saturate(0.82) contrast(1.03);
+	}
+
+	.mustika-ledger .ledger-intro-media figcaption {
+		margin-top: 0.75rem;
+		color: var(--ledger-muted);
+		font-size: 0.72rem;
+		letter-spacing: 0.03em;
+	}
+
+	.mustika-ledger .ledger-intro-detail {
+		grid-column: 1;
+		grid-template-columns: minmax(0, 0.92fr) minmax(170px, 0.55fr);
+		gap: clamp(1.5rem, 4vw, 4rem);
+		margin-top: clamp(3rem, 6vw, 6rem);
+	}
+
+	/* Rituals: rows are a reading list, not four product cards. */
+	.mustika-ledger .rituals-heading {
+		margin-block: clamp(2.5rem, 5vw, 4.5rem) clamp(2.5rem, 4vw, 3.5rem);
+	}
+
+	.mustika-ledger .rituals-heading h2 {
+		max-width: 14ch;
+		font-size: clamp(3rem, 5.6vw, 6.2rem);
+	}
+
+	.mustika-ledger .service-row {
+		grid-template-columns: minmax(80px, 0.18fr) minmax(0, 1fr) 72px;
+		min-height: 154px;
+		background: transparent;
+	}
+
+	.mustika-ledger .service-row:hover {
+		background: transparent;
+	}
+
+	.mustika-ledger .service-row-top {
+		padding-block: 1.35rem 1.15rem;
+	}
+
+	.mustika-ledger .service-row-copy {
+		grid-template-columns: 130px minmax(0, 1fr);
+		gap: clamp(1.2rem, 3vw, 2.5rem);
+	}
+
+	.mustika-ledger .service-row-media {
+		aspect-ratio: 1.05;
+	}
+
+	.mustika-ledger .service-row-copy h3 {
+		font-size: clamp(2rem, 3.6vw, 4rem);
+		transition: color 300ms ease, transform 500ms var(--ease-out-quint);
+	}
+
+	.mustika-ledger .service-row:hover .service-row-copy h3 {
+		color: var(--ledger-gold);
+		transform: translateX(0.2rem);
+	}
+
+	.mustika-ledger .service-hover-preview {
+		width: min(29vw, 430px);
+		min-width: 290px;
+	}
+
+	.mustika-ledger .service-hover-preview-frame {
+		padding: 0;
+		border: 0;
+		box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+	}
+
+	.mustika-ledger .service-hover-preview-topline,
+	.mustika-ledger .service-hover-preview-caption {
+		padding-inline: 0.2rem;
+	}
+
+	.mustika-ledger .service-hover-preview-topline {
+		padding-block: 0 0.6rem;
+	}
+
+	.mustika-ledger .service-hover-preview-media {
+		aspect-ratio: 1 / 1.12;
+	}
+
+	.mustika-ledger .service-hover-preview-caption {
+		padding-block: 0.75rem 0;
+	}
+
+	/* Later sections use quieter scales so the hero remains the only crescendo. */
+	.mustika-ledger .experience-heading h2,
+	.mustika-ledger .standards-copy h2,
+	.mustika-ledger .faq-heading h2,
+	.mustika-ledger .book-copy h2 {
+		font-size: clamp(3rem, 5.4vw, 6.4rem);
+	}
+
+	.mustika-ledger .experience-heading {
+		grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.42fr);
+		margin-block: clamp(3rem, 6vw, 5.5rem);
+	}
+
+	.mustika-ledger .journey-track h3 {
+		font-size: clamp(1.45rem, 2.3vw, 2.3rem);
+	}
+
+	.mustika-ledger .book-visual {
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: 48%;
+		height: auto;
+		border: 0;
+		box-shadow: none;
+		transform: none;
+	}
+
+	.mustika-ledger .book-visual img {
+		filter: saturate(0.82) contrast(1.04) brightness(0.76);
+	}
+
+	.mustika-ledger .book-visual-wash {
+		background: linear-gradient(90deg, var(--ledger-ink) 0%, rgba(32, 39, 31, 0.72) 22%, rgba(32, 39, 31, 0.08) 70%), linear-gradient(180deg, rgba(32, 39, 31, 0.18), rgba(32, 39, 31, 0.38));
+	}
+
+	.mustika-ledger::after {
+		display: none;
+	}
+
+	@media (max-width: 760px) {
+		.mustika-ledger .ledger-hero {
+			height: auto;
+			min-height: 720px;
+		}
+
+		.mustika-ledger .ledger-hero-top {
+			position: relative;
+			padding-top: 5.8rem;
+		}
+
+		.mustika-ledger .ledger-top-note {
+			display: none;
+		}
+
+		.mustika-ledger .ledger-hero-grid {
+			display: grid;
+			height: auto;
+			padding-top: 2rem;
+		}
+
+		.mustika-ledger .hero-visual {
+			position: relative;
+			inset: auto;
+			order: 0;
+			width: 100%;
+			aspect-ratio: 0.9;
+		}
+
+		.mustika-ledger .hero-visual-meta,
+		.mustika-ledger .hero-visual-rule,
+		.mustika-ledger .hero-visual-detail {
+			width: calc(100% - 2.5rem);
+		}
+
+		.mustika-ledger .hero-visual-meta {
+			top: 1.2rem;
+		}
+
+		.mustika-ledger .hero-visual-rule {
+			top: 3.8rem;
+		}
+
+		.mustika-ledger .hero-visual-detail {
+			bottom: 1.25rem;
+		}
+
+		.mustika-ledger .ledger-copy {
+			position: relative;
+			bottom: auto;
+			left: auto;
+			order: 1;
+			width: 100%;
+			margin-top: -9rem;
+			padding: 0 1.25rem 2rem;
+		}
+
+		.mustika-ledger .ledger-title {
+			max-width: 11ch;
+			font-size: clamp(3rem, 14vw, 5rem);
+		}
+
+		.mustika-ledger .ledger-intro-content {
+			display: grid;
+			grid-template-columns: 1fr;
+		}
+
+		.mustika-ledger .ledger-intro-content > h2,
+		.mustika-ledger .ledger-intro-media,
+		.mustika-ledger .ledger-intro-detail {
+			grid-column: 1;
+			grid-row: auto;
+		}
+
+		.mustika-ledger .ledger-intro-media {
+			width: min(72vw, 24rem);
+			margin-top: 2.8rem;
+			margin-left: auto;
+		}
+
+		.mustika-ledger .ledger-intro-detail {
+			grid-template-columns: 1fr;
+			margin-top: 2.75rem;
+		}
+
+		.mustika-ledger .service-row {
+			grid-template-columns: 2.3rem minmax(0, 1fr) 2rem;
+			min-height: 0;
+		}
+
+		.mustika-ledger .service-row-copy {
+			grid-template-columns: 76px minmax(0, 1fr);
+		}
+
+		.mustika-ledger .service-row-copy h3 {
+			font-size: clamp(1.65rem, 7vw, 2.7rem);
+		}
+
+		.mustika-ledger .book-visual {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+		.mustika-ledger .book-layout {
+			grid-template-columns: 1fr;
+			min-height: 34rem;
+			padding-block: 6rem;
 		}
 	}
 </style>
