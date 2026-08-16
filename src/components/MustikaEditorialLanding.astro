@@ -535,12 +535,15 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.ledger-hero {
 		position: relative;
-		height: max(620px, calc(100svh - 86px));
+		/* ScrollTrigger pins from the viewport top, behind the fixed header.
+		 * The scene therefore has to fill the full viewport; subtracting the
+		 * header height leaves the next section visible under the transition. */
+		height: max(620px, 100svh);
 		min-height: 620px;
 		/* Keep the next section aligned with the end of the pinned scene.
 		 * The min-height is important on short viewports: the old fixed
 		 * compensation left a full blank band between the hero and intro. */
-		margin-bottom: max(0px, calc(120svh - max(620px, calc(100svh - 86px))));
+		margin-bottom: max(0px, calc(120svh - max(620px, 100svh)));
 		background: var(--ledger-bone);
 		isolation: isolate;
 	}
