@@ -20,4 +20,11 @@
 	"triggers": {
 		"crons": ["* * * * *"],
 	},
+	// Workers Logs: persist invocation + console logs to the Cloudflare dashboard
+	"observability": {
+		"logs": {
+			"enabled": true,
+			"invocation_logs": true,
+		},
+	},
 }

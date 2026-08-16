@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
@@ -8,6 +9,20 @@ const cwd = process.cwd();
 const configPath = resolve(cwd, process.env.EMDASH_WRANGLER_CONFIG_PATH || "dist/server/wrangler.json");
 const wranglerBin = resolve(cwd, process.env.EMDASH_WRANGLER_BIN || "node_modules/.bin/wrangler");
 const sessionBinding = "SESSION";
+
+const readConfigWhenReady = async (path) => {
+	let lastError;
+	for (let attempt = 0; attempt < 80; attempt += 1) {
+		try {
+			return await readFile(path, "utf8");
+		} catch (error) {
+			lastError = error;
+			if (error?.code !== "ENOENT") throw error;
+			await delay(250);
+		}
+	}
+	throw lastError;
+};
 
 const normalize = (value) => String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -91,15 +106,27 @@ const setSessionBinding = (bindings, id) => {
 
 const main = async () => {
 	const [configSource, packageSource] = await Promise.all([
-		readFile(configPath, "utf8"),
+		readConfigWhenReady(configPath),
 		readFile(resolve(cwd, "package.json"), "utf8"),
 	]);
 	const config = JSON.parse(configSource);
 	const packageJson = JSON.parse(packageSource);
+
+	// The Astro adapter does not carry `observability` over from the root
+	// wrangler config, so mirror it here to keep Workers Logs enabled on deploy.
+	config.observability = {
+		logs: {
+			enabled: true,
+			invocation_logs: true,
+		},
+	};
+
 	const currentBinding = config.kv_namespaces?.find((binding) => binding.binding === sessionBinding);
 
 	if (currentBinding?.id) {
+		await writeFile(configPath, `${JSON.stringify(config, null, "\t")}\n`);
 		console.log(`Cloudflare SESSION KV binding already configured: ${currentBinding.id}`);
+		console.log("Workers observability logs enabled in the deploy config.");
 		return;
 	}
 

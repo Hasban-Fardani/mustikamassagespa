@@ -23,25 +23,21 @@ const fallbackBookingNumber = "0812 2273 9180";
 
 const fallbackServices = [
 	{
-		number: "01",
 		title: "Traditional Massage",
 		description: "Pijat tradisional untuk melepas pegal setelah hari yang panjang.",
 		tag: "Untuk badan yang pegal",
 	},
 	{
-		number: "02",
 		title: "Aromatherapy Massage",
 		description: "Sentuhan lembut dengan aroma yang membantu suasana terasa lebih tenang.",
 		tag: "Untuk suasana yang tenang",
 	},
 	{
-		number: "03",
 		title: "Full Body Massage",
 		description: "Pijat seluruh tubuh ketika rasanya semua bagian perlu diperhatikan.",
 		tag: "Untuk perhatian menyeluruh",
 	},
 	{
-		number: "04",
 		title: "Wellness Therapy",
 		description: "Sesi yang disesuaikan dengan kebutuhan tubuh.",
 		tag: "Untuk kebutuhan yang lebih personal",
@@ -50,17 +46,14 @@ const fallbackServices = [
 
 const fallbackExperienceSteps = [
 	{
-		number: "01",
 		title: "Ceritakan kebutuhan",
 		text: "Ceritakan bagian tubuh yang terasa paling membutuhkan perhatian.",
 	},
 	{
-		number: "02",
 		title: "Kami sesuaikan sesi",
 		text: "Terapis membantu menyesuaikan pilihan perawatan dengan kebutuhan.",
 	},
 	{
-		number: "03",
 		title: "Nikmati waktu setelahnya",
 		text: "Selesai sesi, beri tubuh waktu untuk beristirahat sebelum kembali beraktivitas.",
 	},
@@ -171,16 +164,15 @@ const serviceImagePaths = [
 ];
 const services = rawServices.length
 	? rawServices.map((service, index) => ({
-			number: String(index + 1).padStart(2, "0"),
 			title: readString(service.title, fallbackServices[index]?.title || "Massage & wellness"),
 			description: readString(service.description),
 			tag: readString(service.tag, fallbackServices[index]?.tag || "Untuk kebutuhan tubuh"),
 			imageSrc: serviceImagePaths[index % serviceImagePaths.length],
 		}))
 	: fallbackServices.map((service, index) => ({
-		...service,
-		imageSrc: serviceImagePaths[index],
-	}));
+			...service,
+			imageSrc: serviceImagePaths[index],
+		}));
 const previewService = services[0] ?? fallbackServices[0];
 
 const experienceHeadline = readString(experienceNode?.headline, "Datang dengan lelah.");
@@ -191,8 +183,7 @@ const experienceBody = readString(
 );
 const rawExperienceSteps = readMustikaRecords(experienceNode?.steps);
 const experienceSteps = rawExperienceSteps.length
-	? rawExperienceSteps.map((step, index) => ({
-			number: readString(step.number, String(index + 1).padStart(2, "0")),
+	? rawExperienceSteps.map((step) => ({
 			title: readString(step.title),
 			text: readString(step.text),
 		}))
@@ -230,8 +221,6 @@ const bookingBody = readString(
 );
 const bookingCtaLabel = readString(bookingNode?.ctaLabel, "Booking via WhatsApp");
 const bookingCtaUrl = readString(bookingNode?.ctaUrl, bookingHref);
-const heroLocation = readString(heroNode?.location, "Bandung, Jawa Barat");
-const heroAudience = readString(heroNode?.audienceLabel, "Untuk pelanggan umum dan keluarga");
 
 const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 ---
@@ -262,11 +251,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 							</em>
 						</span>
 					</h1>
-					<div class="ledger-index" data-reveal>
-						<span class="ledger-index-number" data-hero-index>01</span>
-						<span class="ledger-index-rule" aria-hidden="true"></span>
-						<span>Sesi yang bisa dipilih</span>
-					</div>
+					<p class="ledger-index" data-reveal>Sesi yang bisa dipilih</p>
 					<p class="ledger-lede" data-reveal>{heroSubheadline}</p>
 					<div class="ledger-actions" data-reveal>
 						<a class="ledger-button magnetic" href={bookingHref} target="_blank" rel="noopener noreferrer">
@@ -277,11 +262,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 							<span>{heroSecondaryLabel}</span>
 							<span aria-hidden="true">↓</span>
 						</a>
-					</div>
-					<div class="ledger-meta" data-reveal>
-						<span>{heroLocation}</span>
-						<span class="ledger-meta-separator" aria-hidden="true">/</span>
-						<span>{heroAudience}</span>
 					</div>
 				</div>
 
@@ -326,10 +306,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 								</picture>
 							))}
 						</div>
-						<div class="hero-visual-detail" data-hero-visual-detail>
-							<span class="hero-visual-detail-index" data-hero-detail-index>01</span>
-							<p data-hero-detail>{heroSlides[0].detail}</p>
-						</div>
+						<p class="hero-visual-detail" data-hero-visual-detail data-hero-detail>{heroSlides[0].detail}</p>
 					</div>
 				</figure>
 			</div>
@@ -338,10 +315,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	<section class="ledger-intro section" aria-labelledby="intro-title">
 		<div class="shell ledger-intro-grid">
-			<div class="section-marker" data-reveal>
-				<span>01</span>
-				<span>Ruang untuk jeda</span>
-			</div>
+			<p class="section-marker" data-reveal>Ruang untuk jeda</p>
 			<div class="ledger-intro-content">
 				<h2 id="intro-title" data-word-reveal>{introHeadline} <em>{introEmphasis}</em></h2>
 				<figure class="ledger-intro-media" data-reveal>
@@ -372,10 +346,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	<section class="ledger-rituals section" id="rituals" aria-labelledby="rituals-title">
 		<div class="shell">
-			<div class="section-bar section-bar-light" data-reveal>
-				<span>02</span>
-				<span>Ritual pilihan</span>
-			</div>
+			<p class="section-bar section-bar-light" data-reveal>Ritual pilihan</p>
 			<div class="rituals-heading">
 				<h2 id="rituals-title" data-word-reveal>{readString(servicesNode?.headline, "Temukan cara tubuh ingin")} <em>{readString(servicesNode?.emphasis, "dipulihkan.")}</em></h2>
 			</div>
@@ -387,22 +358,24 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 						data-service-item
 						data-service-image={service.imageSrc}
 						data-service-title={service.title}
-						data-service-number={service.number}
 						data-service-tag={service.tag}
 					>
-						<div class="service-row-top">
-							<span class="service-number">{service.number}</span>
+						<figure class="service-row-media">
+							<img
+								src={service.imageSrc}
+								alt={`Suasana ${service.title}`}
+								width="900"
+								height="1125"
+								sizes="(max-width: 760px) 116px, 220px"
+								loading="lazy"
+								decoding="async"
+							/>
+						</figure>
+						<div class="service-row-copy">
 							<span class="service-tag">{service.tag}</span>
-					</div>
-					<div class="service-row-copy">
-						<div class="service-row-media">
-							<img src={service.imageSrc} alt={`Suasana ${service.title}`} width="900" height="1125" sizes="(max-width: 760px) 92px, 180px" loading="lazy" decoding="async" />
-						</div>
-						<div class="service-row-text">
 							<h3 data-word-reveal>{service.title}</h3>
 							<p data-word-reveal>{service.description}</p>
 						</div>
-					</div>
 						<div class="service-row-end">
 							<span class="service-hover-line" aria-hidden="true"></span>
 							<span class="service-arrow" aria-hidden="true">↗</span>
@@ -412,10 +385,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			</div>
 			<div class="service-hover-preview" data-service-preview aria-hidden="true">
 				<div class="service-hover-preview-frame">
-					<div class="service-hover-preview-topline">
-						<span data-service-preview-number>{previewService.number}</span>
-						<span>Detail ritual</span>
-					</div>
+					<p class="service-hover-preview-topline">Detail ritual</p>
 					<div class="service-hover-preview-media">
 						<img
 							data-service-preview-image
@@ -442,10 +412,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	<section class="ledger-experience section" id="experience" aria-labelledby="experience-title">
 		<div class="shell">
-			<div class="section-bar" data-reveal>
-				<span>03</span>
-				<span>Cara datang ke Mustika</span>
-			</div>
+			<p class="section-bar" data-reveal>Cara datang ke Mustika</p>
 			<div class="experience-heading">
 				<h2 id="experience-title" data-word-reveal>{experienceHeadline}<br /><em>{experienceEmphasis}</em></h2>
 				<p data-word-reveal>{experienceBody}</p>
@@ -453,8 +420,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			<ol class="journey-track" data-journey-list>
 				{experienceSteps.map((step) => (
 					<li data-journey-step>
-						<span class="journey-step-number">{step.number}</span>
-						<span class="journey-step-line" aria-hidden="true"></span>
 						<h3 data-word-reveal>{step.title}</h3>
 						<p data-word-reveal>{step.text}</p>
 					</li>
@@ -465,10 +430,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	<section class="ledger-standards section" id="standards" aria-labelledby="standards-title">
 		<div class="shell standards-layout">
-			<div class="section-bar" data-reveal>
-				<span>04</span>
-				<span>Yang kami jaga</span>
-			</div>
+			<p class="section-bar" data-reveal>Yang kami jaga</p>
 			<div class="standards-grid">
 				<div class="standards-copy">
 					<h2 id="standards-title" data-word-reveal>{standardsHeadline} <em>{standardsEmphasis}</em></h2>
@@ -479,9 +441,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 					</div>
 				</div>
 				<ul class="standard-ledger" data-standard-list>
-					{standards.map((standard, index) => (
+					{standards.map((standard) => (
 						<li data-standard-item>
-							<span class="standard-index">0{index + 1}</span>
 							<span>{standard}</span>
 							<span class="standard-check" aria-hidden="true">↗</span>
 						</li>
@@ -494,10 +455,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	<section class="ledger-faq section" id="faq" aria-labelledby="faq-title">
 		<div class="shell faq-layout">
 			<div class="faq-heading">
-				<div class="section-bar" data-reveal>
-					<span>05</span>
-					<span>Sebelum datang</span>
-				</div>
+				<p class="section-bar" data-reveal>Sebelum datang</p>
 				<h2 id="faq-title" data-word-reveal>{faqHeadline}</h2>
 				<p class="faq-lede" data-word-reveal>{faqBody}</p>
 				<a class="ledger-inline-link" href={faqCtaUrl} target="_blank" rel="noopener noreferrer" data-reveal><span>{faqCtaLabel}</span><span aria-hidden="true">↗</span></a>
@@ -513,7 +471,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 								aria-controls={`faq-answer-${index + 1}`}
 								data-faq-trigger
 							>
-								<span class="faq-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
 								<span class="faq-question-label" data-word-reveal>{faq.question}</span>
 								<span class="faq-toggle" aria-hidden="true"><span></span><span></span></span>
 							</button>
@@ -603,25 +560,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.ledger-hero {
 		position: relative;
-		/* ScrollTrigger pins from the viewport top, behind the fixed header.
-		 * The scene therefore has to fill the full viewport; subtracting the
-		 * header height leaves the next section visible under the transition. */
 		height: max(620px, 100svh);
 		min-height: 620px;
-		/* Keep the next section aligned with the end of the pinned scene.
-		 * The min-height is important on short viewports: the old fixed
-		 * compensation left a full blank band between the hero and intro. */
-		margin-bottom: max(0px, calc(120svh - max(620px, 100svh)));
 		background: var(--ledger-bone);
 		isolation: isolate;
-	}
-
-	.ledger-hero.is-pinned {
-		z-index: 20;
-	}
-
-	.ledger-hero.is-released {
-		visibility: hidden;
 	}
 
 	.ledger-hero-main {
@@ -677,19 +619,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.ledger-index {
-		margin-top: 1rem;
-	}
-
-	.ledger-index-number,
-	.section-marker > span:first-child,
-	.section-bar > span:first-child {
+		margin-top: 1.4rem;
 		color: var(--ledger-oxide);
-	}
-
-	.ledger-index-rule {
-		width: 2.8rem;
-		height: 1px;
-		background: var(--ledger-gold);
 	}
 
 	.ledger-title {
@@ -734,8 +665,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.rituals-heading h2 em,
 	.experience-heading h2 em,
 	.standards-copy h2 em,
-	.ledger-book h2 em,
-	.hero-exit-inner h2 em {
+	.ledger-book h2 em {
 		font-style: italic;
 	}
 
@@ -779,8 +709,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.ledger-text-link,
-	.ledger-inline-link,
-	.hero-exit-link {
+	.ledger-inline-link {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.65rem;
@@ -796,29 +725,13 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.ledger-text-link:hover,
-	.ledger-inline-link:hover,
-	.hero-exit-link:hover {
+	.ledger-inline-link:hover {
 		gap: 0.95rem;
 	}
 
 	.ledger-text-link,
 	.ledger-inline-link {
 		color: var(--ledger-ink);
-	}
-
-	.ledger-meta {
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 0.6rem;
-		margin-top: 2.6rem;
-		color: var(--ledger-muted);
-		font-size: 0.7rem;
-		letter-spacing: 0.04em;
-	}
-
-	.ledger-meta-separator {
-		color: var(--ledger-gold);
 	}
 
 	.hero-visual {
@@ -843,8 +756,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		transform-origin: 50% 50%;
 	}
 
-	.hero-visual-meta,
-	.hero-visual-detail {
+	.hero-visual-meta {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -966,25 +878,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.hero-visual-detail {
-		align-items: flex-start;
-		justify-content: flex-start;
-		color: var(--ledger-ink);
-		text-transform: none;
-	}
-
-	.hero-visual-detail-index {
-		color: var(--ledger-oxide);
-		font-family: var(--font-heading);
-		font-size: 1.7rem;
-		font-weight: 400;
-		letter-spacing: -0.04em;
-		line-height: 0.9;
-	}
-
-	.hero-visual-detail p {
-		max-width: 28ch;
 		margin: 0;
-		font-size: 0.72rem;
+		color: var(--ledger-ink);
+		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.02em;
 		line-height: 1.45;
@@ -999,88 +895,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			width: 1.55rem;
 			height: 1.55rem;
 		}
-	}
-
-	.ledger-hero-exit {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		align-items: center;
-		background: var(--ledger-ink);
-		color: var(--ledger-paper);
-		z-index: 3;
-		pointer-events: none;
-	}
-
-	.hero-exit-visual {
-		position: absolute;
-		z-index: 1;
-		top: 12%;
-		right: 6%;
-		width: min(33vw, 32rem);
-		height: 76%;
-		overflow: hidden;
-		border: 1px solid rgba(196, 154, 78, 0.34);
-		background: var(--ledger-ink-soft);
-		box-shadow: 1rem 1rem 0 rgba(196, 154, 78, 0.08);
-		transform: rotate(0deg);
-		transform-origin: 50% 50%;
-		will-change: transform, clip-path, opacity;
-	}
-
-	.hero-exit-visual img,
-	.hero-exit-visual-wash {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-	}
-
-	.hero-exit-visual img {
-		display: block;
-		object-fit: cover;
-		object-position: center;
-		filter: saturate(0.78) contrast(1.02);
-		transform: scale(1.06);
-	}
-
-	.hero-exit-visual-wash {
-		z-index: 1;
-		background: linear-gradient(180deg, rgba(28, 32, 26, 0.1), rgba(28, 32, 26, 0.68)), linear-gradient(90deg, rgba(28, 32, 26, 0.55), rgba(28, 32, 26, 0.08));
-	}
-
-	:global(html.js) .ledger-hero-exit {
-		opacity: 0;
-	}
-
-	.hero-exit-inner {
-		position: relative;
-		z-index: 2;
-		display: grid;
-		align-content: center;
-		min-height: 100%;
-		padding-block: 7rem;
-	}
-
-	.ledger-overline-light {
-		color: var(--ledger-gold);
-	}
-
-	.hero-exit-inner h2 {
-		max-width: 11ch;
-		margin-top: 1.2rem;
-		font-size: clamp(3.8rem, 7.5vw, 8.5rem);
-		letter-spacing: -0.045em;
-		line-height: 0.86;
-	}
-
-	.hero-exit-inner h2 em {
-		color: var(--ledger-oxide);
-	}
-
-	.hero-exit-link {
-		margin-top: 2rem;
-		color: var(--ledger-paper);
 	}
 
 	.ledger-intro {
@@ -1207,8 +1021,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.service-row {
 		display: grid;
-		grid-template-columns: minmax(115px, 0.3fr) minmax(0, 1.4fr) minmax(100px, 0.3fr);
-		gap: 1.5rem;
+		grid-template-columns: clamp(120px, 16vw, 200px) minmax(0, 1fr) auto;
+		gap: clamp(1.25rem, 3vw, 2.5rem);
 		align-items: stretch;
 		min-height: 142px;
 		border-bottom: 1px solid var(--ledger-line-light);
@@ -1303,25 +1117,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		text-transform: uppercase;
 	}
 
-	.service-row-top {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		padding-block: 1.2rem 1rem;
-	}
-
-	.service-number,
-	.standard-index,
-	.faq-index,
-	.journey-step-number {
-		color: var(--ledger-gold);
-		font-size: 0.72rem;
-		font-weight: 800;
-		letter-spacing: 0.14em;
-	}
-
 	.service-tag {
-		max-width: 15ch;
+		max-width: 24ch;
 		color: rgba(240, 233, 221, 0.52);
 		font-size: 0.7rem;
 		font-weight: 700;
@@ -1332,17 +1129,17 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.service-row-copy {
 		display: grid;
-		grid-template-columns: minmax(88px, 0.28fr) minmax(0, 1fr);
-		gap: clamp(1rem, 3vw, 2.2rem);
-		align-items: center;
-		align-self: center;
-		padding-block: 1.15rem;
+		align-content: center;
+		gap: 0.55rem;
+		min-width: 0;
+		padding-block: 1.3rem;
 	}
 
 	.service-row-media {
 		position: relative;
-		aspect-ratio: 1.15;
-		min-height: 88px;
+		align-self: stretch;
+		min-height: 130px;
+		margin: 0;
 		overflow: hidden;
 		background: var(--ledger-ink-soft);
 		isolation: isolate;
@@ -1372,10 +1169,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		transform: scale(1.09);
 	}
 
-	.service-row-text {
-		min-width: 0;
-	}
-
 	.service-row-copy h3 {
 		font-size: clamp(1.9rem, 3.8vw, 4.2rem);
 		letter-spacing: -0.045em;
@@ -1384,7 +1177,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.service-row-copy p {
 		max-width: 42ch;
-		margin-top: 0.7rem;
+		margin: 0;
 		color: rgba(240, 233, 221, 0.61);
 		font-size: 0.82rem;
 		line-height: 1.5;
@@ -1431,18 +1224,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: var(--ledger-paper);
 	}
 
-	.ledger-experience .section-bar,
-	.ledger-experience .journey-step-line {
-		border-color: rgba(248, 244, 236, 0.28);
-	}
-
 	.ledger-experience .section-bar {
+		border-color: rgba(248, 244, 236, 0.28);
 		color: rgba(248, 244, 236, 0.75);
-	}
-
-	.ledger-experience .section-bar > span:first-child,
-	.journey-step-number {
-		color: var(--ledger-ink);
 	}
 
 	.experience-heading {
@@ -1484,43 +1268,26 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.journey-track li {
-		position: relative;
 		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: 1rem;
-		padding: 1.2rem clamp(1rem, 3vw, 2.2rem) 0 0;
+		gap: 0.45rem;
+		align-content: start;
+		padding-right: clamp(1rem, 3vw, 2.2rem);
 	}
 
 	.journey-track li:not(:last-child) {
 		margin-right: clamp(1rem, 4vw, 4rem);
 	}
 
-	.journey-step-line {
-		position: absolute;
-		top: 1.56rem;
-		right: 0;
-		left: 3.3rem;
-		height: 1px;
-		border-top: 1px solid rgba(248, 244, 236, 0.28);
-		transform-origin: left center;
-	}
-
-	.journey-track li:last-child .journey-step-line {
-		display: none;
-	}
-
 	.journey-track h3 {
-		grid-column: 1 / -1;
-		margin-top: 2.75rem;
+		margin-top: 0;
 		font-size: clamp(1.65rem, 2.7vw, 2.8rem);
 		letter-spacing: -0.04em;
 		line-height: 0.95;
 	}
 
 	.journey-track p {
-		grid-column: 1 / -1;
 		max-width: 25ch;
-		margin-top: 0.2rem;
+		margin-top: 0;
 		color: rgba(248, 244, 236, 0.68);
 		font-size: 0.83rem;
 	}
@@ -1593,7 +1360,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.standard-ledger li {
 		display: grid;
-		grid-template-columns: 3rem minmax(0, 1fr) auto;
+		grid-template-columns: minmax(0, 1fr) auto;
 		gap: 1rem;
 		align-items: center;
 		min-height: 92px;
@@ -1640,7 +1407,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.faq-row {
-		--faq-index-column: 3rem;
 		border-bottom: 1px solid var(--ledger-line);
 	}
 
@@ -1651,7 +1417,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.faq-question {
 		display: grid;
 		width: 100%;
-		grid-template-columns: var(--faq-index-column) minmax(0, 1fr) 2.25rem;
+		grid-template-columns: minmax(0, 1fr) 2.25rem;
 		gap: 1rem;
 		align-items: start;
 		padding: 1.55rem 0;
@@ -1719,7 +1485,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.faq-answer {
 		display: grid;
 		grid-template-rows: 1fr;
-		margin-left: calc(var(--faq-index-column) + 1rem);
 		padding-right: 3.25rem;
 		opacity: 1;
 		transition: grid-template-rows 520ms cubic-bezier(0.16, 1, 0.3, 1), opacity 260ms ease;
@@ -1747,14 +1512,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.mustika-page.faq-ready .faq-row[data-faq-open="true"] .faq-answer {
 		grid-template-rows: 1fr;
 		opacity: 1;
-	}
-
-	.faq-row .faq-index {
-		padding-top: 0.25rem;
-	}
-
-	.faq-row .faq-question {
-		line-height: 1.3;
 	}
 
 	.ledger-book {
@@ -1893,7 +1650,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		}
 
 		.service-row {
-			grid-template-columns: minmax(90px, 0.28fr) minmax(0, 1.3fr) minmax(70px, 0.3fr);
+			grid-template-columns: clamp(110px, 15vw, 170px) minmax(0, 1fr) auto;
 		}
 
 		.service-hover-preview {
@@ -1947,24 +1704,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			margin-top: 1.5rem;
 		}
 
-		.ledger-meta {
-			margin-top: 1.85rem;
-		}
-
 		.hero-visual {
 			width: min(100%, 520px);
 			aspect-ratio: 1.02;
 			justify-self: center;
 			order: -1;
-		}
-
-		.ledger-hero-exit {
-			display: none;
-		}
-
-		.hero-exit-inner {
-			min-height: 440px;
-			padding-block: 4.5rem;
 		}
 
 		.ledger-intro-detail,
@@ -1997,31 +1741,25 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		}
 
 		.service-row {
-			grid-template-columns: 2.5rem minmax(0, 1fr) 2.2rem;
-			gap: 0.8rem;
+			grid-template-columns: clamp(92px, 25vw, 120px) minmax(0, 1fr) auto;
+			gap: 1rem;
 			min-height: 0;
 		}
 
-		.service-row-top {
-			grid-column: 1;
+		.service-row-media {
 			grid-row: 1;
-			padding-block: 1.2rem;
-		}
-
-		.service-tag {
-			display: none;
+			min-height: 104px;
 		}
 
 		.service-row-copy {
 			grid-column: 2;
 			grid-row: 1;
-			grid-template-columns: minmax(68px, 0.34fr) minmax(0, 1fr);
-			gap: 0.75rem;
-			padding-block: 1rem;
+			gap: 0.45rem;
+			padding-block: 1.1rem;
 		}
 
-		.service-row-media {
-			min-height: 76px;
+		.service-tag {
+			display: none;
 		}
 
 		.service-row-copy h3 {
@@ -2038,39 +1776,18 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		}
 
 		.journey-track {
-			display: block;
+			grid-template-columns: 1fr;
 		}
 
 		.journey-track li,
 		.journey-track li:not(:last-child) {
-			grid-template-columns: 2.5rem 1fr;
 			margin: 0;
-			padding: 1.4rem 0 1.7rem;
+			padding: 1.5rem 0 1.7rem;
 			border-bottom: 1px solid rgba(248, 244, 236, 0.28);
 		}
 
-		.journey-step-line {
-			top: 2rem;
-			right: auto;
-			left: 3rem;
-			width: 2rem;
-		}
-
-		.journey-track h3,
-		.journey-track p {
-			grid-column: 2;
-		}
-
-		.journey-track h3 {
-			margin-top: 0;
-		}
-
-		.journey-track p {
-			margin-top: 0.2rem;
-		}
-
 		.standard-ledger li {
-			grid-template-columns: 2.35rem minmax(0, 1fr) auto;
+			grid-template-columns: minmax(0, 1fr) auto;
 			font-size: 1.55rem;
 		}
 
@@ -2078,16 +1795,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			gap: 3.5rem;
 		}
 
-		.faq-row {
-			--faq-index-column: 2.35rem;
-		}
-
 		.faq-question {
 			gap: 0.8rem;
 		}
 
 		.faq-answer {
-			margin-left: calc(var(--faq-index-column) + 0.8rem);
 			padding-right: 3rem;
 		}
 
@@ -2134,10 +1846,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			width: calc(100% - 1.35rem);
 		}
 
-		.hero-exit-inner h2 {
-			font-size: clamp(3.5rem, 16vw, 5.6rem);
-		}
-
 		.ledger-intro-content h2,
 		.rituals-heading h2,
 		.experience-heading h2,
@@ -2157,14 +1865,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.ledger-button,
 	.ledger-text-link,
 	.ledger-inline-link,
-	.hero-exit-link,
-	.ledger-meta,
 	.hero-visual-meta,
 	.hero-visual-detail,
-	.service-number,
-	.standard-index,
-	.faq-index,
-	.journey-step-number,
 	.detail-label,
 	.service-tag,
 	.book-phone {
@@ -2178,28 +1880,17 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		letter-spacing: 0.04em;
 	}
 
-	.ledger-hero-top .ledger-overline,
-	.section-bar > span:first-child {
+	.ledger-hero-top .ledger-overline {
 		text-transform: uppercase;
 		letter-spacing: 0.15em;
 	}
 
-	.faq-index {
-		color: var(--ledger-oxide-deep);
-	}
-
-	.ledger-intro .section-marker > span:first-child,
 	.ledger-intro .detail-label,
-	.ledger-intro .intro-audience li::before,
-	.ledger-faq .section-bar > span:first-child,
-	.ledger-standards .standard-index {
+	.ledger-intro .intro-audience li::before {
 		color: var(--ledger-oxide-deep);
 	}
 
-	.ledger-experience .section-bar,
-	.ledger-experience .section-bar > span:first-child,
 	.ledger-experience .experience-heading > p,
-	.ledger-experience .journey-step-number,
 	.ledger-experience .journey-track p {
 		color: var(--ledger-paper);
 	}
@@ -2209,16 +1900,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.ledger-hero {
-			margin-bottom: 0;
-		}
-
-		:global(html.js) .ledger-hero-exit {
-			opacity: 0;
-			visibility: hidden;
-			transform: none;
-		}
-
 		.faq-answer,
 		.faq-question-label,
 		.faq-toggle {
@@ -2227,10 +1908,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	@media (hover: none) {
-		.ledger-hero {
-			margin-bottom: 0;
-		}
-
 		.service-hover-preview {
 			display: none;
 		}
@@ -2392,15 +2069,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		z-index: 4;
 		width: var(--site-width);
 		margin-inline: auto;
-		color: var(--ledger-paper);
-	}
-
-	.mustika-ledger .hero-visual-detail-index {
-		color: var(--ledger-gold);
-	}
-
-	.mustika-ledger .hero-visual-detail p {
-		color: rgba(247, 242, 233, 0.82);
+		max-width: max-content;
+		color: rgba(247, 242, 233, 0.85);
 	}
 
 	.mustika-ledger .ledger-copy {
@@ -2430,10 +2100,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: rgba(247, 242, 233, 0.78);
 	}
 
-	.mustika-ledger .ledger-index-number {
-		color: var(--ledger-gold);
-	}
-
 	.mustika-ledger .ledger-lede {
 		max-width: 35ch;
 		margin-top: 1.2rem;
@@ -2458,15 +2124,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.mustika-ledger .ledger-text-link {
 		color: var(--ledger-paper);
-	}
-
-	.mustika-ledger .ledger-meta {
-		margin-top: 2rem;
-		color: rgba(247, 242, 233, 0.64);
-	}
-
-	.mustika-ledger .ledger-hero-exit {
-		display: none;
 	}
 
 	/* The first editorial section uses an actual image as part of the story. */
@@ -2526,8 +2183,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.mustika-ledger .service-row {
-		grid-template-columns: minmax(80px, 0.18fr) minmax(0, 1fr) 72px;
-		min-height: 154px;
+		grid-template-columns: clamp(132px, 17vw, 210px) minmax(0, 1fr) auto;
+		min-height: 150px;
 		background: transparent;
 	}
 
@@ -2535,17 +2192,13 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		background: transparent;
 	}
 
-	.mustika-ledger .service-row-top {
-		padding-block: 1.35rem 1.15rem;
-	}
-
 	.mustika-ledger .service-row-copy {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0;
+		align-self: center;
+		padding-block: 1.6rem;
 	}
 
 	.mustika-ledger .service-row-media {
-		display: none;
+		min-height: 150px;
 	}
 
 	.mustika-ledger .service-row-copy h3 {
@@ -2678,15 +2331,27 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			bottom: auto;
 			left: auto;
 			order: 1;
+			box-sizing: border-box;
 			width: 100%;
 			margin-left: 0;
-			margin-top: -9rem;
-			padding: 0 1.25rem 2rem;
+			margin-top: 1.5rem;
+			padding: 0 1.25rem 0.5rem;
+			color: var(--ledger-paper);
+		}
+
+		.mustika-ledger .ledger-index {
+			color: var(--ledger-gold);
 		}
 
 		.mustika-ledger .ledger-title {
 			max-width: 11ch;
 			font-size: clamp(3rem, 14vw, 5rem);
+		}
+
+		/* Single column below the hero: no narrow marker rail, no dead space. */
+		.mustika-ledger .ledger-intro-grid {
+			grid-template-columns: 1fr;
+			gap: 1.25rem;
 		}
 
 		.mustika-ledger .ledger-intro-content {
@@ -2702,9 +2367,13 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		}
 
 		.mustika-ledger .ledger-intro-media {
-			width: min(72vw, 24rem);
-			margin-top: 2.8rem;
-			margin-left: auto;
+			width: 100%;
+			margin-top: 1.75rem;
+			margin-left: 0;
+		}
+
+		.mustika-ledger .ledger-intro-media img {
+			aspect-ratio: 1.1;
 		}
 
 		.mustika-ledger .ledger-intro-detail {
@@ -2712,13 +2381,28 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			margin-top: 2.75rem;
 		}
 
+		.mustika-ledger .experience-heading {
+			grid-template-columns: 1fr;
+			margin-block: clamp(2.5rem, 6vw, 4rem);
+		}
+
+		.mustika-ledger .experience-heading > p {
+			justify-self: start;
+			margin-top: 1.1rem;
+		}
+
 		.mustika-ledger .service-row {
-			grid-template-columns: 2.3rem minmax(0, 1fr) 2rem;
+			grid-template-columns: clamp(92px, 25vw, 120px) minmax(0, 1fr) auto;
+			gap: 1rem;
 			min-height: 0;
 		}
 
+		.mustika-ledger .service-row-media {
+			min-height: 108px;
+		}
+
 		.mustika-ledger .service-row-copy {
-			grid-template-columns: minmax(0, 1fr);
+			padding-block: 1rem;
 		}
 
 		.mustika-ledger .service-row-copy h3 {
@@ -2752,12 +2436,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		transform: translate(0.2rem, -0.2rem);
 	}
 
-	.mustika-ledger .section-bar > span:last-child {
+	.mustika-ledger .section-bar {
 		color: inherit;
-		font-size: 0.75rem;
 		font-weight: 600;
 		letter-spacing: 0.03em;
-		text-transform: none;
 	}
 
 	.mustika-ledger .faq-toggle {
@@ -2792,5 +2474,126 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.mustika-ledger .service-hover-preview-caption span {
 		color: rgba(247, 242, 233, 0.64);
+	}
+
+	/* The mobile composition is a single, bounded column. Keep the full-bleed
+	 * photograph intentional without letting a nested 100vw grid create a
+	 * horizontal scroll trap. */
+	@media (max-width: 760px) {
+		.mustika-ledger {
+			overflow-x: clip;
+		}
+
+		.mustika-ledger .ledger-hero-grid {
+			width: 100vw;
+			max-width: 100vw;
+			margin-left: calc(50% - 50vw);
+			margin-right: 0;
+			padding-inline: 0;
+		}
+
+		.mustika-ledger .ledger-hero-top {
+			box-sizing: border-box;
+			width: 100%;
+			padding-inline: 1.25rem;
+		}
+
+		.mustika-ledger .hero-visual {
+			min-width: 0;
+			width: 100%;
+			aspect-ratio: 0.86;
+		}
+
+		.mustika-ledger .hero-visual-nav button {
+			width: 2.75rem;
+			height: 2.75rem;
+		}
+
+		.mustika-ledger .ledger-copy {
+			box-sizing: border-box;
+			width: 100%;
+			margin-top: 1.5rem;
+			padding-inline: 1.25rem;
+		}
+
+		.mustika-ledger .ledger-title {
+			max-width: 10.5ch;
+			font-size: clamp(2.8rem, 13vw, 4.8rem);
+		}
+
+		.mustika-ledger .ledger-lede {
+			max-width: 31ch;
+			font-size: 0.92rem;
+		}
+
+		.mustika-ledger .ledger-actions {
+			gap: 1.1rem;
+		}
+
+		.mustika-ledger .ledger-button {
+			min-height: 3.25rem;
+		}
+	}
+
+	@media (max-width: 430px) {
+		.mustika-ledger .ledger-hero-top {
+			padding-top: 5.35rem;
+		}
+
+		.mustika-ledger .hero-visual-meta,
+		.mustika-ledger .hero-visual-rule,
+		.mustika-ledger .hero-visual-detail {
+			width: calc(100% - 2rem);
+		}
+
+		.mustika-ledger .hero-visual-meta {
+			top: 1rem;
+			font-size: 0.68rem;
+		}
+
+		.mustika-ledger .hero-visual-rule {
+			top: 3.55rem;
+		}
+
+		.mustika-ledger .hero-visual-detail {
+			bottom: 1rem;
+		}
+
+		.mustika-ledger .ledger-copy {
+			margin-top: 1.25rem;
+		}
+
+		.mustika-ledger .ledger-title {
+			font-size: clamp(2.65rem, 12.8vw, 4rem);
+		}
+
+		.mustika-ledger .service-row {
+			grid-template-columns: clamp(78px, 22vw, 100px) minmax(0, 1fr) auto;
+			gap: 0.85rem;
+		}
+
+		.mustika-ledger .service-row-copy h3 {
+			font-size: clamp(1.45rem, 7.8vw, 2.2rem);
+		}
+	}
+
+	/* The preview becomes a body-level portal so it can escape clipped sections.
+	 * Keep its portal styles outside the page descendant selector as well. */
+	body > .service-hover-preview {
+		--ledger-gold: #c49a4e;
+		--ledger-ink: #20271f;
+		--ledger-paper: #f7f2e9;
+		width: min(29vw, 430px);
+		min-width: 290px;
+		border-left: 1px solid var(--ledger-gold);
+		padding-left: 0.8rem;
+	}
+
+	body > .service-hover-preview .service-hover-preview-frame {
+		padding: 0;
+		border: 0;
+		background: var(--ledger-ink);
+		box-shadow: 0 18px 45px rgba(0, 0, 0, 0.2);
+		color: var(--ledger-paper);
 	}
 </style>
