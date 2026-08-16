@@ -104,8 +104,8 @@
 							"emphasis": "Kadang ia minta jeda.",
 							"body": "Mustika memberi ruang untuk melepas pegal dan menenangkan pikiran. Pilih sesi yang sesuai, lalu biarkan tubuh beristirahat.",
 							"audience": "Badan terasa pegal setelah aktivitas\nIngin istirahat tanpa terburu-buru\nMencari sesi untuk keluarga",
-							"linkLabel": "Kenali pengalaman Mustika",
-							"linkUrl": "#experience"
+							"linkLabel": "Lihat pilihan perawatan",
+							"linkUrl": "#rituals"
 						},
 						{
 							"_type": "marketing.features",
@@ -145,7 +145,7 @@
 							"_key": "home-experience",
 							"headline": "Datang dengan lelah.",
 							"emphasis": "Pulang lebih ringan.",
-							"body": "Ceritakan bagian tubuh yang terasa pegal. Terapis menyesuaikan sesi dan fokus perawatan dengan kebutuhan.",
+							"body": "Ceritakan bagian tubuh yang terasa pegal. Terapis menyesuaikan sesi dengan kebutuhan Anda.",
 							"steps": [
 								{
 									"number": "01",

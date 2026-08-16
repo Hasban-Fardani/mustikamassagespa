@@ -128,8 +128,8 @@ const introAudience = readStringList(introNode?.audience, [
 	"Ingin istirahat tanpa terburu-buru",
 	"Mencari sesi untuk keluarga",
 ]);
-const introLinkLabel = readString(introNode?.linkLabel, "Kenali pengalaman Mustika");
-const introLinkUrl = readString(introNode?.linkUrl, "#experience");
+const introLinkLabel = readString(introNode?.linkLabel, "Lihat pilihan perawatan");
+const introLinkUrl = readString(introNode?.linkUrl, "#rituals");
 
 const rawServices = readMustikaRecords(servicesNode?.features);
 const serviceImagePaths = [
@@ -155,7 +155,7 @@ const services = rawServices.length
 const experienceEmphasis = readString(experienceNode?.emphasis, "Pulang lebih ringan.");
 const experienceBody = readString(
 	experienceNode?.body,
-	"Ceritakan bagian tubuh yang terasa pegal. Terapis menyesuaikan sesi dan fokus perawatan dengan kebutuhan.",
+	"Ceritakan bagian tubuh yang terasa pegal. Terapis menyesuaikan sesi dengan kebutuhan Anda.",
 );
 const rawExperienceSteps = readMustikaRecords(experienceNode?.steps);
 const experienceSteps = rawExperienceSteps.length
@@ -344,11 +344,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		<div class="shell">
 			<div class="section-bar section-bar-light" data-reveal>
 				<span>02 / Ritual</span>
-				<span>Empat cara untuk mulai merasa lebih baik</span>
 			</div>
 			<div class="rituals-heading">
 				<h2 id="rituals-title" data-word-reveal>{readString(servicesNode?.headline, "Temukan cara tubuh ingin")} <em>{readString(servicesNode?.emphasis, "dipulihkan.")}</em></h2>
-				<p data-word-reveal>{readString(servicesNode?.subheadline, "Pilih yang terasa paling dekat dengan kebutuhan tubuh hari ini.")}</p>
 			</div>
 
 			<div class="service-ledger" data-service-list>
@@ -384,8 +382,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	<section class="ledger-experience section" id="experience" aria-labelledby="experience-title">
 		<div class="shell">
 			<div class="section-bar" data-reveal>
-					<span>03 / Pengalaman</span>
-					<span>Pendekatan yang mengikuti kebutuhan tubuh</span>
+				<span>03 / Pengalaman</span>
 			</div>
 			<div class="experience-heading">
 				<h2 id="experience-title" data-word-reveal>{experienceHeadline}<br /><em>{experienceEmphasis}</em></h2>
@@ -408,7 +405,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		<div class="shell standards-layout">
 			<div class="section-bar" data-reveal>
 				<span>04 / Mengapa Mustika</span>
-				<span>Detail yang kami jaga</span>
 			</div>
 			<div class="standards-grid">
 				<div class="standards-copy">
@@ -437,7 +433,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			<div class="faq-heading">
 				<div class="section-bar" data-reveal>
 					<span>05 / FAQ</span>
-					<span>Jawaban singkat sebelum datang</span>
 				</div>
 				<h2 id="faq-title" data-word-reveal>{faqHeadline}</h2>
 				<p data-word-reveal>Jika belum menemukan jawabannya, admin Mustika siap membantu lewat WhatsApp.</p>
@@ -1065,7 +1060,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		display: grid;
 		grid-template-columns: minmax(0, 0.88fr) minmax(180px, 0.55fr);
 		gap: clamp(2rem, 8vw, 9rem);
-		align-items: end;
+		align-items: start;
 		margin-top: clamp(3rem, 7vw, 6.5rem);
 		border-top: 1px solid var(--ledger-line);
 		padding-top: 1.2rem;
@@ -1080,6 +1075,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.intro-side-column {
 		display: grid;
 		gap: 1.15rem;
+		border-left: 1px solid var(--ledger-line);
+		padding-left: clamp(1.15rem, 2.4vw, 2.4rem);
 	}
 
 	.detail-label {
@@ -1116,7 +1113,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.section-bar {
-		justify-content: space-between;
+		justify-content: flex-start;
 		border-bottom: 1px solid var(--ledger-line);
 		padding-bottom: 0.75rem;
 	}
@@ -1131,10 +1128,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.rituals-heading {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(200px, 0.4fr);
-		gap: 2rem;
-		align-items: end;
+		display: block;
 		margin-block: clamp(3.25rem, 6vw, 6rem) clamp(3rem, 5vw, 4rem);
 	}
 
@@ -1147,13 +1141,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.rituals-heading h2 em {
 		color: var(--ledger-gold);
-	}
-
-	.rituals-heading > p {
-		max-width: 28ch;
-		justify-self: end;
-		color: rgba(240, 233, 221, 0.68);
-		font-size: 0.9rem;
 	}
 
 	.service-ledger {
@@ -1320,7 +1307,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(220px, 0.45fr);
 		gap: 2rem;
-		align-items: end;
+		align-items: start;
 		margin-block: clamp(3rem, 6vw, 6rem);
 	}
 
@@ -1338,6 +1325,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.experience-heading > p {
 		max-width: 31ch;
 		justify-self: end;
+		margin-top: clamp(0.8rem, 1.6vw, 1.5rem);
+		border-left: 1px solid rgba(248, 244, 236, 0.28);
+		padding-left: clamp(1rem, 2vw, 1.7rem);
 		color: rgba(248, 244, 236, 0.72);
 		font-size: 0.91rem;
 	}
@@ -1787,7 +1777,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			font-size: clamp(3.25rem, 14vw, 5.7rem);
 		}
 
-		.rituals-heading > p,
 		.experience-heading > p {
 			justify-self: start;
 		}
