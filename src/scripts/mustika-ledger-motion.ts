@@ -456,6 +456,14 @@ function animateHero(
 	window.addEventListener("pointermove", onPointerMove, { passive: true });
 	window.addEventListener("load", () => ScrollTrigger.refresh(), { once: true });
 	enableHeroSlider(gsap);
+
+	// gsap.matchMedia() kills these tweens when the breakpoint flips, but not
+	// listeners bound straight to window -- without this cleanup a resize or
+	// phone rotation leaves orphaned pointermove handlers driving quickTo
+	// tweens whose targets were already reverted.
+	return () => {
+		window.removeEventListener("pointermove", onPointerMove);
+	};
 }
 
 function animateWordReveals(gsap: GsapModule["default"]) {
@@ -550,6 +558,32 @@ function animateMobileExperience(
 
 	animateSections(gsap, ScrollTrigger);
 	enableTapFeedback(gsap);
+
+	// Phones previously reached the service ledger with no entrance at all --
+	// the wipe only ran on the desktop path, which read as "animations gone"
+	// across the largest section of the page. Each row now rises into place
+	// with its own trigger, so the reveal follows the stacked cards however
+	// tall the list gets. Transform-only, like every other mobile reveal.
+	const serviceRows = document.querySelectorAll<HTMLElement>("[data-service-item]");
+	serviceRows.forEach((row) => {
+		revealServiceRowOnScroll(gsap, ScrollTrigger, row);
+	});
+}
+
+function revealServiceRowOnScroll(
+	gsap: GsapModule["default"],
+	ScrollTrigger: ScrollTriggerModule["ScrollTrigger"],
+	row: HTMLElement,
+) {
+	gsap.fromTo(
+		row,
+		{ y: 34 },
+		{
+			y: 0,
+			ease: "none",
+			scrollTrigger: { trigger: row, start: "top 90%", end: "top 58%", scrub: 0.8, invalidateOnRefresh: true },
+		},
+	);
 }
 
 function animateServiceLedger(gsap: GsapModule["default"]) {
@@ -933,7 +967,10 @@ export async function initMustikaLedgerMotion() {
 	const supportsRichMotion = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 	const restoreInitialHash = prepareInitialHashPosition();
 
-	const fallbackTimer = window.setTimeout(showStaticContent, 1400);
+	// Slow mobile networks can outrun this timer while the gsap chunk is still
+	// in flight; firing early would flash the whole page visible and then
+	// re-hide it when the real timelines start. 2s still bounds the no-JS case.
+	const fallbackTimer = window.setTimeout(showStaticContent, 2000);
 
 	try {
 		const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -947,11 +984,14 @@ export async function initMustikaLedgerMotion() {
 		const media = gsap.matchMedia();
 		media.add("(max-width: 760px)", () => animateMobileExperience(gsap, ScrollTrigger));
 		media.add("(min-width: 761px)", () => {
-			animateHero(gsap, ScrollTrigger);
+			const cleanupHero = animateHero(gsap, ScrollTrigger);
 			animateIntroPin(gsap, ScrollTrigger);
 			animateServiceLedger(gsap);
 			animateSections(gsap, ScrollTrigger);
 			if (supportsRichMotion) enableMagneticButtons(gsap);
+			// Propagate the hero's listener cleanup so a breakpoint flip
+			// (resize / rotation) reverts tweens AND unbinds window listeners.
+			return cleanupHero;
 		});
 		enableHashNavigation(gsap, ScrollTrigger);
 

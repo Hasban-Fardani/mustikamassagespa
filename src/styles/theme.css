@@ -551,7 +551,7 @@ h4 {
 	}
 }
 
-@media (max-width: 720px) {
+@media (max-width: 760px) {
 	.nav-shell {
 		min-height: 72px;
 	}
@@ -619,6 +619,14 @@ h4 {
 
 	.menu-toggle {
 		display: block;
+	}
+
+	/* Below this width the nav panel turns position: fixed and leaves the flex
+	 * flow, so its margin-left: auto no longer pushes the actions group right.
+	 * Claim the free space here or the booking button + hamburger strand
+	 * themselves right next to the logo. */
+	.site-nav-actions {
+		margin-left: auto;
 	}
 
 	.footer-nav-group {
