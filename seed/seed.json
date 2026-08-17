@@ -87,9 +87,9 @@
 						{
 							"_type": "marketing.hero",
 							"_key": "home-hero",
-							"headline": "Pijat profesional untuk",
-							"emphasis": "tubuh yang butuh jeda.",
-							"subheadline": "Sampaikan bagian tubuh yang terasa pegal. Kami bantu pilihkan sesi yang sesuai di Bandung.",
+							"headline": "Bahu yang kaku sejak pagi,",
+							"emphasis": "mata yang lelah sejak siang.",
+							"subheadline": "Letakkan keduanya di meja kami. Minyak hangat, tekanan yang menemukan simpulnya, dan ruang yang tidak meminta Anda bicara.",
 							"primaryCtaLabel": "Booking via WhatsApp",
 							"primaryCtaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
 							"secondaryCtaLabel": "Lihat ritual kami",
@@ -100,66 +100,66 @@
 						{
 							"_type": "mustika.intro",
 							"_key": "home-intro",
-							"headline": "Tubuh tidak selalu minta lebih.",
-							"emphasis": "Kadang ia minta jeda.",
-							"body": "Mustika memberi ruang untuk melepas pegal dan menenangkan pikiran. Pilih sesi yang sesuai, lalu biarkan tubuh beristirahat.",
-							"audience": "Badan terasa pegal setelah aktivitas\nIngin istirahat tanpa terburu-buru\nMencari sesi untuk keluarga",
-							"linkLabel": "Lihat pilihan perawatan",
+							"headline": "Pintu menutup,",
+							"emphasis": "kota mengecil.",
+							"body": "Aromaterapi menyapa lebih dulu sebelum Anda duduk. Handuk hangat menunggu di meja, cahaya amber diredam pelan — sampai bahu Anda turun dengan sendirinya, tanpa diminta.",
+							"audience": "Punggung kaku setelah seharian di kursi\nMata perih menatap layar sejak pagi\nButuh diam dulu sebelum pulang ke rutinitas",
+							"linkLabel": "Lihat pilihan ritual",
 							"linkUrl": "#rituals"
 						},
 						{
 							"_type": "marketing.features",
 							"_key": "home-rituals",
-							"headline": "Pilih sesi yang sesuai",
-							"emphasis": "hari ini.",
+							"headline": "Bayangkan tangan yang tahu",
+"emphasis": "ke mana harus menekan.",
 							"subheadline": "Beri tahu bagian tubuh yang paling membutuhkan perhatian.",
 							"features": [
 								{
 									"icon": "heart",
 									"title": "Traditional Massage",
-									"tag": "Untuk badan yang pegal",
-									"description": "Pijat tradisional untuk melepas pegal setelah hari yang panjang."
+									"tag": "Untuk pegal yang menumpuk",
+									"description": "Tekanan mantap dari punggung hingga telapak kaki, mengurai simpul yang mengeras sepanjang minggu."
 								},
 								{
 									"icon": "star",
 									"title": "Aromatherapy Massage",
-									"tag": "Untuk suasana yang tenang",
-									"description": "Sentuhan lembut dengan aroma yang membantu suasana terasa lebih tenang."
+									"tag": "Untuk pikiran yang berisik",
+									"description": "Minyak hangat dan gerakan lambat; aromanya tinggal lebih lama di ingatan daripada di kulit."
 								},
 								{
 									"icon": "users",
 									"title": "Full Body Massage",
-									"tag": "Untuk perhatian menyeluruh",
-									"description": "Pijat seluruh tubuh ketika rasanya semua bagian perlu diperhatikan."
+									"tag": "Untuk lelah yang menyeluruh",
+									"description": "Dari ujung kepala sampai telapak kaki — tidak ada bagian yang dilewatkan begitu saja."
 								},
 								{
 									"icon": "clock",
 									"title": "Wellness Therapy",
-									"tag": "Untuk kebutuhan yang lebih personal",
-									"description": "Sesi yang disesuaikan dengan kebutuhan tubuh."
+									"tag": "Mengikuti kondisi hari ini",
+									"description": "Tekanan, minyak, dan durasi disesuaikan dengan apa yang tubuh Anda bawa hari ini."
 								}
 							]
 						},
 						{
 							"_type": "mustika.experience",
 							"_key": "home-experience",
-							"headline": "Datang dengan lelah.",
-							"emphasis": "Pulang lebih ringan.",
-							"body": "Ceritakan bagian tubuh yang terasa pegal. Terapis menyesuaikan sesi dengan kebutuhan Anda.",
+							"headline": "Anda datang membawa beban,",
+							"emphasis": "pulang tanpa merasakannya.",
+							"body": "Tidak ada formulir panjang. Ceritakan, berbaring, lalu beri tubuh Anda waktu.",
 							"steps": [
 								{
 									"number": "01",
-									"title": "Ceritakan kebutuhan",
+									"title": "Ceritakan di mana pegalnya",
 									"text": "Ceritakan bagian tubuh yang terasa paling membutuhkan perhatian."
 								},
 								{
 									"number": "02",
-									"title": "Kami sesuaikan sesi",
+									"title": "Kami sesuaikan sesinya",
 									"text": "Terapis membantu menyesuaikan pilihan perawatan dengan kebutuhan."
 								},
 								{
 									"number": "03",
-									"title": "Nikmati waktu setelahnya",
+									"title": "Beri tubuh waktu setelahnya",
 									"text": "Selesai sesi, beri tubuh waktu untuk beristirahat sebelum kembali beraktivitas."
 								}
 							]
@@ -167,22 +167,22 @@
 						{
 							"_type": "mustika.standards",
 							"_key": "home-standards",
-							"headline": "Hal kecil yang kami perhatikan",
-							"emphasis": "sejak awal.",
-							"body": "Dari sapaan pertama hingga waktu untuk pulang, kami ingin sesi terasa tenang dan personal.",
-							"quote": "Kalau ada bagian yang terasa kurang nyaman, beri tahu kami. Sesi bisa disesuaikan.",
+							"headline": "Detail kecil yang",
+"emphasis": "Anda rasakan.",
+							"body": "Sprei berganti setiap sesi. Minyak yang tidak lengket. Ruang yang dijaga tetap sunyi — kalau Anda tertidur, itu pujian bagi kami.",
+							"quote": "Kalau tekanannya kurang pas, tinggal bilang. Sesi ini milik Anda, bukan daftar menu.",
 							"items": [
-								{ "text": "Terapis profesional" },
-								{ "text": "Pengalaman yang personal" },
-								{ "text": "Ruang bersih dan nyaman" },
-								{ "text": "Untuk tubuh dan pikiran" }
+								{ "text": "Terapis berpengalaman dan terlatih" },
+								{ "text": "Sprei dan handuk baru setiap sesi" },
+								{ "text": "Minyak hangat, bukan dingin dari kulkas" },
+								{ "text": "Ruang sunyi, jauh dari deru jalan" }
 							]
 						},
 						{
 							"_type": "marketing.faq",
 							"_key": "home-faq",
-							"headline": "Sebelum datang, simak jawabannya.",
-							"body": "Belum menemukan yang Anda cari? Tanya admin Mustika melalui WhatsApp.",
+							"headline": "Yang biasanya ditanyakan.",
+							"body": "Belum menemukan jawabannya? Admin Mustika menjawab lewat WhatsApp.",
 							"ctaLabel": "Tanya admin Mustika",
 							"ctaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
 							"items": [
@@ -207,9 +207,9 @@
 						{
 							"_type": "mustika.booking",
 							"_key": "home-booking",
-							"headline": "Satu pesan kecil.",
-							"emphasis": "Waktu untuk beristirahat.",
-							"body": "Chat Mustika untuk memilih sesi dan waktu yang sesuai di Bandung.",
+							"headline": "Kirim satu pesan.",
+"emphasis": "Sisanya biarkan pada kami.",
+							"body": "Pilih sesi dan waktunya lewat WhatsApp. Setelah itu Anda berbaring, ruang menjadi sunyi, dan hari yang berat perlahan meninggalkan tubuh.",
 							"ctaLabel": "Mulai booking",
 							"ctaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
 							"phone": "0812 2273 9180"
@@ -244,25 +244,25 @@
 									"icon": "heart",
 									"title": "Traditional Massage",
 									"tag": "",
-									"description": "Pijat tradisional untuk melepas pegal setelah hari yang panjang."
+									"description": "Tekanan mantap dari punggung hingga telapak kaki, mengurai simpul yang mengeras sepanjang minggu."
 								},
 								{
 									"icon": "star",
 									"title": "Aromatherapy Massage",
 									"tag": "",
-									"description": "Sentuhan lembut dengan aroma yang membantu suasana terasa lebih tenang."
+									"description": "Minyak hangat dan gerakan lambat; aromanya tinggal lebih lama di ingatan daripada di kulit."
 								},
 								{
 									"icon": "users",
 									"title": "Full Body Massage",
 									"tag": "",
-									"description": "Pijat seluruh tubuh ketika rasanya semua bagian perlu diperhatikan."
+									"description": "Dari ujung kepala sampai telapak kaki — tidak ada bagian yang dilewatkan begitu saja."
 								},
 								{
 									"icon": "clock",
 									"title": "Wellness Therapy",
 									"tag": "",
-									"description": "Sesi yang disesuaikan dengan kebutuhan tubuh."
+									"description": "Tekanan, minyak, dan durasi disesuaikan dengan apa yang tubuh Anda bawa hari ini."
 								}
 							]
 						}

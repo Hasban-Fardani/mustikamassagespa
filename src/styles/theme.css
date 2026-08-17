@@ -52,6 +52,10 @@
 html {
 	scroll-behavior: smooth;
 	scroll-padding-top: 96px;
+	/* The hero breaks out to 100vw, which is scrollbar-width wider than the
+	 * layout. Clip at the root so no horizontal scrollbar ever appears,
+	 * without turning any section into a clipping container. */
+	overflow-x: clip;
 	background: var(--color-bg);
 }
 
@@ -549,7 +553,7 @@ h4 {
 
 @media (max-width: 720px) {
 	.nav-shell {
-		min-height: 74px;
+		min-height: 72px;
 	}
 
 	.site-brand-mark {
@@ -558,38 +562,46 @@ h4 {
 	}
 
 	.site-brand-copy strong {
-		font-size: 1.1rem;
+		font-size: 1.05rem;
 	}
 
-	.site-nav {
+	.site-brand-copy span {
+		font-size: 0.7rem;
+	}
+
+	/* The panel hangs from the exact header height, edge to edge, so the open
+	 * menu reads as one surface instead of a floating box with a gap. These
+	 * rules out-specify the boutique overrides at the end of the file. */
+	.site-header .site-nav {
 		position: fixed;
-		top: 74px;
-		right: 5%;
-		left: 5%;
+		top: 73px;
+		right: 0;
+		left: 0;
 		display: grid;
 		gap: 0;
-		padding: 0.8rem 1.1rem 1.1rem;
+		padding: 0.3rem 1.25rem 1rem;
 		background: var(--paper);
-		border: 1px solid var(--line);
-		box-shadow: var(--shadow-soft);
+		border-bottom: 1px solid var(--line);
+		box-shadow: 0 16px 28px rgba(46, 35, 22, 0.1);
 		opacity: 0;
 		pointer-events: none;
-		transform: translateY(-10px);
+		transform: translateY(-8px);
 		transition:
 			opacity var(--transition-base),
 			transform var(--transition-base);
 	}
 
-	.site-nav.is-open {
+	.site-header .site-nav.is-open {
 		opacity: 1;
 		pointer-events: auto;
 		transform: translateY(0);
 	}
 
-	.site-nav a {
-		padding: 1rem 0.4rem;
+	.site-header .site-nav a {
+		padding: 0.95rem 0.15rem;
 		border-bottom: 1px solid var(--line);
-		font-size: 0.72rem;
+		font-size: 0.82rem;
+		letter-spacing: 0.04em;
 	}
 
 	.site-nav a:last-child {
@@ -603,7 +615,6 @@ h4 {
 	.nav-booking {
 		min-height: 40px;
 		padding-inline: 0.75rem;
-		font-size: 0.75rem;
 	}
 
 	.menu-toggle {
@@ -621,7 +632,9 @@ h4 {
 	}
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+	/* The booking label drops earlier than the old 480px breakpoint: between
+	 * 481-640px the brand + label + toggle together exceeded the viewport. */
 	.nav-booking span:first-child {
 		display: none;
 	}
@@ -684,8 +697,8 @@ h4 {
 }
 
 .site-brand-copy span {
-	font-size: 0.62rem;
-	letter-spacing: 0.17em;
+	font-size: 0.7rem;
+	letter-spacing: 0.14em;
 }
 
 .site-nav {
@@ -701,6 +714,6 @@ h4 {
 	min-height: 42px;
 	padding-inline: 1rem;
 	border-radius: 0;
-	font-size: 0.68rem;
+	font-size: 0.7rem;
 	letter-spacing: 0.08em;
 }

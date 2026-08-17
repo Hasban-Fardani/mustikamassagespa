@@ -18,7 +18,7 @@
 	],
 	// Drives scheduled publishing, plugin cron, and maintenance (see src/worker.ts)
 	"triggers": {
-		"crons": ["* * * * *"],
+		"crons": ["*/5 * * * *"],
 	},
 	// Workers Logs: persist invocation + console logs to the Cloudflare dashboard
 	"observability": {

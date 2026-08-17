@@ -241,7 +241,9 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	wrap.dataset.heroSliderReady = "true";
 
 	let activeIndex = Math.max(0, slides.findIndex((slide) => slide.dataset.active === "true"));
-	let transitionInProgress = false;
+	// Cooldown instead of a boolean latch: a latch can deadlock forever when the
+	// GSAP ticker is throttled and the timeline's onComplete never fires.
+	let lastTransitionAt = 0;
 	let timer: number | undefined;
 	let pointerStartX: number | null = null;
 	let isVisible = true;
@@ -252,32 +254,21 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 
 	const formatIndex = (index: number) => String(index + 1).padStart(2, "0");
 	const updateCopy = (slide: HTMLElement, index: number, animate: boolean) => {
-		const apply = () => {
-			if (counter) counter.textContent = `${formatIndex(index)} / ${String(total).padStart(2, "0")}`;
-			if (label) label.textContent = slide.dataset.label || "Suasana relaksasi";
-			if (detail) detail.textContent = slide.dataset.detail || "Waktu untuk beristirahat.";
-		};
+		// State is applied synchronously so the counter and captions are always
+		// correct even if the animation ticker is throttled; the tween is only
+		// the entrance garnish. The counter is a screen-reader-only live region
+		// announcing the slide label -- no visual chrome on the photo.
+		const slideLabel = slide.dataset.label || "Suasana relaksasi";
+		if (counter) counter.textContent = `${slideLabel} (${formatIndex(index + 1)} dari ${total})`;
+		if (label) label.textContent = slideLabel;
+		if (detail) detail.textContent = slide.dataset.detail || "Waktu untuk beristirahat.";
 
-		if (!gsap || !animate || !copyTargets.length) {
-			apply();
-			return;
-		}
-
-		gsap.to(copyTargets, {
-			y: -6,
-			opacity: 0,
-			duration: 0.16,
-			stagger: 0.025,
-			ease: "power2.in",
-			onComplete: () => {
-				apply();
-				gsap.fromTo(
-					copyTargets,
-					{ y: 7, opacity: 0 },
-					{ y: 0, opacity: 1, duration: 0.34, stagger: 0.035, ease: "power3.out" },
-				);
-			},
-		});
+		if (!gsap || !animate || !copyTargets.length) return;
+		gsap.fromTo(
+			copyTargets,
+			{ y: 7 },
+			{ y: 0, duration: 0.4, stagger: 0.04, ease: "power3.out", overwrite: "auto" },
+		);
 	};
 
 	const setAccessibilityState = (nextIndex: number) => {
@@ -300,8 +291,9 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	};
 
 	const showSlide = (requestedIndex: number, direction: 1 | -1, automatic = false) => {
+		const now = performance.now();
 		const nextIndex = (requestedIndex + total) % total;
-		if (nextIndex === activeIndex || transitionInProgress) {
+		if (nextIndex === activeIndex || now - lastTransitionAt < 950) {
 			if (automatic) scheduleNext();
 			return;
 		}
@@ -314,23 +306,21 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		const outgoingImage = outgoing.querySelector<HTMLElement>("img");
 		const incomingImage = incoming.querySelector<HTMLElement>("img");
 		activeIndex = nextIndex;
+		lastTransitionAt = now;
 		setAccessibilityState(nextIndex);
 		updateCopy(incoming, nextIndex, true);
 
 		if (!gsap || reducedMotion) {
-			transitionInProgress = false;
 			scheduleNext();
 			return;
 		}
 
-		transitionInProgress = true;
 		const incomingClip = direction > 0 ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)";
 		const outgoingClip = direction > 0 ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)";
 		const timeline = gsap.timeline({
 			onComplete: () => {
 				gsap.set(outgoing, { autoAlpha: 0, zIndex: 0, clipPath: "inset(0 0 0 0)" });
 				gsap.set(incoming, { autoAlpha: 1, zIndex: 1, clipPath: "inset(0 0 0 0)" });
-				transitionInProgress = false;
 				scheduleNext();
 			},
 		});
@@ -382,16 +372,9 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		if (Math.abs(distance) < 42) return;
 		showSlide(activeIndex + (distance < 0 ? 1 : -1), distance < 0 ? 1 : -1);
 	});
-	stage.addEventListener("pointerenter", (event) => {
-		if (event.pointerType === "touch") return;
-		isPaused = true;
-		clearTimer();
-	});
-	stage.addEventListener("pointerleave", (event) => {
-		if (event.pointerType === "touch") return;
-		isPaused = false;
-		scheduleNext();
-	});
+	// No section-wide hover pause: the stage covers the whole first viewport,
+	// so a resting cursor would freeze autoplay forever. The deck still pauses
+	// for keyboard focus on the controls, hidden tabs, and when scrolled away.
 	stage.addEventListener("focusin", () => {
 		isPaused = true;
 		clearTimer();
@@ -430,7 +413,6 @@ function animateHero(
 	const heroImage = heroImageWrap?.querySelector<HTMLElement>("img");
 	const heroWords = document.querySelectorAll<HTMLElement>("[data-hero-word]");
 	const heroReveal = document.querySelectorAll<HTMLElement>("[data-hero-main] [data-reveal]");
-	const heroTop = document.querySelector<HTMLElement>("[data-hero-top]");
 	const heroSheetRule = document.querySelector<HTMLElement>("[data-hero-sheet-rule]");
 	const heroVisualDetail = document.querySelector<HTMLElement>("[data-hero-visual-detail]");
 
@@ -447,20 +429,18 @@ function animateHero(
 	gsap.set(heroImageWrap, { scale: 1.16, xPercent: 4, transformOrigin: "50% 50%" });
 	if (heroImage) gsap.set(heroImage, { scale: 1.08, transformOrigin: "50% 50%" });
 	gsap.set(heroSheetRule, { scaleX: 0, transformOrigin: "left center" });
-	gsap.set(heroVisualDetail, { y: 16, opacity: 0 });
-	gsap.set(heroTop, { y: 18, opacity: 0 });
-	gsap.set(heroReveal, { y: 24, opacity: 0 });
+	gsap.set(heroVisualDetail, { y: 16 });
+	gsap.set(heroReveal, { y: 24 });
 
 	const intro = gsap.timeline({ defaults: { ease: "expo.out" } });
 	intro
-		.to(heroTop, { y: 0, opacity: 1, duration: 0.72 }, 0)
 		.to(heroPaper, { clipPath: "inset(0 0 0 0%)", x: 0, rotate: 0, duration: 1.2 }, 0.12)
 		.to(heroStage, { y: 0, rotate: 0, duration: 1.2 }, 0.12)
 		.to(heroSheetRule, { scaleX: 1, duration: 0.6 }, 0.38)
 		.to(heroImageWrap, { scale: 1, xPercent: 0, duration: 1.05 }, 0.24)
 		.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.88, stagger: 0.055 }, 0.34)
-		.to(heroVisualDetail, { y: 0, opacity: 1, duration: 0.6 }, 0.62)
-		.to(heroReveal, { y: 0, opacity: 1, duration: 0.66, stagger: 0.07 }, 0.68);
+		.to(heroVisualDetail, { y: 0, duration: 0.6 }, 0.62)
+		.to(heroReveal, { y: 0, duration: 0.66, stagger: 0.07 }, 0.68);
 
 	if (heroImage) intro.to(heroImage, { scale: 1, duration: 1.1 }, 0.2);
 
@@ -478,7 +458,6 @@ function animateHero(
 	});
 
 	scrollScene
-		.to(heroTop, { autoAlpha: 0, duration: 0.28 }, 0)
 		.to(heroVisualDetail, { autoAlpha: 0, duration: 0.28 }, 0)
 		.to(heroCopy, { yPercent: -18, autoAlpha: 0, duration: 0.55 }, 0.08)
 		.to(heroStage, { yPercent: 9, duration: 1 }, 0)
@@ -509,10 +488,9 @@ function animateWordReveals(gsap: GsapModule["default"]) {
 		const words = root.querySelectorAll<HTMLElement>("[data-scroll-word-inner]");
 		if (!words.length) return;
 
-		gsap.set(words, { yPercent: 112, opacity: 0, rotate: 1.5, transformOrigin: "left bottom" });
+		gsap.set(words, { yPercent: 112, rotate: 1.5, transformOrigin: "left bottom" });
 		gsap.to(words, {
 			yPercent: 0,
-			opacity: 1,
 			rotate: 0,
 			stagger: 0.035,
 			ease: "none",
@@ -551,7 +529,6 @@ function animateMobileExperience(
 	ScrollTrigger: ScrollTriggerModule["ScrollTrigger"],
 ) {
 	const hero = document.querySelector<HTMLElement>("[data-ledger-hero]");
-	const heroTop = document.querySelector<HTMLElement>("[data-hero-top]");
 	const heroStage = document.querySelector<HTMLElement>("[data-hero-stage]");
 	const heroImageWrap = document.querySelector<HTMLElement>("[data-hero-image-wrap]");
 	const heroImage = heroImageWrap?.querySelector<HTMLElement>("img");
@@ -560,21 +537,35 @@ function animateMobileExperience(
 	const heroDetail = document.querySelector<HTMLElement>("[data-hero-visual-detail]");
 
 	if (hero && heroStage && heroImageWrap) {
-		gsap.set(heroStage, { autoAlpha: 0, y: 18, clipPath: "inset(0 0 10% 0)" });
+		gsap.set(heroStage, { y: 18, clipPath: "inset(0 0 10% 0)" });
 		gsap.set(heroImageWrap, { scale: 1.1, transformOrigin: "50% 50%" });
 		gsap.set(heroWords, { yPercent: 112, rotate: 2.5, transformOrigin: "left bottom" });
-		gsap.set(heroReveal, { y: 18, autoAlpha: 0 });
-		gsap.set(heroTop, { y: 12, autoAlpha: 0 });
-		gsap.set(heroDetail, { y: 10, autoAlpha: 0 });
+		gsap.set(heroReveal, { y: 18 });
+		gsap.set(heroDetail, { y: 10 });
 
 		const arrival = gsap.timeline({ defaults: { ease: "expo.out" } });
 		arrival
-			.to(heroStage, { autoAlpha: 1, y: 0, clipPath: "inset(0 0 0% 0)", duration: 0.85 }, 0)
+			.to(heroStage, { y: 0, clipPath: "inset(0 0 0% 0)", duration: 0.85 }, 0)
 			.to(heroImageWrap, { scale: 1, duration: 1.15 }, 0)
-			.to(heroTop, { y: 0, autoAlpha: 1, duration: 0.5 }, 0.16)
 			.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.78, stagger: 0.045 }, 0.2)
-			.to(heroDetail, { y: 0, autoAlpha: 1, duration: 0.48 }, 0.52)
-			.to(heroReveal, { y: 0, autoAlpha: 1, duration: 0.6, stagger: 0.07 }, 0.48);
+			.to(heroDetail, { y: 0, duration: 0.48 }, 0.52)
+			.to(heroReveal, { y: 0, duration: 0.6, stagger: 0.07 }, 0.48);
+
+		// Mobile gets the same story without the pin: the intro photograph
+		// settles as it passes through the viewport.
+		const introMedia = document.querySelector<HTMLElement>(".ledger-intro-media img");
+		if (introMedia) {
+			gsap.fromTo(
+				introMedia,
+				{ scale: 1.12, yPercent: 3 },
+				{
+					scale: 1,
+					yPercent: -3,
+					ease: "none",
+					scrollTrigger: { trigger: introMedia, start: "top bottom", end: "bottom top", scrub: 1, invalidateOnRefresh: true },
+				},
+			);
+		}
 
 		if (heroImage) {
 			gsap.to(heroImage, {
@@ -592,113 +583,133 @@ function animateMobileExperience(
 function animateServiceLedger(gsap: GsapModule["default"]) {
 	const list = document.querySelector<HTMLElement>("[data-service-list]");
 	const items = list?.querySelectorAll<HTMLElement>("[data-service-item]");
-	const preview = document.querySelector<HTMLElement>("[data-service-preview]");
-	const previewImage = preview?.querySelector<HTMLImageElement>("[data-service-preview-image]");
-	const previewNumber = preview?.querySelector<HTMLElement>("[data-service-preview-number]");
-	const previewTitle = preview?.querySelector<HTMLElement>("[data-service-preview-title]");
-	const previewTag = preview?.querySelector<HTMLElement>("[data-service-preview-tag]");
 	if (!list || !items?.length) return;
 
-	if (preview && preview.parentElement !== document.body) {
+	// Anticipation: each card wipes in left-to-right as the reader scrolls,
+	// one card chasing the next. Scrub keeps the reveal glued to the scroll
+	// position, so a fast jump or a restored scroll can never strand a card.
+	const cardTimeline = gsap.timeline({
+		scrollTrigger: {
+			trigger: list,
+			start: "top 82%",
+			end: "top 28%",
+			scrub: 0.8,
+			invalidateOnRefresh: true,
+		},
+	});
+	cardTimeline
+		.fromTo(
+			items,
+			{ clipPath: "inset(0 100% 0 0)", x: 24 },
+			{ clipPath: "inset(0 0% 0 0)", x: 0, stagger: 0.42, ease: "none" },
+			0,
+		)
+		.fromTo(
+			list.querySelectorAll<HTMLElement>(".service-row-media img"),
+			{ scale: 1.14 },
+			{ scale: 1, stagger: 0.42, ease: "none" },
+			0,
+		);
+
+	// The hover preview is a desktop-only sweetener: every row already shows its
+	// photograph, so touch devices never need a popup (and never get stuck with
+	// one that cannot be closed).
+	const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+	if (!canHover) return;
+
+	const preview = document.querySelector<HTMLElement>("[data-service-preview]");
+	const previewImage = preview?.querySelector<HTMLImageElement>("[data-service-preview-image]");
+	const previewTitle = preview?.querySelector<HTMLElement>("[data-service-preview-title]");
+	const previewTag = preview?.querySelector<HTMLElement>("[data-service-preview-tag]");
+	if (!preview || !previewImage) return;
+
+	if (preview.parentElement !== document.body) {
 		document.body.appendChild(preview);
 	}
 
-	// Keep position and visual transform separate. The preview also animates
-	// scale/rotation, so using transform for the pointer coordinates can make
-	// it appear stuck at its initial left edge.
-	const previewLeft = preview ? gsap.quickTo(preview, "left", { duration: 0.34, ease: "power3.out" }) : null;
-	const previewTop = preview ? gsap.quickTo(preview, "top", { duration: 0.34, ease: "power3.out" }) : null;
-	let activeClosePreview: (() => void) | null = null;
+	// Position via transform only. Animating left/top fights whatever the
+	// stylesheet sets on the portal and can leave the card stuck at the left
+	// edge; x/y always track the pointer.
+	const previewX = gsap.quickTo(preview, "x", { duration: 0.32, ease: "power3.out" });
+	const previewY = gsap.quickTo(preview, "y", { duration: 0.32, ease: "power3.out" });
+	let previewOpen = false;
 
-	gsap.fromTo(
-		items,
-		{ clipPath: "inset(0 100% 0 0)", x: 24 },
-		{
-			clipPath: "inset(0 0% 0 0)",
-			x: 0,
-			duration: 0.95,
-			stagger: 0.12,
-			ease: "expo.out",
-			scrollTrigger: { trigger: list, start: "top 78%", toggleActions: "play reverse play reverse" },
-		},
-	);
+	const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+	const pointerCoordinates = (event: PointerEvent) => {
+		const gap = 28;
+		const previewWidth = preview.offsetWidth || 320;
+		const previewHeight = preview.offsetHeight || 430;
+		const placeLeft = event.clientX > window.innerWidth * 0.58;
+		const placeAbove = event.clientY > window.innerHeight * 0.66;
+		const rawX = event.clientX + (placeLeft ? -previewWidth - gap : gap);
+		const rawY = event.clientY + (placeAbove ? -previewHeight - gap : gap);
+		return {
+			x: clamp(rawX, 18, window.innerWidth - previewWidth - 18),
+			y: clamp(rawY, 18, window.innerHeight - previewHeight - 18),
+		};
+	};
+
+	const movePreview = (event: PointerEvent) => {
+		if (!previewOpen) return;
+		const { x, y } = pointerCoordinates(event);
+		previewX(x);
+		previewY(y);
+	};
+
+	const openPreview = (event: PointerEvent) => {
+		if (event.pointerType === "touch") return;
+		const item = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
+		if (!item) return;
+
+		previewOpen = true;
+		preview.dataset.servicePreviewOpen = "true";
+		preview.setAttribute("aria-hidden", "false");
+		previewImage.src = item.dataset.serviceImage || previewImage.src;
+		previewImage.alt = `Detail suasana ${item.dataset.serviceTitle || "layanan Mustika"}`;
+		if (previewTitle) previewTitle.textContent = item.dataset.serviceTitle || "Ritual Mustika";
+		if (previewTag) previewTag.textContent = item.dataset.serviceTag || "Massage & wellness";
+
+		gsap.killTweensOf(preview);
+		gsap.killTweensOf(previewImage);
+		gsap.set(preview, {
+			rotate: event.clientX > window.innerWidth * 0.58 ? 1.8 : -1.8,
+			transformOrigin: event.clientX > window.innerWidth * 0.58 ? "right bottom" : "left bottom",
+		});
+		// Place instantly on open; quickTo only smooths the follow afterwards.
+		const { x, y } = pointerCoordinates(event);
+		gsap.set(preview, { x, y });
+		gsap.fromTo(
+			preview,
+			{ autoAlpha: 0, scale: 0.78 },
+			{ autoAlpha: 1, scale: 1, duration: 0.48, ease: "expo.out" },
+		);
+		gsap.fromTo(
+			previewImage,
+			{ scale: 1.16, xPercent: event.clientX > window.innerWidth * 0.58 ? 5 : -5 },
+			{ scale: 1, xPercent: 0, duration: 0.8, ease: "power3.out" },
+		);
+	};
+
+	const closePreview = () => {
+		if (!previewOpen) return;
+		previewOpen = false;
+		preview.dataset.servicePreviewOpen = "false";
+		preview.setAttribute("aria-hidden", "true");
+		gsap.to(preview, { autoAlpha: 0, scale: 0.9, duration: 0.28, ease: "power3.in" });
+	};
 
 	items.forEach((item) => {
 		const hoverLine = item.querySelector<HTMLElement>(".service-hover-line");
 		const arrow = item.querySelector<HTMLElement>(".service-arrow");
-		let previewOpen = false;
 
-		const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
-		const movePreview = (event: PointerEvent) => {
-			if (!preview || !previewOpen || !previewLeft || !previewTop) return;
+		item.addEventListener("pointerenter", (event) => {
 			if (event.pointerType === "touch") return;
-
-			const gap = 28;
-			const previewWidth = preview.offsetWidth || 320;
-			const previewHeight = preview.offsetHeight || 430;
-			const placeLeft = event.clientX > window.innerWidth * 0.58;
-			const placeAbove = event.clientY > window.innerHeight * 0.66;
-			const rawX = event.clientX + (placeLeft ? -previewWidth - gap : gap);
-			const rawY = event.clientY + (placeAbove ? -previewHeight - gap : gap);
-			const x = clamp(rawX, 18, window.innerWidth - previewWidth - 18);
-			const y = clamp(rawY, 18, window.innerHeight - previewHeight - 18);
-
-			previewLeft(x);
-			previewTop(y);
-		};
-
-		const openPreview = (event: PointerEvent, allowTouch = false) => {
-			if (!preview || !previewImage || (!allowTouch && event.pointerType === "touch")) return;
-			activeClosePreview?.();
-			activeClosePreview = closePreview;
-
-			previewOpen = true;
-			preview.dataset.servicePreviewOpen = "true";
-			preview.setAttribute("aria-hidden", "false");
-			previewImage.src = item.dataset.serviceImage || previewImage.src;
-			previewImage.alt = `Detail suasana ${item.dataset.serviceTitle || "layanan Mustika"}`;
-			if (previewNumber) previewNumber.textContent = item.dataset.serviceNumber || "01";
-			if (previewTitle) previewTitle.textContent = item.dataset.serviceTitle || "Ritual Mustika";
-			if (previewTag) previewTag.textContent = item.dataset.serviceTag || "Massage & wellness";
-
-			gsap.killTweensOf(preview);
-			gsap.killTweensOf(previewImage);
-			gsap.set(preview, {
-				rotate: event.clientX > window.innerWidth * 0.58 ? 1.8 : -1.8,
-				transformOrigin: event.clientX > window.innerWidth * 0.58 ? "right bottom" : "left bottom",
-			});
-			// Position after cancelling the previous preview tween. Calling the
-			// quick setter before killTweensOf would cancel the fresh pointer
-			// coordinate and leave the portal at left: 0.
-			movePreview(event);
-			gsap.fromTo(
-				preview,
-				{ autoAlpha: 0, scale: 0.78 },
-				{ autoAlpha: 1, scale: 1, duration: 0.48, ease: "expo.out" },
-			);
-			gsap.fromTo(
-				previewImage,
-				{ scale: 1.16, xPercent: event.clientX > window.innerWidth * 0.58 ? 5 : -5 },
-				{ scale: 1, xPercent: 0, duration: 0.8, ease: "power3.out" },
-			);
-		};
-
-		const closePreview = () => {
-			if (!preview || !previewOpen) return;
-			previewOpen = false;
-			preview.dataset.servicePreviewOpen = "false";
-			preview.setAttribute("aria-hidden", "true");
-			if (activeClosePreview === closePreview) activeClosePreview = null;
-			gsap.to(preview, { autoAlpha: 0, scale: 0.9, duration: 0.28, ease: "power3.in" });
-		};
-		item.addEventListener("pointerenter", () => {
 			gsap.to(item, { x: 8, duration: 0.42, ease: "power3.out" });
 			if (hoverLine) gsap.to(hoverLine, { scaleX: 1, duration: 0.42, ease: "power3.out" });
 			if (arrow) gsap.to(arrow, { rotate: 45, color: "#f0e9dd", duration: 0.38, ease: "power3.out" });
+			openPreview(event);
 		});
-		item.addEventListener("pointerenter", openPreview);
 		item.addEventListener("pointermove", movePreview);
-
 		item.addEventListener("pointerleave", (event) => {
 			if (event.pointerType === "touch") return;
 			gsap.to(item, { x: 0, duration: 0.55, ease: "power4.out" });
@@ -706,21 +717,48 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 			if (arrow) gsap.to(arrow, { rotate: 0, color: "#c49a4e", duration: 0.45, ease: "power4.out" });
 			closePreview();
 		});
-		item.addEventListener("pointerup", (event) => {
-			if (event.pointerType !== "touch") return;
-			if (previewOpen) closePreview();
-			else openPreview(event, true);
-		});
-		item.addEventListener("pointercancel", closePreview);
 	});
 
 	document.addEventListener("keydown", (event) => {
-		if (event.key === "Escape") activeClosePreview?.();
+		if (event.key === "Escape") closePreview();
 	});
-	document.addEventListener("pointerdown", (event) => {
-		if (!activeClosePreview || !preview || event.pointerType !== "touch") return;
-		if (event.target instanceof Node && !preview.contains(event.target)) activeClosePreview();
-	});
+}
+
+/*
+ * Narrative scroll system. Every reveal is scrub-linked (progress follows the
+ * scrollbar) instead of toggle-based, so state can never desync from scroll
+ * position -- and the page reads as one continuous breath: quick hero,
+ * immersive pinned middle, slow exhale at the booking end.
+ */
+
+function animateIntroPin(
+	gsap: GsapModule["default"],
+	ScrollTrigger: ScrollTriggerModule["ScrollTrigger"],
+) {
+	const section = document.querySelector<HTMLElement>(".ledger-intro");
+	const media = section?.querySelector<HTMLElement>(".ledger-intro-media img");
+	const content = section?.querySelector<HTMLElement>(".ledger-intro-content");
+	if (!section || !media || !content) return;
+
+	// "Entering the room": while pinned, the photograph opens from its inset
+	// matte and the copy drifts upward, like stepping through the doorway.
+	gsap
+		.timeline({
+			defaults: { ease: "none" },
+			scrollTrigger: {
+				trigger: section,
+				start: "top top",
+				end: "+=78%",
+				pin: true,
+				anticipatePin: 1,
+				scrub: 0.7,
+				invalidateOnRefresh: true,
+			},
+		})
+		.fromTo(media, { clipPath: "inset(12% 9% 12% 9%)", scale: 1.16 }, { clipPath: "inset(0% 0% 0% 0%)", scale: 1, duration: 1 }, 0)
+		.fromTo(content, { y: 46 }, { y: -14, duration: 1 }, 0);
+
+	ScrollTrigger.refresh();
 }
 
 function animateSections(
@@ -729,19 +767,21 @@ function animateSections(
 ) {
 	animateWordReveals(gsap);
 
-	document.querySelectorAll<HTMLElement>(".mustika-ledger section:not(.ledger-hero) [data-reveal]").forEach((element) => {
-		gsap.fromTo(
-			element,
-			{ y: 28, opacity: 0 },
-			{
-				y: 0,
-				opacity: 1,
-				duration: 0.82,
-				ease: "expo.out",
-				scrollTrigger: { trigger: element, start: "top 90%", toggleActions: "play reverse play reverse" },
-			},
-		);
-	});
+	// Quiet utility reveals (footers, captions): a short rise, nothing louder
+	// than the content it carries.
+	document
+		.querySelectorAll<HTMLElement>(".mustika-ledger section:not(.ledger-hero) [data-reveal]")
+		.forEach((element) => {
+			gsap.fromTo(
+				element,
+				{ y: 24 },
+				{
+					y: 0,
+					ease: "none",
+					scrollTrigger: { trigger: element, start: "top 94%", end: "top 68%", scrub: 0.8, invalidateOnRefresh: true },
+				},
+			);
+		});
 
 	const bookVisualImage = document.querySelector<HTMLElement>("[data-book-visual] img");
 	if (bookVisualImage) {
@@ -762,50 +802,77 @@ function animateSections(
 		);
 	}
 
-	const journey = document.querySelectorAll<HTMLElement>("[data-journey-step]");
-	if (journey.length) {
-		gsap.fromTo(
-			journey,
-			{ y: 24, opacity: 0 },
-			{
-				y: 0,
-				opacity: 1,
-				duration: 0.75,
-				stagger: 0.13,
-				ease: "expo.out",
-				scrollTrigger: { trigger: journey[0], start: "top 80%", toggleActions: "play reverse play reverse" },
-			},
-		);
-	}
+	// The visit steps arrive one by one, and each connector rule is "drawn"
+	// (scaleX) as the step settles -- sequence you can feel while scrolling.
+	const journeySteps = document.querySelectorAll<HTMLElement>("[data-journey-step]");
+	journeySteps.forEach((step) => {
+		const rule = step.querySelector<HTMLElement>(".journey-rule");
+		const stepTimeline = gsap.timeline({
+			defaults: { ease: "none" },
+			scrollTrigger: { trigger: step, start: "top 84%", end: "top 52%", scrub: 0.8, invalidateOnRefresh: true },
+		});
+		stepTimeline.fromTo(step, { y: 34 }, { y: 0, duration: 1 }, 0);
+		if (rule) stepTimeline.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.65 }, 0.28);
+	});
 
+	// The standards sweep in from the right, ledger-like.
 	const standards = document.querySelectorAll<HTMLElement>("[data-standard-item]");
 	if (standards.length) {
 		gsap.fromTo(
 			standards,
-			{ x: 26, opacity: 0 },
+			{ x: 36 },
 			{
 				x: 0,
-				opacity: 1,
-				duration: 0.76,
-				stagger: 0.1,
-				ease: "expo.out",
-				scrollTrigger: { trigger: standards[0], start: "top 82%", toggleActions: "play reverse play reverse" },
+				stagger: 0.3,
+				ease: "none",
+				scrollTrigger: { trigger: standards[0], start: "top 84%", end: "top 40%", scrub: 0.85, invalidateOnRefresh: true },
 			},
 		);
 	}
 
+	// The quote gets the slowest lane on the page -- an emotional pause before
+	// the FAQ takes over. Long scrub window = unhurried.
+	const quote = document.querySelector<HTMLElement>(".standard-quote");
+	if (quote) {
+		gsap.fromTo(
+			quote,
+			{ y: 48 },
+			{
+				y: 0,
+				ease: "none",
+				scrollTrigger: { trigger: quote, start: "top 92%", end: "top 42%", scrub: 1.25, invalidateOnRefresh: true },
+			},
+		);
+	}
+
+	// FAQ rows unfold downward, unhurried but not heavy.
 	const faq = document.querySelectorAll<HTMLElement>("[data-faq-item]");
 	if (faq.length) {
 		gsap.fromTo(
 			faq,
-			{ clipPath: "inset(0 0 100% 0)", y: 16 },
+			{ clipPath: "inset(0 0 100% 0)", y: 18 },
 			{
 				clipPath: "inset(0 0 0% 0)",
 				y: 0,
-				duration: 0.72,
-				stagger: 0.1,
-				ease: "expo.out",
-				scrollTrigger: { trigger: faq[0], start: "top 82%", toggleActions: "play reverse play reverse" },
+				stagger: 0.28,
+				ease: "none",
+				scrollTrigger: { trigger: faq[0], start: "top 84%", end: "top 38%", scrub: 0.9, invalidateOnRefresh: true },
+			},
+		);
+	}
+
+	// Closing exhale: the booking copy widens and rises slowly -- no sharp
+	// moves this late in the story.
+	const bookCopy = document.querySelector<HTMLElement>(".ledger-book .book-copy");
+	if (bookCopy) {
+		gsap.fromTo(
+			bookCopy,
+			{ scale: 0.965, y: 42 },
+			{
+				scale: 1,
+				y: 0,
+				ease: "none",
+				scrollTrigger: { trigger: bookCopy, start: "top 90%", end: "top 44%", scrub: 1.15, invalidateOnRefresh: true },
 			},
 		);
 	}
@@ -845,6 +912,7 @@ export async function initMustikaLedgerMotion() {
 		media.add("(max-width: 760px)", () => animateMobileExperience(gsap, ScrollTrigger));
 		media.add("(min-width: 761px)", () => {
 			animateHero(gsap, ScrollTrigger);
+			animateIntroPin(gsap, ScrollTrigger);
 			animateServiceLedger(gsap);
 			animateSections(gsap, ScrollTrigger);
 			if (supportsRichMotion) enableMagneticButtons(gsap);
