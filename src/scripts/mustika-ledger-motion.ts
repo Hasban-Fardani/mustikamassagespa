@@ -269,7 +269,7 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	const scheduleNext = () => {
 		clearTimer();
 		if (reducedMotion || isPaused || !isVisible || document.hidden) return;
-		timer = window.setTimeout(() => showSlide(activeIndex + 1, 1, true), 6200);
+		timer = window.setTimeout(() => showSlide(activeIndex + 1, 1, true), 4800);
 	};
 
 	const showSlide = (requestedIndex: number, direction: 1 | -1, automatic = false) => {
