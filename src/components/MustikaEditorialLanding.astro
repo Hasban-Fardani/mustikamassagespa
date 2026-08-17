@@ -115,28 +115,24 @@ const heroSlides = [
 		desktopSrc: "/images/mustika/hero-01-amber-spa.webp",
 		mobileSrc: "/images/mustika/hero-01-amber-spa-720.webp",
 		label: "Suasana relaksasi",
-		detail: "Cahaya hangat untuk memulai jeda.",
 		alt: "Interior spa dengan cahaya amber dan dua meja perawatan",
 	},
 	{
 		desktopSrc: "/images/mustika/hero-02-candle-massage.webp",
 		mobileSrc: "/images/mustika/hero-02-candle-massage-720.webp",
 		label: "Ritual perawatan",
-		detail: "Perawatan profesional tanpa terburu-buru.",
 		alt: "Dua pelanggan menikmati pijat di ruang bercahaya hangat",
 	},
 	{
-		desktopSrc: "/images/mustika/hero-03-aroma-ritual.webp",
-		mobileSrc: "/images/mustika/hero-03-aroma-ritual-720.webp",
-		label: "Aroma & linen",
-		detail: "Detail kecil yang menenangkan indera.",
-		alt: "Minyak aromaterapi, lilin, linen, dan bunga kering di atas nampan kayu",
+		desktopSrc: "/images/mustika/mustika-space.webp",
+		mobileSrc: "/images/mustika/mustika-space-720.webp",
+		label: "Ruang perawatan",
+		alt: "Ruang perawatan Mustika yang tenang dan bersih",
 	},
 	{
 		desktopSrc: "/images/mustika/hero-04-traditional-care.webp",
 		mobileSrc: "/images/mustika/hero-04-traditional-care-720.webp",
 		label: "Sentuhan tradisional",
-		detail: "Perhatian yang terasa personal.",
 		alt: "Terapis memberikan pijat bahu di ruang perawatan bernuansa merah dan emas",
 	},
 ];
@@ -189,8 +185,8 @@ const experienceSteps = rawExperienceSteps.length
 		}))
 	: fallbackExperienceSteps;
 
-const standardsHeadline = readString(standardsNode?.headline, "Detail kecil yang");
-const standardsEmphasis = readString(standardsNode?.emphasis, "Anda rasakan.");
+const standardsHeadline = readString(standardsNode?.headline, "Yang kami jaga");
+const standardsEmphasis = readString(standardsNode?.emphasis, "di setiap sesi.");
 const standardsBody = readString(
 	standardsNode?.body,
 	"Sprei berganti setiap sesi. Minyak yang tidak lengket. Ruang yang dijaga tetap sunyi — kalau Anda tertidur, itu pujian bagi kami.",
@@ -272,14 +268,12 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 				<figure class="hero-visual" data-hero-stage aria-label="Galeri suasana pijat dan wellness">
 					<div class="hero-visual-frame" data-hero-paper>
 						<div class="hero-visual-meta">
-							<span data-hero-slide-label>{heroSlides[0].label}</span>
 							<span class="sr-only-slide-status" data-hero-counter aria-live="polite">{heroSlides[0].label}</span>
 							<span class="hero-visual-nav">
 								<button type="button" data-hero-prev aria-label="Lihat foto sebelumnya">←</button>
 								<button type="button" data-hero-next aria-label="Lihat foto berikutnya">→</button>
 							</span>
 						</div>
-						<div class="hero-visual-rule" data-hero-sheet-rule aria-hidden="true"></div>
 						<div
 							class="hero-visual-image"
 							data-hero-image-wrap
@@ -293,7 +287,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 									data-hero-slide
 									data-active={index === 0 ? "true" : "false"}
 									data-label={slide.label}
-									data-detail={slide.detail}
 									aria-hidden={index === 0 ? "false" : "true"}
 								>
 									<source media="(max-width: 760px)" srcset={slide.mobileSrc} />
@@ -310,7 +303,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 								</picture>
 							))}
 						</div>
-						<p class="hero-visual-detail" data-hero-visual-detail data-hero-detail>{heroSlides[0].detail}</p>
 					</div>
 				</figure>
 			</div>
@@ -321,28 +313,25 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		<div class="shell ledger-intro-grid">
 			<div class="ledger-intro-content">
 				<h2 id="intro-title" data-word-reveal>{introHeadline} <em>{introEmphasis}</em></h2>
+				<div class="ledger-intro-copy" data-reveal>
+					<p data-word-reveal>{introBody}</p>
+					<ul class="intro-audience" aria-label="Cocok untuk">
+						{introAudience.map((audience) => <li>{audience}</li>)}
+					</ul>
+					<a class="ledger-inline-link" href={introLinkUrl}><span>{introLinkLabel}</span><span aria-hidden="true">↘</span></a>
+				</div>
 				<figure class="ledger-intro-media" data-reveal>
 					<img
-						src="/images/mustika/hero-03-aroma-ritual.webp"
-						alt="Ruang perawatan Mustika dengan cahaya lembut dan aroma terapi"
-						width="1200"
-						height="1500"
+						src="/images/mustika/hero-exit-traditional.webp"
+						alt="Sesi pijat di ruang perawatan Mustika"
+						width="1000"
+						height="1250"
 						sizes="(max-width: 760px) 100vw, 30vw"
 						loading="lazy"
 						decoding="async"
 					/>
 					<figcaption>Ruang tenang untuk memulai sesi.</figcaption>
 				</figure>
-				<div class="ledger-intro-detail" data-reveal>
-					<p data-word-reveal>{introBody}</p>
-					<div class="intro-side-column">
-						<span class="detail-label">Cocok untuk</span>
-						<ul class="intro-audience" aria-label="Cocok untuk">
-							{introAudience.map((audience) => <li>{audience}</li>)}
-						</ul>
-						<a class="ledger-inline-link" href={introLinkUrl}><span>{introLinkLabel}</span><span aria-hidden="true">↘</span></a>
-					</div>
-				</div>
 			</div>
 		</div>
 	</section>
@@ -730,7 +719,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		position: absolute;
 		inset: 0;
 		display: grid;
-		grid-template-rows: auto 1px minmax(0, 1fr) auto;
+		grid-template-rows: auto minmax(0, 1fr);
 		padding: clamp(0.95rem, 1.8vw, 1.35rem);
 		border: 1px solid var(--ledger-line);
 		background: var(--ledger-paper);
@@ -742,7 +731,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.hero-visual-meta {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: flex-end;
 		gap: 1rem;
 		color: var(--ledger-muted);
 		font-size: 0.7rem;
@@ -789,13 +778,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		transform: translateX(2px);
 	}
 
-	.hero-visual-rule {
-		width: 100%;
-		height: 1px;
-		margin-top: 0.8rem;
-		background: var(--ledger-line);
-		transform-origin: left center;
-	}
 
 	.hero-visual-image {
 		position: relative;
@@ -860,14 +842,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		will-change: transform;
 	}
 
-	.hero-visual-detail {
-		margin: 0;
-		color: var(--ledger-ink);
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.02em;
-		line-height: 1.45;
-	}
 
 	@media (max-width: 480px) {
 		.hero-visual-nav {
@@ -908,35 +882,20 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: var(--ledger-oxide);
 	}
 
-	.ledger-intro-detail {
+	.ledger-intro-copy {
 		display: grid;
-		grid-template-columns: minmax(0, 0.88fr) minmax(180px, 0.55fr);
-		gap: clamp(2rem, 8vw, 9rem);
-		align-items: start;
-		margin-top: clamp(3rem, 7vw, 6.5rem);
+		gap: 1.3rem;
+		align-content: start;
+		margin-top: clamp(2.25rem, 5vw, 4rem);
 		border-top: 1px solid var(--ledger-line);
-		padding-top: 1.2rem;
+		padding-top: 1.35rem;
 	}
 
-	.ledger-intro-detail > p {
+	.ledger-intro-copy > p {
 		max-width: 37ch;
+		margin: 0;
 		color: var(--ledger-ink-soft);
 		font-size: 0.95rem;
-	}
-
-	.intro-side-column {
-		display: grid;
-		gap: 1.15rem;
-		border-left: 1px solid var(--ledger-line);
-		padding-left: clamp(1.15rem, 2.4vw, 2.4rem);
-	}
-
-	.detail-label {
-		color: var(--ledger-oxide);
-		font-size: 0.7rem;
-		font-weight: 800;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
 	}
 
 	.intro-audience {
@@ -1669,14 +1628,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			order: -1;
 		}
 
-		.ledger-intro-detail,
 		.rituals-heading,
 		.experience-heading {
 			grid-template-columns: 1fr;
-		}
-
-		.ledger-intro-detail {
-			gap: 2.2rem;
 		}
 
 		.ledger-intro-content h2,
@@ -1817,18 +1771,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.ledger-text-link,
 	.ledger-inline-link,
 	.hero-visual-meta,
-	.hero-visual-detail,
-	.detail-label,
 	.book-phone {
 		font-size: 0.75rem;
 	}
 
-	.hero-visual-detail {
-		text-transform: none;
-		letter-spacing: 0.04em;
-	}
 
-	.ledger-intro .detail-label,
 	.ledger-intro .intro-audience li::before {
 		color: var(--ledger-oxide-deep);
 	}
@@ -1947,24 +1894,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: var(--ledger-paper);
 	}
 
-	.mustika-ledger .hero-visual-meta span:first-child {
-		color: var(--ledger-gold);
-	}
 
 	.mustika-ledger .hero-visual-nav button {
 		color: var(--ledger-paper);
 	}
 
-	.mustika-ledger .hero-visual-rule {
-		position: absolute;
-		top: calc(clamp(6.6rem, 9vw, 8.5rem) + 2.75rem);
-		right: 0;
-		left: 0;
-		z-index: 4;
-		width: var(--site-width);
-		margin-inline: auto;
-		background: rgba(247, 242, 233, 0.27);
-	}
 
 	.mustika-ledger .hero-visual-image {
 		position: absolute;
@@ -1985,17 +1919,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		filter: saturate(0.88) contrast(1.04);
 	}
 
-	.mustika-ledger .hero-visual-detail {
-		position: absolute;
-		right: 0;
-		bottom: clamp(2rem, 5vw, 4.5rem);
-		left: 0;
-		z-index: 4;
-		width: var(--site-width);
-		margin-inline: auto;
-		max-width: max-content;
-		color: rgba(247, 242, 233, 0.85);
-	}
 
 	.mustika-ledger .ledger-copy {
 		position: absolute;
@@ -2086,11 +2009,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		letter-spacing: 0.03em;
 	}
 
-	.mustika-ledger .ledger-intro-detail {
+	.mustika-ledger .ledger-intro-copy {
 		grid-column: 1;
-		grid-template-columns: minmax(0, 0.92fr) minmax(170px, 0.55fr);
-		gap: clamp(1.5rem, 4vw, 4rem);
-		margin-top: clamp(3rem, 6vw, 6rem);
+		max-width: 46ch;
 	}
 
 	/* Rituals: rows are a reading list, not four product cards. */
@@ -2215,9 +2136,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 		.mustika-ledger .ledger-intro-content > h2,
 		.mustika-ledger .ledger-intro-media,
-		.mustika-ledger .ledger-intro-detail {
+		.mustika-ledger .ledger-intro-copy {
 			grid-column: 1;
-			grid-row: auto;
 		}
 
 		.mustika-ledger .ledger-intro-media {
@@ -2226,9 +2146,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			margin-left: 0;
 		}
 
-		.mustika-ledger .ledger-intro-detail {
-			grid-template-columns: 1fr;
-			margin-top: 2.5rem;
+		.mustika-ledger .ledger-intro-copy {
+			max-width: 46ch;
 		}
 
 		.mustika-ledger .experience-heading {
@@ -2261,22 +2180,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			aspect-ratio: 0.9;
 		}
 
-		.mustika-ledger .hero-visual-meta,
-		.mustika-ledger .hero-visual-rule,
-		.mustika-ledger .hero-visual-detail {
-			width: calc(100% - 2.5rem);
-		}
-
 		.mustika-ledger .hero-visual-meta {
+			width: calc(100% - 2.5rem);
 			top: 1.2rem;
-		}
-
-		.mustika-ledger .hero-visual-rule {
-			top: 3.8rem;
-		}
-
-		.mustika-ledger .hero-visual-detail {
-			bottom: 1.25rem;
 		}
 
 		.mustika-ledger .ledger-copy {
@@ -2310,9 +2216,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 		.mustika-ledger .ledger-intro-content > h2,
 		.mustika-ledger .ledger-intro-media,
-		.mustika-ledger .ledger-intro-detail {
+		.mustika-ledger .ledger-intro-copy {
 			grid-column: 1;
-			grid-row: auto;
 		}
 
 		.mustika-ledger .ledger-intro-media {
@@ -2325,9 +2230,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			aspect-ratio: 1.1;
 		}
 
-		.mustika-ledger .ledger-intro-detail {
-			grid-template-columns: 1fr;
-			margin-top: 2.75rem;
+		.mustika-ledger .ledger-intro-copy {
+			max-width: 46ch;
 		}
 
 		.mustika-ledger .experience-heading {
@@ -2475,23 +2379,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	@media (max-width: 430px) {
-		.mustika-ledger .hero-visual-meta,
-		.mustika-ledger .hero-visual-rule,
-		.mustika-ledger .hero-visual-detail {
-			width: calc(100% - 2rem);
-		}
-
 		.mustika-ledger .hero-visual-meta {
+			width: calc(100% - 2rem);
 			top: 1rem;
 			font-size: 0.68rem;
-		}
-
-		.mustika-ledger .hero-visual-rule {
-			top: 3.55rem;
-		}
-
-		.mustika-ledger .hero-visual-detail {
-			bottom: 1rem;
 		}
 
 		.mustika-ledger .ledger-copy {

@@ -72,10 +72,6 @@ function showStaticContent() {
 		element.style.clipPath = "none";
 	});
 
-	document.querySelectorAll<HTMLElement>("[data-hero-visual-detail]").forEach((element) => {
-		element.style.opacity = "1";
-		element.style.transform = "none";
-	});
 
 }
 
@@ -234,8 +230,6 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	const previousButton = document.querySelector<HTMLButtonElement>("[data-hero-prev]");
 	const nextButton = document.querySelector<HTMLButtonElement>("[data-hero-next]");
 	const counter = document.querySelector<HTMLElement>("[data-hero-counter]");
-	const label = document.querySelector<HTMLElement>("[data-hero-slide-label]");
-	const detail = document.querySelector<HTMLElement>("[data-hero-detail]");
 
 	if (!wrap || !stage || slides.length < 2 || wrap.dataset.heroSliderReady === "true") return;
 	wrap.dataset.heroSliderReady = "true";
@@ -250,25 +244,13 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	let isPaused = false;
 	const reducedMotion = prefersReducedMotion();
 	const total = slides.length;
-	const copyTargets = [label, detail].filter((element): element is HTMLElement => Boolean(element));
 
 	const formatIndex = (index: number) => String(index + 1).padStart(2, "0");
-	const updateCopy = (slide: HTMLElement, index: number, animate: boolean) => {
-		// State is applied synchronously so the counter and captions are always
-		// correct even if the animation ticker is throttled; the tween is only
-		// the entrance garnish. The counter is a screen-reader-only live region
-		// announcing the slide label -- no visual chrome on the photo.
+	const updateCopy = (slide: HTMLElement, index: number) => {
+		// The counter is a screen-reader-only live region announcing the slide
+		// label -- the photo carries no floating captions.
 		const slideLabel = slide.dataset.label || "Suasana relaksasi";
 		if (counter) counter.textContent = `${slideLabel} (${formatIndex(index + 1)} dari ${total})`;
-		if (label) label.textContent = slideLabel;
-		if (detail) detail.textContent = slide.dataset.detail || "Waktu untuk beristirahat.";
-
-		if (!gsap || !animate || !copyTargets.length) return;
-		gsap.fromTo(
-			copyTargets,
-			{ y: 7 },
-			{ y: 0, duration: 0.4, stagger: 0.04, ease: "power3.out", overwrite: "auto" },
-		);
 	};
 
 	const setAccessibilityState = (nextIndex: number) => {
@@ -308,7 +290,7 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		activeIndex = nextIndex;
 		lastTransitionAt = now;
 		setAccessibilityState(nextIndex);
-		updateCopy(incoming, nextIndex, true);
+		updateCopy(incoming, nextIndex);
 
 		if (!gsap || reducedMotion) {
 			scheduleNext();
@@ -348,7 +330,7 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		gsap.set(slides[activeIndex], { autoAlpha: 1, zIndex: 1 });
 	}
 	setAccessibilityState(activeIndex);
-	updateCopy(slides[activeIndex]!, activeIndex, false);
+	updateCopy(slides[activeIndex]!, activeIndex);
 
 	previousButton?.addEventListener("click", () => showSlide(activeIndex - 1, -1));
 	nextButton?.addEventListener("click", () => showSlide(activeIndex + 1, 1));
@@ -413,8 +395,6 @@ function animateHero(
 	const heroImage = heroImageWrap?.querySelector<HTMLElement>("img");
 	const heroWords = document.querySelectorAll<HTMLElement>("[data-hero-word]");
 	const heroReveal = document.querySelectorAll<HTMLElement>("[data-hero-main] [data-reveal]");
-	const heroSheetRule = document.querySelector<HTMLElement>("[data-hero-sheet-rule]");
-	const heroVisualDetail = document.querySelector<HTMLElement>("[data-hero-visual-detail]");
 
 	if (!hero || !heroMain || !heroCopy || !heroStage || !heroPaper) return;
 
@@ -428,18 +408,14 @@ function animateHero(
 	gsap.set(heroStage, { y: 24, rotate: 0, transformOrigin: "50% 50%" });
 	gsap.set(heroImageWrap, { scale: 1.16, xPercent: 4, transformOrigin: "50% 50%" });
 	if (heroImage) gsap.set(heroImage, { scale: 1.08, transformOrigin: "50% 50%" });
-	gsap.set(heroSheetRule, { scaleX: 0, transformOrigin: "left center" });
-	gsap.set(heroVisualDetail, { y: 16 });
 	gsap.set(heroReveal, { y: 24 });
 
 	const intro = gsap.timeline({ defaults: { ease: "expo.out" } });
 	intro
 		.to(heroPaper, { clipPath: "inset(0 0 0 0%)", x: 0, rotate: 0, duration: 1.2 }, 0.12)
 		.to(heroStage, { y: 0, rotate: 0, duration: 1.2 }, 0.12)
-		.to(heroSheetRule, { scaleX: 1, duration: 0.6 }, 0.38)
 		.to(heroImageWrap, { scale: 1, xPercent: 0, duration: 1.05 }, 0.24)
 		.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.88, stagger: 0.055 }, 0.34)
-		.to(heroVisualDetail, { y: 0, duration: 0.6 }, 0.62)
 		.to(heroReveal, { y: 0, duration: 0.66, stagger: 0.07 }, 0.68);
 
 	if (heroImage) intro.to(heroImage, { scale: 1, duration: 1.1 }, 0.2);
@@ -458,7 +434,6 @@ function animateHero(
 	});
 
 	scrollScene
-		.to(heroVisualDetail, { autoAlpha: 0, duration: 0.28 }, 0)
 		.to(heroCopy, { yPercent: -18, autoAlpha: 0, duration: 0.55 }, 0.08)
 		.to(heroStage, { yPercent: 9, duration: 1 }, 0)
 		.to(heroImageWrap, { scale: 1.09, duration: 1 }, 0);
@@ -534,21 +509,18 @@ function animateMobileExperience(
 	const heroImage = heroImageWrap?.querySelector<HTMLElement>("img");
 	const heroWords = document.querySelectorAll<HTMLElement>("[data-hero-word]");
 	const heroReveal = document.querySelectorAll<HTMLElement>("[data-hero-main] [data-reveal]");
-	const heroDetail = document.querySelector<HTMLElement>("[data-hero-visual-detail]");
 
 	if (hero && heroStage && heroImageWrap) {
 		gsap.set(heroStage, { y: 18, clipPath: "inset(0 0 10% 0)" });
 		gsap.set(heroImageWrap, { scale: 1.1, transformOrigin: "50% 50%" });
 		gsap.set(heroWords, { yPercent: 112, rotate: 2.5, transformOrigin: "left bottom" });
 		gsap.set(heroReveal, { y: 18 });
-		gsap.set(heroDetail, { y: 10 });
 
 		const arrival = gsap.timeline({ defaults: { ease: "expo.out" } });
 		arrival
 			.to(heroStage, { y: 0, clipPath: "inset(0 0 0% 0)", duration: 0.85 }, 0)
 			.to(heroImageWrap, { scale: 1, duration: 1.15 }, 0)
 			.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.78, stagger: 0.045 }, 0.2)
-			.to(heroDetail, { y: 0, duration: 0.48 }, 0.52)
 			.to(heroReveal, { y: 0, duration: 0.6, stagger: 0.07 }, 0.48);
 
 		// Mobile gets the same story without the pin: the intro photograph
