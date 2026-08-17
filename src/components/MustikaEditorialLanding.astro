@@ -893,7 +893,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.ledger-intro-grid {
 		display: grid;
-		grid-template-columns: minmax(150px, 0.33fr) minmax(0, 1.67fr);
+		grid-template-columns: minmax(0, 1fr);
 		gap: clamp(2rem, 7vw, 9rem);
 	}
 
@@ -2045,9 +2045,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		color: var(--ledger-paper);
 	}
 
-	/* The first editorial section uses an actual image as part of the story. */
+	/* The first editorial section uses an actual image as part of the story.
+	 * The grid carries a single child (the content grid): the editorial split
+	 * lives inside .ledger-intro-content, so no rail column is needed here. */
 	.mustika-ledger .ledger-intro-grid {
-		grid-template-columns: minmax(90px, 0.18fr) minmax(0, 1fr);
+		grid-template-columns: minmax(0, 1fr);
 		gap: clamp(2rem, 6vw, 7rem);
 	}
 
@@ -2380,7 +2382,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.mustika-ledger .service-row:hover .service-arrow {
-		transform: translate(0.2rem, -0.2rem);
+		color: var(--ledger-paper);
+		transform: translate(0.2rem, -0.2rem) rotate(45deg);
 	}
 
 	.mustika-ledger .faq-toggle {

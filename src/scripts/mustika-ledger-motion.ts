@@ -597,19 +597,15 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 			invalidateOnRefresh: true,
 		},
 	});
-	cardTimeline
-		.fromTo(
-			items,
-			{ clipPath: "inset(0 100% 0 0)", x: 24 },
-			{ clipPath: "inset(0 0% 0 0)", x: 0, stagger: 0.42, ease: "none" },
-			0,
-		)
-		.fromTo(
-			list.querySelectorAll<HTMLElement>(".service-row-media img"),
-			{ scale: 1.14 },
-			{ scale: 1, stagger: 0.42, ease: "none" },
-			0,
-		);
+	// The wipe is the card's whole entrance. The photograph's scale stays
+	// untouched so the stylesheet owns that transform: two writers on one
+	// transform property is exactly how a hover zoom gets stuck at half zoom.
+	cardTimeline.fromTo(
+		items,
+		{ clipPath: "inset(0 100% 0 0)", x: 24 },
+		{ clipPath: "inset(0 0% 0 0)", x: 0, stagger: 0.42, ease: "none" },
+		0,
+	);
 
 	// The hover preview is a desktop-only sweetener: every row already shows its
 	// photograph, so touch devices never need a popup (and never get stuck with
@@ -627,22 +623,39 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 		document.body.appendChild(preview);
 	}
 
+	// Warm the decode cache once, so the first hover on any row never shows
+	// the previous ritual's photograph while the real one decodes.
+	items.forEach((item) => {
+		const src = item.dataset.serviceImage;
+		if (!src) return;
+		const warm = new Image();
+		warm.decoding = "async";
+		warm.src = src;
+	});
+
 	// Position via transform only. Animating left/top fights whatever the
 	// stylesheet sets on the portal and can leave the card stuck at the left
 	// edge; x/y always track the pointer.
 	const previewX = gsap.quickTo(preview, "x", { duration: 0.32, ease: "power3.out" });
 	const previewY = gsap.quickTo(preview, "y", { duration: 0.32, ease: "power3.out" });
 	let previewOpen = false;
+	let activeItem: HTMLElement | null = null;
+	let lastPointer: { x: number; y: number } | null = null;
+	let openTween: ReturnType<GsapModule["default"]["to"]> | null = null;
+	let closeTween: ReturnType<GsapModule["default"]["to"]> | null = null;
+	let imageTween: ReturnType<GsapModule["default"]["to"]> | null = null;
 
 	const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
-	const pointerCoordinates = (event: PointerEvent) => {
+	// Accepts any pointer-like point, so the scroll re-anchor below can feed
+	// it a coordinate derived from the row's live bounds.
+	const pointerCoordinates = (point: { clientX: number; clientY: number }) => {
 		const gap = 28;
 		const previewWidth = preview.offsetWidth || 320;
 		const previewHeight = preview.offsetHeight || 430;
-		const placeLeft = event.clientX > window.innerWidth * 0.58;
-		const placeAbove = event.clientY > window.innerHeight * 0.66;
-		const rawX = event.clientX + (placeLeft ? -previewWidth - gap : gap);
-		const rawY = event.clientY + (placeAbove ? -previewHeight - gap : gap);
+		const placeLeft = point.clientX > window.innerWidth * 0.58;
+		const placeAbove = point.clientY > window.innerHeight * 0.66;
+		const rawX = point.clientX + (placeLeft ? -previewWidth - gap : gap);
+		const rawY = point.clientY + (placeAbove ? -previewHeight - gap : gap);
 		return {
 			x: clamp(rawX, 18, window.innerWidth - previewWidth - 18),
 			y: clamp(rawY, 18, window.innerHeight - previewHeight - 18),
@@ -651,6 +664,7 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 
 	const movePreview = (event: PointerEvent) => {
 		if (!previewOpen) return;
+		lastPointer = { x: event.clientX, y: event.clientY };
 		const { x, y } = pointerCoordinates(event);
 		previewX(x);
 		previewY(y);
@@ -662,6 +676,8 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 		if (!item) return;
 
 		previewOpen = true;
+		activeItem = item;
+		lastPointer = { x: event.clientX, y: event.clientY };
 		preview.dataset.servicePreviewOpen = "true";
 		preview.setAttribute("aria-hidden", "false");
 		previewImage.src = item.dataset.serviceImage || previewImage.src;
@@ -669,8 +685,13 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 		if (previewTitle) previewTitle.textContent = item.dataset.serviceTitle || "Ritual Mustika";
 		if (previewTag) previewTag.textContent = item.dataset.serviceTag || "Massage & wellness";
 
-		gsap.killTweensOf(preview);
-		gsap.killTweensOf(previewImage);
+		// Kill by reference only. A blanket killTweensOf() would take the
+		// quickTo pointer followers down together with the card's own tweens.
+		openTween?.kill();
+		closeTween?.kill();
+		imageTween?.kill();
+		previewX.tween.kill();
+		previewY.tween.kill();
 		gsap.set(preview, {
 			rotate: event.clientX > window.innerWidth * 0.58 ? 1.8 : -1.8,
 			transformOrigin: event.clientX > window.innerWidth * 0.58 ? "right bottom" : "left bottom",
@@ -678,12 +699,12 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 		// Place instantly on open; quickTo only smooths the follow afterwards.
 		const { x, y } = pointerCoordinates(event);
 		gsap.set(preview, { x, y });
-		gsap.fromTo(
+		openTween = gsap.fromTo(
 			preview,
 			{ autoAlpha: 0, scale: 0.78 },
 			{ autoAlpha: 1, scale: 1, duration: 0.48, ease: "expo.out" },
 		);
-		gsap.fromTo(
+		imageTween = gsap.fromTo(
 			previewImage,
 			{ scale: 1.16, xPercent: event.clientX > window.innerWidth * 0.58 ? 5 : -5 },
 			{ scale: 1, xPercent: 0, duration: 0.8, ease: "power3.out" },
@@ -693,34 +714,77 @@ function animateServiceLedger(gsap: GsapModule["default"]) {
 	const closePreview = () => {
 		if (!previewOpen) return;
 		previewOpen = false;
+		activeItem = null;
+		lastPointer = null;
 		preview.dataset.servicePreviewOpen = "false";
 		preview.setAttribute("aria-hidden", "true");
-		gsap.to(preview, { autoAlpha: 0, scale: 0.9, duration: 0.28, ease: "power3.in" });
+		openTween?.kill();
+		imageTween?.kill();
+		closeTween?.kill();
+		closeTween = gsap.to(preview, { autoAlpha: 0, scale: 0.9, duration: 0.28, ease: "power3.in" });
 	};
 
+	// Rows animate through the stylesheet (:hover transitions). GSAP owns the
+	// inline transforms on these elements for the scroll scrub, so a hover
+	// tween fighting it on the same transform is how a card ends up stuck
+	// mid-gesture. Only the hover line stays scripted: nothing else writes
+	// its scaleX.
 	items.forEach((item) => {
 		const hoverLine = item.querySelector<HTMLElement>(".service-hover-line");
-		const arrow = item.querySelector<HTMLElement>(".service-arrow");
 
 		item.addEventListener("pointerenter", (event) => {
 			if (event.pointerType === "touch") return;
-			gsap.to(item, { x: 8, duration: 0.42, ease: "power3.out" });
-			if (hoverLine) gsap.to(hoverLine, { scaleX: 1, duration: 0.42, ease: "power3.out" });
-			if (arrow) gsap.to(arrow, { rotate: 45, color: "#f0e9dd", duration: 0.38, ease: "power3.out" });
+			if (hoverLine) {
+				gsap.to(hoverLine, { scaleX: 1, duration: 0.42, ease: "power3.out", overwrite: "auto" });
+			}
 			openPreview(event);
 		});
 		item.addEventListener("pointermove", movePreview);
 		item.addEventListener("pointerleave", (event) => {
 			if (event.pointerType === "touch") return;
-			gsap.to(item, { x: 0, duration: 0.55, ease: "power4.out" });
-			if (hoverLine) gsap.to(hoverLine, { scaleX: 0, duration: 0.42, ease: "power3.out" });
-			if (arrow) gsap.to(arrow, { rotate: 0, color: "#c49a4e", duration: 0.45, ease: "power4.out" });
+			if (hoverLine) {
+				gsap.to(hoverLine, { scaleX: 0, duration: 0.42, ease: "power3.out", overwrite: "auto" });
+			}
 			closePreview();
 		});
 	});
 
 	document.addEventListener("keydown", (event) => {
 		if (event.key === "Escape") closePreview();
+	});
+
+	// Scrolling with a resting pointer would leave the card floating beside a
+	// coordinate that no longer sits on the row. Re-anchor it to the row's
+	// live bounds (rAF-throttled), and let go once the row leaves the viewport.
+	let scrollSyncQueued = false;
+	const syncPreviewToRow = () => {
+		if (scrollSyncQueued) return;
+		scrollSyncQueued = true;
+		requestAnimationFrame(() => {
+			scrollSyncQueued = false;
+			if (!previewOpen || !activeItem) return;
+			const bounds = activeItem.getBoundingClientRect();
+			if (bounds.bottom < 0 || bounds.top > window.innerHeight) {
+				closePreview();
+				return;
+			}
+			if (!lastPointer) return;
+			const anchor = {
+				clientX: clamp(lastPointer.x, bounds.left, bounds.right),
+				clientY: clamp(lastPointer.y, bounds.top, bounds.bottom),
+			};
+			const { x, y } = pointerCoordinates(anchor);
+			previewX(x);
+			previewY(y);
+		});
+	};
+	window.addEventListener("scroll", syncPreviewToRow, { passive: true });
+
+	// Alt-tab / switching windows never fires pointerleave: without these the
+	// card would stay frozen on an unfocused page.
+	window.addEventListener("blur", closePreview);
+	document.addEventListener("visibilitychange", () => {
+		if (document.hidden) closePreview();
 	});
 }
 
