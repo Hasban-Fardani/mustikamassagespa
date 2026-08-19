@@ -1,9 +1,9 @@
 ---
-import { getEmDashEntry, getSiteSettings } from "emdash";
+import { getEmDashEntry } from "emdash";
 import { getSeoMeta } from "emdash/seo";
 import Base from "../layouts/Base.astro";
 import MustikaLanding from "../components/MustikaEditorialLanding.astro";
-import { MUSTIKA_SEO } from "../lib/mustika-seo";
+import { MUSTIKA_OG_IMAGE, MUSTIKA_SEO, mustikaPageSeo } from "../lib/mustika-seo";
 
 const { entry: home, error, cacheHint } = await getEmDashEntry("pages", "home");
 
@@ -17,28 +17,23 @@ if (!home) {
 
 Astro.cache.set(cacheHint);
 
-const settings = await getSiteSettings();
-const siteTitle = settings.title || "Mustika Massage Spa";
-const homeSeoTitle = (home.data as typeof home.data & { seo?: { title?: unknown } }).seo?.title;
-const editorialTitle =
-	typeof homeSeoTitle === "string" && homeSeoTitle.trim()
-		? homeSeoTitle
-		: home.data.title;
-const seo = getSeoMeta(home, {
-	siteTitle: editorialTitle === siteTitle ? undefined : siteTitle,
-	siteUrl: Astro.url.origin,
-	path: "/",
-	defaultTitle: MUSTIKA_SEO.home.title,
-	defaultDescription: MUSTIKA_SEO.home.description,
-	defaultOgImage: "/images/mustika/mustika-hero.webp",
-});
+const seo = {
+	...getSeoMeta(home, {
+		siteUrl: Astro.url.origin,
+		path: "/",
+		defaultTitle: MUSTIKA_SEO.home.title,
+		defaultDescription: MUSTIKA_SEO.home.description,
+		defaultOgImage: MUSTIKA_OG_IMAGE,
+	}),
+	...mustikaPageSeo("home"),
+};
 ---
 
 <Base
-	title={home.data.title}
-	pageTitle={home.data.title}
+	title={seo.title}
+	pageTitle={MUSTIKA_SEO.home.shareTitle}
 	description={seo.description ?? undefined}
-	image={seo.ogImage ?? "/images/mustika/mustika-hero.webp"}
+	image={MUSTIKA_OG_IMAGE}
 	seo={seo}
 	content={{ collection: "pages", id: home.data.id, slug: home.id }}
 >

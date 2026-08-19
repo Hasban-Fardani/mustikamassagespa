@@ -49,8 +49,8 @@ const heroSlides = [
 		...heroSlideMeta[1],
 	},
 	{
-		desktopSrc: "/images/mustika/mustika-space.webp",
-		mobileSrc: "/images/mustika/mustika-space-720.webp",
+		desktopSrc: "/images/mustika/hero-03-facial-calm.webp",
+		mobileSrc: "/images/mustika/hero-03-facial-calm-720.webp",
 		...heroSlideMeta[2],
 	},
 	{
@@ -150,13 +150,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 				<figure class="hero-visual" data-hero-stage aria-label="Foto pijat Mustika">
 					<div class="hero-visual-frame" data-hero-paper>
-						<div class="hero-visual-meta">
-							<span class="sr-only-slide-status" data-hero-counter aria-live="polite">{heroSlides[0].label}</span>
-							<span class="hero-visual-nav">
-								<button type="button" data-hero-prev aria-label="Lihat foto sebelumnya">←</button>
-								<button type="button" data-hero-next aria-label="Lihat foto berikutnya">→</button>
-							</span>
-						</div>
+						<span class="sr-only-slide-status" data-hero-counter aria-live="polite">{heroSlides[0].label}</span>
 						<div
 							class="hero-visual-image"
 							data-hero-image-wrap
@@ -185,6 +179,10 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 									/>
 								</picture>
 							))}
+							<div class="hero-visual-nav">
+								<button type="button" data-hero-prev aria-label="Lihat foto sebelumnya">←</button>
+								<button type="button" data-hero-next aria-label="Lihat foto berikutnya">→</button>
+							</div>
 						</div>
 					</div>
 				</figure>
@@ -627,7 +625,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		position: absolute;
 		inset: 0;
 		display: grid;
-		grid-template-rows: auto minmax(0, 1fr);
+		grid-template-rows: minmax(0, 1fr);
 		padding: clamp(0.95rem, 1.8vw, 1.35rem);
 		border: 1px solid var(--ledger-line);
 		background: var(--ledger-paper);
@@ -636,46 +634,35 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		transform-origin: 50% 50%;
 	}
 
-	.hero-visual-meta {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		gap: 1rem;
-		color: var(--ledger-muted);
-		font-size: 0.7rem;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		line-height: 1.35;
-		text-transform: uppercase;
-	}
-
-	.hero-visual-meta span:first-child {
-		color: var(--ledger-oxide);
-	}
-
 	.hero-visual-nav {
+		position: absolute;
+		left: clamp(0.85rem, 2vw, 1.35rem);
+		bottom: clamp(0.85rem, 2.2vw, 1.5rem);
+		z-index: 5;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.45rem;
-		white-space: nowrap;
+		gap: 0.4rem;
 	}
 
 	.hero-visual-nav button {
 		display: grid;
-		width: 1.8rem;
-		height: 1.8rem;
+		width: 2.4rem;
+		height: 2.4rem;
 		border: 0;
-		background: transparent;
-		color: var(--ledger-muted);
+		border-radius: 999px;
+		background: rgba(22, 16, 12, 0.42);
+		color: var(--ledger-paper);
 		font: inherit;
 		line-height: 1;
 		place-items: center;
-		transition: color 180ms ease, transform 260ms var(--ease-out-quint);
+		backdrop-filter: blur(10px);
+		transition: color 180ms ease, transform 260ms var(--ease-out-quint), background 180ms ease;
 	}
 
 	.hero-visual-nav button:hover,
 	.hero-visual-nav button:focus-visible {
-		color: var(--ledger-oxide);
+		background: rgba(22, 16, 12, 0.68);
+		color: var(--ledger-paper);
 	}
 
 	.hero-visual-nav button:first-child:hover {
@@ -745,7 +732,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.hero-visual-image img {
 		object-fit: cover;
-		object-position: 48% 48%;
+		object-position: 50% 22%;
 		transform: scale(1.04);
 		will-change: transform;
 	}
@@ -757,8 +744,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		}
 
 		.hero-visual-nav button {
-			width: 1.55rem;
-			height: 1.55rem;
+			width: 2.35rem;
+			height: 2.35rem;
 		}
 	}
 
@@ -908,7 +895,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		filter: saturate(0.92) contrast(1.03);
+		filter: saturate(1.12) contrast(1.06) sepia(0.06);
 		will-change: transform;
 	}
 
@@ -976,12 +963,12 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		filter: saturate(0.82) contrast(1);
+		filter: saturate(1.08) contrast(1.05) sepia(0.05);
 		transition: filter 600ms ease, transform 700ms var(--ease-out-quint);
 	}
 
 	.service-row:hover .service-row-media img {
-		filter: saturate(1) contrast(1.04);
+		filter: saturate(1.18) contrast(1.08) sepia(0.04);
 		transform: scale(1.035);
 	}
 
@@ -1399,7 +1386,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.book-visual img {
 		display: block;
 		object-fit: cover;
-		filter: saturate(0.86) contrast(1.02) brightness(0.92);
+		filter: saturate(1.1) contrast(1.06) sepia(0.08) brightness(0.98);
 		transform: scale(1.03);
 	}
 
@@ -1704,7 +1691,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	.ledger-button,
 	.ledger-text-link,
 	.ledger-inline-link,
-	.hero-visual-meta,
 	.book-phone {
 		font-size: 0.75rem;
 	}
@@ -1811,23 +1797,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		inset: 0;
 		z-index: 2;
 		background:
-			linear-gradient(90deg, rgba(32, 39, 31, 0.94) 0%, rgba(32, 39, 31, 0.62) 34%, rgba(32, 39, 31, 0.14) 68%),
-			linear-gradient(0deg, rgba(32, 39, 31, 0.78) 0%, rgba(32, 39, 31, 0.28) 42%, transparent 62%);
+			linear-gradient(90deg, rgba(28, 18, 12, 0.72) 0%, rgba(28, 18, 12, 0.28) 36%, transparent 66%),
+			linear-gradient(180deg, transparent 38%, rgba(18, 12, 8, 0.52) 100%);
 		content: "";
 		pointer-events: none;
 	}
-
-	.mustika-ledger .hero-visual-meta {
-		position: absolute;
-		top: clamp(6.6rem, 9vw, 8.5rem);
-		right: 0;
-		left: 0;
-		z-index: 4;
-		width: var(--site-width);
-		margin-inline: auto;
-		color: var(--ledger-paper);
-	}
-
 
 	.mustika-ledger .hero-visual-nav button {
 		color: var(--ledger-paper);
@@ -1848,9 +1822,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.mustika-ledger .hero-visual-image img {
-		object-position: 50% 54%;
+		object-position: 50% 24%;
 		transform: scale(1.02);
-		filter: saturate(0.88) contrast(1.04);
+		filter: saturate(1.16) contrast(1.08) sepia(0.08);
 	}
 
 
@@ -1933,7 +1907,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		width: 100%;
 		aspect-ratio: 0.78;
 		object-fit: cover;
-		filter: saturate(0.82) contrast(1.03);
+		filter: saturate(1.1) contrast(1.06) sepia(0.06);
 	}
 
 	.mustika-ledger .ledger-intro-copy {
@@ -2032,7 +2006,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.mustika-ledger .book-visual img {
-		filter: saturate(0.82) contrast(1.04) brightness(0.76);
+		filter: saturate(1.12) contrast(1.08) sepia(0.08) brightness(0.92);
 	}
 
 	.mustika-ledger .book-visual-wash {
@@ -2101,11 +2075,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 			order: 0;
 			width: 100%;
 			aspect-ratio: 1.2;
-		}
-
-		.mustika-ledger .hero-visual-meta {
-			width: calc(100% - 2.5rem);
-			top: 1.2rem;
 		}
 
 		.mustika-ledger .ledger-copy {
@@ -2283,12 +2252,6 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	@media (max-width: 430px) {
-		.mustika-ledger .hero-visual-meta {
-			width: calc(100% - 2rem);
-			top: 1rem;
-			font-size: 0.68rem;
-		}
-
 		.mustika-ledger .ledger-copy {
 			margin-top: 0.25rem;
 		}

@@ -239,6 +239,7 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	// GSAP ticker is throttled and the timeline's onComplete never fires.
 	let lastTransitionAt = 0;
 	let timer: number | undefined;
+	let kenBurns: ReturnType<GsapModule["default"]["to"]> | null = null;
 	let pointerStartX: number | null = null;
 	let isVisible = true;
 	let isPaused = false;
@@ -251,6 +252,30 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		// label -- the photo carries no floating captions.
 		const slideLabel = slide.dataset.label || "Suasana relaksasi";
 		if (counter) counter.textContent = `${slideLabel} (${formatIndex(index + 1)} dari ${total})`;
+	};
+
+	const startKenBurns = (image: HTMLElement | null) => {
+		kenBurns?.kill();
+		kenBurns = null;
+		if (!gsap || reducedMotion || !image || !isVisible || document.hidden) return;
+		gsap.set(image, { scale: 1.04, yPercent: 0, transformOrigin: "50% 22%" });
+		kenBurns = gsap.to(image, {
+			scale: 1.14,
+			yPercent: -5.5,
+			duration: 9.4,
+			ease: "none",
+			overwrite: "auto",
+			force3D: true,
+		});
+	};
+
+	const pulseControl = (button: HTMLButtonElement | null) => {
+		if (!gsap || reducedMotion || !button) return;
+		gsap.fromTo(
+			button,
+			{ scale: 1 },
+			{ scale: 0.88, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out", overwrite: true },
+		);
 	};
 
 	const setAccessibilityState = (nextIndex: number) => {
@@ -269,13 +294,18 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	const scheduleNext = () => {
 		clearTimer();
 		if (reducedMotion || isPaused || !isVisible || document.hidden) return;
-		timer = window.setTimeout(() => showSlide(activeIndex + 1, 1, true), 4800);
+		timer = window.setTimeout(() => showSlide(activeIndex + 1, 1, true), 5600);
 	};
 
-	const showSlide = (requestedIndex: number, direction: 1 | -1, automatic = false) => {
+	const showSlide = (
+		requestedIndex: number,
+		direction: 1 | -1,
+		automatic = false,
+		axis: "x" | "y" = "y",
+	) => {
 		const now = performance.now();
 		const nextIndex = (requestedIndex + total) % total;
-		if (nextIndex === activeIndex || now - lastTransitionAt < 950) {
+		if (nextIndex === activeIndex || now - lastTransitionAt < 1200) {
 			if (automatic) scheduleNext();
 			return;
 		}
@@ -297,29 +327,59 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 			return;
 		}
 
-		const incomingClip = direction > 0 ? "inset(0 0 0 100%)" : "inset(0 100% 0 0)";
-		const outgoingClip = direction > 0 ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)";
+		kenBurns?.kill();
+		const incomingClip =
+			axis === "y"
+				? direction > 0
+					? "inset(100% 0 0 0)"
+					: "inset(0 0 100% 0)"
+				: direction > 0
+					? "inset(0 0 0 100%)"
+					: "inset(0 100% 0 0)";
+		const outgoingClip =
+			axis === "y"
+				? direction > 0
+					? "inset(0 0 100% 0)"
+					: "inset(100% 0 0 0)"
+				: direction > 0
+					? "inset(0 100% 0 0)"
+					: "inset(0 0 0 100%)";
 		const timeline = gsap.timeline({
 			onComplete: () => {
 				gsap.set(outgoing, { autoAlpha: 0, zIndex: 0, clipPath: "inset(0 0 0 0)" });
 				gsap.set(incoming, { autoAlpha: 1, zIndex: 1, clipPath: "inset(0 0 0 0)" });
+				startKenBurns(incomingImage);
 				scheduleNext();
 			},
 		});
 
 		timeline
 			.set(incoming, { autoAlpha: 1, zIndex: 2, clipPath: incomingClip })
-			.to(outgoing, { clipPath: outgoingClip, duration: 0.72, ease: "expo.inOut" }, 0)
-			.to(incoming, { clipPath: "inset(0 0% 0 0%)", duration: 0.82, ease: "expo.inOut" }, 0.06);
+			.to(outgoing, { clipPath: outgoingClip, duration: 1.12, ease: "expo.inOut" }, 0)
+			.to(incoming, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.28, ease: "expo.inOut" }, 0.05);
 
 		if (outgoingImage) {
-			timeline.to(outgoingImage, { scale: 1.055, xPercent: direction * -2, duration: 0.72, ease: "power2.inOut" }, 0);
+			timeline.to(
+				outgoingImage,
+				{
+					scale: 1.16,
+					xPercent: axis === "x" ? direction * -5 : 0,
+					yPercent: axis === "y" ? direction * -6 : 2,
+					duration: 1.12,
+					ease: "power2.inOut",
+				},
+				0,
+			);
 		}
 		if (incomingImage) {
 			timeline.fromTo(
 				incomingImage,
-				{ scale: 1.12, xPercent: direction * 3 },
-				{ scale: 1.015, xPercent: 0, duration: 1, ease: "power3.out" },
+				{
+					scale: 1.28,
+					xPercent: axis === "x" ? direction * 6 : 0,
+					yPercent: axis === "y" ? direction * 8 : 0,
+				},
+				{ scale: 1.04, xPercent: 0, yPercent: 0, duration: 1.38, ease: "power3.out" },
 				0.02,
 			);
 		}
@@ -328,20 +388,29 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 	if (gsap) {
 		gsap.set(slides, { autoAlpha: 0, zIndex: 0, clipPath: "inset(0 0 0 0)" });
 		gsap.set(slides[activeIndex], { autoAlpha: 1, zIndex: 1 });
+		gsap.delayedCall(1.45, () => {
+			startKenBurns(slides[activeIndex]?.querySelector<HTMLElement>("img") ?? null);
+		});
 	}
 	setAccessibilityState(activeIndex);
 	updateCopy(slides[activeIndex]!, activeIndex);
 
-	previousButton?.addEventListener("click", () => showSlide(activeIndex - 1, -1));
-	nextButton?.addEventListener("click", () => showSlide(activeIndex + 1, 1));
+	previousButton?.addEventListener("click", () => {
+		pulseControl(previousButton);
+		showSlide(activeIndex - 1, -1, false, "y");
+	});
+	nextButton?.addEventListener("click", () => {
+		pulseControl(nextButton);
+		showSlide(activeIndex + 1, 1, false, "y");
+	});
 	wrap.addEventListener("keydown", (event) => {
 		if (event.key === "ArrowLeft") {
 			event.preventDefault();
-			showSlide(activeIndex - 1, -1);
+			showSlide(activeIndex - 1, -1, false, "x");
 		}
 		if (event.key === "ArrowRight") {
 			event.preventDefault();
-			showSlide(activeIndex + 1, 1);
+			showSlide(activeIndex + 1, 1, false, "x");
 		}
 	});
 	wrap.addEventListener("pointerdown", (event) => {
@@ -352,7 +421,7 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		const distance = event.clientX - pointerStartX;
 		pointerStartX = null;
 		if (Math.abs(distance) < 42) return;
-		showSlide(activeIndex + (distance < 0 ? 1 : -1), distance < 0 ? 1 : -1);
+		showSlide(activeIndex + (distance < 0 ? 1 : -1), distance < 0 ? 1 : -1, false, "x");
 	});
 	// No section-wide hover pause: the stage covers the whole first viewport,
 	// so a resting cursor would freeze autoplay forever. The deck still pauses
@@ -371,8 +440,13 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				isVisible = Boolean(entry?.isIntersecting && entry.intersectionRatio > 0.22);
-				if (isVisible) scheduleNext();
-				else clearTimer();
+				if (isVisible) {
+					startKenBurns(slides[activeIndex]?.querySelector<HTMLElement>("img") ?? null);
+					scheduleNext();
+				} else {
+					kenBurns?.pause();
+					clearTimer();
+				}
 			},
 			{ threshold: [0, 0.22] },
 		);
@@ -400,25 +474,25 @@ function animateHero(
 
 	gsap.set(heroWords, { yPercent: 120, rotate: 2.5, transformOrigin: "left bottom" });
 	gsap.set(heroPaper, {
-		clipPath: "inset(0 0 0 100%)",
-		x: 28,
+		clipPath: "inset(100% 0 0 0)",
+		y: 36,
 		rotate: 0,
-		transformOrigin: "50% 50%",
+		transformOrigin: "50% 100%",
 	});
-	gsap.set(heroStage, { y: 24, rotate: 0, transformOrigin: "50% 50%" });
-	gsap.set(heroImageWrap, { scale: 1.16, xPercent: 4, transformOrigin: "50% 50%" });
-	if (heroImage) gsap.set(heroImage, { scale: 1.08, transformOrigin: "50% 50%" });
-	gsap.set(heroReveal, { y: 24 });
+	gsap.set(heroStage, { y: 28, rotate: 0, transformOrigin: "50% 50%" });
+	gsap.set(heroImageWrap, { scale: 1.22, yPercent: 6, transformOrigin: "50% 30%" });
+	if (heroImage) gsap.set(heroImage, { scale: 1.14, transformOrigin: "50% 24%" });
+	gsap.set(heroReveal, { y: 36, clipPath: "inset(110% 0 0 0)" });
 
 	const intro = gsap.timeline({ defaults: { ease: "expo.out" } });
 	intro
-		.to(heroPaper, { clipPath: "inset(0 0 0 0%)", x: 0, rotate: 0, duration: 1.2 }, 0.12)
-		.to(heroStage, { y: 0, rotate: 0, duration: 1.2 }, 0.12)
-		.to(heroImageWrap, { scale: 1, xPercent: 0, duration: 1.05 }, 0.24)
-		.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.88, stagger: 0.055 }, 0.34)
-		.to(heroReveal, { y: 0, duration: 0.66, stagger: 0.07 }, 0.68);
+		.to(heroPaper, { clipPath: "inset(0% 0 0 0)", y: 0, rotate: 0, duration: 1.42 }, 0.06)
+		.to(heroStage, { y: 0, rotate: 0, duration: 1.32 }, 0.06)
+		.to(heroImageWrap, { scale: 1, yPercent: 0, duration: 1.28 }, 0.16)
+		.to(heroWords, { yPercent: 0, rotate: 0, duration: 1.08, stagger: 0.075 }, 0.24)
+		.to(heroReveal, { y: 0, clipPath: "inset(0% 0 0 0)", duration: 0.86, stagger: 0.1 }, 0.7);
 
-	if (heroImage) intro.to(heroImage, { scale: 1, duration: 1.1 }, 0.2);
+	if (heroImage) intro.to(heroImage, { scale: 1.04, duration: 1.32 }, 0.14);
 
 	// The hero scrolls away naturally -- no pin, no extra scroll length. Layered
 	// parallax keeps the exit continuous so nothing feels skipped or teleported.
@@ -447,15 +521,14 @@ function animateHero(
 		if (event.pointerType === "touch") return;
 		const x = event.clientX / window.innerWidth - 0.5;
 		const y = event.clientY / window.innerHeight - 0.5;
-		stageX(x * 15);
-		stageY(y * 10);
-		copyX(x * -4);
-		copyY(y * -2.5);
+		stageX(x * 22);
+		stageY(y * 14);
+		copyX(x * -6);
+		copyY(y * -3.5);
 	};
 
 	window.addEventListener("pointermove", onPointerMove, { passive: true });
 	window.addEventListener("load", () => ScrollTrigger.refresh(), { once: true });
-	enableHeroSlider(gsap);
 
 	// gsap.matchMedia() kills these tweens when the breakpoint flips, but not
 	// listeners bound straight to window -- without this cleanup a resize or
@@ -512,27 +585,47 @@ function animateMobileExperience(
 	ScrollTrigger: ScrollTriggerModule["ScrollTrigger"],
 ) {
 	const hero = document.querySelector<HTMLElement>("[data-ledger-hero]");
+	const heroCopy = document.querySelector<HTMLElement>("[data-hero-copy]");
 	const heroStage = document.querySelector<HTMLElement>("[data-hero-stage]");
+	const heroPaper = document.querySelector<HTMLElement>("[data-hero-paper]");
 	const heroImageWrap = document.querySelector<HTMLElement>("[data-hero-image-wrap]");
 	const heroImage = heroImageWrap?.querySelector<HTMLElement>("img");
 	const heroWords = document.querySelectorAll<HTMLElement>("[data-hero-word]");
 	const heroReveal = document.querySelectorAll<HTMLElement>("[data-hero-main] [data-reveal]");
 
-	if (hero && heroStage && heroImageWrap) {
-		gsap.set(heroStage, { y: 18, clipPath: "inset(0 0 10% 0)" });
-		gsap.set(heroImageWrap, { scale: 1.1, transformOrigin: "50% 50%" });
-		gsap.set(heroWords, { yPercent: 112, rotate: 2.5, transformOrigin: "left bottom" });
-		gsap.set(heroReveal, { y: 18 });
+	if (hero && heroStage && heroImageWrap && heroPaper) {
+		gsap.set(heroWords, { yPercent: 120, rotate: 2.5, transformOrigin: "left bottom" });
+		gsap.set(heroPaper, { clipPath: "inset(100% 0 0 0)", y: 28, transformOrigin: "50% 100%" });
+		gsap.set(heroStage, { y: 18 });
+		gsap.set(heroImageWrap, { scale: 1.22, yPercent: 8, transformOrigin: "50% 28%" });
+		if (heroImage) gsap.set(heroImage, { scale: 1.16, transformOrigin: "50% 22%" });
+		gsap.set(heroReveal, { y: 28, clipPath: "inset(110% 0 0 0)" });
 
 		const arrival = gsap.timeline({ defaults: { ease: "expo.out" } });
 		arrival
-			.to(heroStage, { y: 0, clipPath: "inset(0 0 0% 0)", duration: 0.85 }, 0)
-			.to(heroImageWrap, { scale: 1, duration: 1.15 }, 0)
-			.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.78, stagger: 0.045 }, 0.2)
-			.to(heroReveal, { y: 0, duration: 0.6, stagger: 0.07 }, 0.48);
+			.to(heroPaper, { clipPath: "inset(0% 0 0 0)", y: 0, duration: 1.18 }, 0)
+			.to(heroStage, { y: 0, duration: 1.12 }, 0)
+			.to(heroImageWrap, { scale: 1, yPercent: 0, duration: 1.28 }, 0.08)
+			.to(heroWords, { yPercent: 0, rotate: 0, duration: 0.98, stagger: 0.065 }, 0.14)
+			.to(heroReveal, { y: 0, clipPath: "inset(0% 0 0 0)", duration: 0.78, stagger: 0.09 }, 0.52);
 
-		// Mobile gets the same story without the pin: the intro photograph
-		// settles as it passes through the viewport.
+		if (heroImage) arrival.to(heroImage, { scale: 1.04, duration: 1.22 }, 0.06);
+
+		if (heroCopy) {
+			gsap.to(heroCopy, {
+				yPercent: -14,
+				autoAlpha: 0,
+				ease: "none",
+				scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.7, invalidateOnRefresh: true },
+			});
+		}
+
+		gsap.to(heroImageWrap, {
+			scale: 1.12,
+			ease: "none",
+			scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.85, invalidateOnRefresh: true },
+		});
+
 		const introMedia = document.querySelector<HTMLElement>(".ledger-intro-media img");
 		if (introMedia) {
 			gsap.fromTo(
@@ -545,14 +638,6 @@ function animateMobileExperience(
 					scrollTrigger: { trigger: introMedia, start: "top bottom", end: "bottom top", scrub: 1, invalidateOnRefresh: true },
 				},
 			);
-		}
-
-		if (heroImage) {
-			gsap.to(heroImage, {
-				yPercent: 5,
-				ease: "none",
-				scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.8 },
-			});
 		}
 	}
 

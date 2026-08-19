@@ -1,14 +1,13 @@
 ---
-import { getEmDashEntry, getMenu, getSiteSettings } from "emdash";
+import { getEmDashEntry, getMenu } from "emdash";
 import { getSeoMeta } from "emdash/seo";
 import Base from "../layouts/Base.astro";
 import { findMustikaCmsNode, getMustikaCmsNodes, readMustikaString } from "../lib/mustika-content";
 import { MUSTIKA_COPY } from "../lib/mustika-copy";
-import { MUSTIKA_SEO } from "../lib/mustika-seo";
+import { MUSTIKA_OG_IMAGE, MUSTIKA_SEO, mustikaPageSeo } from "../lib/mustika-seo";
 
-const [{ entry: contact, error, cacheHint }, settings, supportMenu] = await Promise.all([
+const [{ entry: contact, error, cacheHint }, supportMenu] = await Promise.all([
 	getEmDashEntry("pages", "contact"),
-	getSiteSettings(),
 	getMenu("footer_support"),
 ]);
 
@@ -22,14 +21,16 @@ if (!contact) {
 
 Astro.cache.set(cacheHint);
 
-const seo = getSeoMeta(contact, {
-	siteTitle: settings.title || "Mustika Massage Spa",
-	siteUrl: Astro.url.origin,
-	path: "/contact",
-	defaultTitle: MUSTIKA_SEO.contact.title,
-	defaultDescription: MUSTIKA_SEO.contact.description,
-	defaultOgImage: "/images/mustika/mustika-hero.webp",
-});
+const seo = {
+	...getSeoMeta(contact, {
+		siteUrl: Astro.url.origin,
+		path: "/contact",
+		defaultTitle: MUSTIKA_SEO.contact.title,
+		defaultDescription: MUSTIKA_SEO.contact.description,
+		defaultOgImage: MUSTIKA_OG_IMAGE,
+	}),
+	...mustikaPageSeo("contact"),
+};
 
 const nodes = getMustikaCmsNodes(contact.data.content);
 const heroNode = findMustikaCmsNode(nodes, "mustika.hero", "marketing.hero");
@@ -47,10 +48,10 @@ const heroLocation = copy.asideNote;
 ---
 
 <Base
-	title={contact.data.title}
-	pageTitle={contact.data.title}
+	title={seo.title}
+	pageTitle={MUSTIKA_SEO.contact.shareTitle}
 	description={seo.description ?? undefined}
-	image={seo.ogImage ?? "/images/mustika/mustika-hero.webp"}
+	image={MUSTIKA_OG_IMAGE}
 	seo={seo}
 	content={{ collection: "pages", id: contact.data.id, slug: contact.id }}
 >

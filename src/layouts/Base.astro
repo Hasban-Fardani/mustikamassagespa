@@ -3,6 +3,10 @@ import { getMenu, getSiteSettings } from "emdash";
 import { EmDashBodyEnd, EmDashBodyStart, EmDashHead } from "emdash/ui";
 import { createPublicPageContext } from "emdash/page";
 import {
+	MUSTIKA_OG_IMAGE_ALT,
+	MUSTIKA_OG_IMAGE_HEIGHT,
+	MUSTIKA_OG_IMAGE_TYPE,
+	MUSTIKA_OG_IMAGE_WIDTH,
 	MUSTIKA_PHONE,
 	MUSTIKA_SITE_DESCRIPTION,
 	MUSTIKA_WHATSAPP_URL,
@@ -28,6 +32,7 @@ interface Props {
 		description?: string | null;
 		canonical?: string | null;
 		ogImage?: string | null;
+		ogImageAlt?: string | null;
 		robots?: string | null;
 	};
 }
@@ -60,6 +65,9 @@ const resolvedDescription = seo?.description || description || siteDescription;
 const canonical = seo?.canonical || new URL(Astro.url.pathname, Astro.url.origin).href;
 const resolvedImage = seo?.ogImage || image;
 const absoluteImage = resolvedImage ? toAbsoluteUrl(resolvedImage, Astro.url) : undefined;
+const shareTitle = seo?.ogTitle || fullTitle;
+const shareDescription = seo?.ogDescription || resolvedDescription;
+const shareImageAlt = seo?.ogImageAlt || MUSTIKA_OG_IMAGE_ALT;
 type FooterMenu = NonNullable<typeof footerProduct>;
 type FooterMenuGroup = { menu: FooterMenu; label: string };
 const footerMenus: FooterMenuGroup[] = [
@@ -79,9 +87,13 @@ const structuredData = {
 			name: siteTitle,
 			description: siteDescription,
 			url: businessUrl,
-			image: absoluteImage || toAbsoluteUrl(logoSrc, Astro.url),
+			image: [
+				absoluteImage || toAbsoluteUrl(logoSrc, Astro.url),
+				toAbsoluteUrl(logoSrc, Astro.url),
+			],
 			logo: toAbsoluteUrl(logoSrc, Astro.url),
 			telephone: MUSTIKA_PHONE,
+			priceRange: "IDR 245000-475000",
 			address: {
 				"@type": "PostalAddress",
 				addressLocality: "Bandung",
@@ -116,8 +128,8 @@ const pageCtx = createPublicPageContext({
 	image: absoluteImage,
 	content,
 	seo: {
-		ogTitle: seo?.ogTitle || fullTitle,
-		ogDescription: seo?.ogDescription || resolvedDescription,
+		ogTitle: shareTitle,
+		ogDescription: shareDescription,
 		ogImage: absoluteImage,
 		robots: seo?.robots,
 	},
@@ -134,11 +146,23 @@ const pageCtx = createPublicPageContext({
 		<meta name="theme-color" content="#f0e9dd" />
 		<meta name="format-detection" content="telephone=yes" />
 		<meta property="og:locale" content="id_ID" />
+		<meta name="author" content={siteTitle} />
 		<link rel="icon" type="image/webp" href={faviconSrc} />
+		<link rel="apple-touch-icon" href={logoSrc} />
 		<title>{fullTitle}</title>
 		{seo?.robots && <meta name="robots" content={seo.robots} />}
 		<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
 		<EmDashHead page={pageCtx} />
+		{absoluteImage && (
+			<>
+				<meta property="og:image:secure_url" content={absoluteImage} />
+				<meta property="og:image:type" content={MUSTIKA_OG_IMAGE_TYPE} />
+				<meta property="og:image:width" content={String(MUSTIKA_OG_IMAGE_WIDTH)} />
+				<meta property="og:image:height" content={String(MUSTIKA_OG_IMAGE_HEIGHT)} />
+				<meta property="og:image:alt" content={shareImageAlt} />
+				<meta name="twitter:image:alt" content={shareImageAlt} />
+			</>
+		)}
 		<script is:inline>
 			document.documentElement.classList.add("js");
 		</script>

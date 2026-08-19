@@ -10,10 +10,18 @@ export const MUSTIKA_COPY = {
 		homeTitle: "Mustika Massage Spa Bandung | Pijat",
 		homeDescription:
 			"Pijat tradisional, aromaterapi, dan full body plus scrub di Bandung. Harga nett. Chat WhatsApp untuk booking.",
+		homeShareTitle: "Mustika Massage Spa Bandung",
+		homeShareDescription:
+			"Pijat tradisional, aromaterapi, full body plus scrub. Harga nett. Chat WhatsApp 0812 2273 9180.",
 		pricingTitle: "Harga pijat Bandung | Mustika",
 		pricingDescription: "Harga pijat Mustika di Bandung, semua nett. Pilih durasi atau chat WhatsApp.",
+		pricingShareTitle: "Harga pijat Mustika Bandung",
+		pricingShareDescription: "Harga nett Traditional, Aromatherapy, Full Body. Pilih durasi atau chat WhatsApp.",
 		contactTitle: "Booking pijat Bandung | Mustika",
 		contactDescription: "Booking pijat Mustika di Bandung lewat WhatsApp. Tulis layanan dan jam yang mau.",
+		contactShareTitle: "Booking pijat Mustika Bandung",
+		contactShareDescription: "Chat WhatsApp 0812 2273 9180. Tulis layanan dan jam yang mau.",
+		ogImageAlt: "Wanita dengan wajah tenang sedang pijat di Mustika Bandung",
 	},
 	hero: {
 		headline: "Pegal dari pagi?",
@@ -164,8 +172,8 @@ export const MUSTIKA_COPY = {
 			alt: "Terapis merawat wajah klien yang berbaring",
 		},
 		{
-			label: "Ruang Mustika",
-			alt: "Ruang pijat Mustika yang bersih",
+			label: "Wajah tenang",
+			alt: "Wanita dengan wajah tenang saat perawatan wajah",
 		},
 		{
 			label: "Pijat wajah",
