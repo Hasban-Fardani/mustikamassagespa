@@ -21,7 +21,7 @@ export const MUSTIKA_COPY = {
 		contactDescription: "Booking pijat Mustika di Bandung lewat WhatsApp. Tulis layanan dan jam yang mau.",
 		contactShareTitle: "Booking pijat Mustika Bandung",
 		contactShareDescription: "Chat WhatsApp 0812 2273 9180. Tulis layanan dan jam yang mau.",
-		ogImageAlt: "Wanita dengan wajah tenang sedang pijat di Mustika Bandung",
+		ogImageAlt: "Wanita berbaring tenang di meja pijat Mustika Bandung",
 	},
 	hero: {
 		headline: "Pegal dari pagi?",
@@ -64,19 +64,19 @@ export const MUSTIKA_COPY = {
 			},
 			{
 				title: "Wellness Therapy",
-				tag: "Tidak ada paket kaku",
+				tag: "Nyesuaiin kondisi",
 				description: "Ceritakan kondisinya. Terapis yang nyesuaiin tekanan, minyak, dan durasi.",
 			},
 		],
 	},
 	experience: {
-		headline: "Datang, cerita,",
-		emphasis: "lalu berbaring.",
-		body: "Tidak ada formulir panjang. Bilang pegalnya di mana, kami yang atur sisanya.",
+		headline: "Cara kerjanya",
+		emphasis: "begini.",
+		body: "Datang, bilang pegalnya di mana. Terapis yang atur minyak sama tekanan.",
 		steps: [
 			{
 				title: "Bilang pegalnya di mana",
-				text: 'Cukup "bahu kiri" atau "kaki semua". Tidak usah panjang-panjang.',
+				text: 'Cukup "bahu kiri" atau "kaki semua".',
 			},
 			{
 				title: "Terapis yang atur",
@@ -164,20 +164,20 @@ export const MUSTIKA_COPY = {
 	},
 	heroSlides: [
 		{
-			label: "Klien sedang pijat",
-			alt: "Wanita dengan wajah tenang sedang pijat",
+			label: "Pijat punggung",
+			alt: "Terapis memijat punggung klien di meja pijat",
 		},
 		{
-			label: "Perawatan wajah",
-			alt: "Terapis merawat wajah klien yang berbaring",
+			label: "Istirahat di meja",
+			alt: "Wanita berbaring tenang di meja pijat",
 		},
 		{
 			label: "Wajah tenang",
-			alt: "Wanita dengan wajah tenang saat perawatan wajah",
+			alt: "Wanita dengan wajah tenang saat dipijat",
 		},
 		{
-			label: "Pijat wajah",
-			alt: "Wanita berbaring saat pijat wajah",
+			label: "Minyak hangat",
+			alt: "Terapis menuang minyak pijat ke punggung klien",
 		},
 	],
 } as const;

@@ -191,7 +191,7 @@
 								{
 									"icon": "clock",
 									"title": "Wellness Therapy",
-									"tag": "Tidak ada paket kaku",
+									"tag": "Nyesuaiin kondisi",
 									"description": "Ceritakan kondisinya. Terapis yang nyesuaiin tekanan, minyak, dan durasi."
 								}
 							]
@@ -199,14 +199,14 @@
 						{
 							"_type": "mustika.experience",
 							"_key": "home-experience",
-							"headline": "Datang, cerita,",
-							"emphasis": "lalu berbaring.",
-							"body": "Tidak ada formulir panjang. Bilang pegalnya di mana, kami yang atur sisanya.",
+							"headline": "Cara kerjanya",
+							"emphasis": "begini.",
+							"body": "Datang, bilang pegalnya di mana. Terapis yang atur minyak sama tekanan.",
 							"steps": [
 								{
 									"number": "01",
 									"title": "Bilang pegalnya di mana",
-									"text": "Cukup \"bahu kiri\" atau \"kaki semua\". Tidak usah panjang-panjang."
+									"text": "Cukup \"bahu kiri\" atau \"kaki semua\"."
 								},
 								{
 									"number": "02",
@@ -325,7 +325,7 @@
 								{
 									"icon": "clock",
 									"title": "Wellness Therapy",
-									"tag": "Tidak ada paket kaku",
+									"tag": "Nyesuaiin kondisi",
 									"description": "Ceritakan kondisinya. Terapis yang nyesuaiin tekanan, minyak, dan durasi."
 								}
 							]

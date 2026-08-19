@@ -72,9 +72,16 @@ const serviceImagePaths = [
 	"/images/mustika/service-full-body.webp",
 	"/images/mustika/service-wellness.webp",
 ];
+const serviceImageAlts = [
+	"Terapis memijat punggung klien di meja pijat",
+	"Terapis menuang minyak pijat ke punggung klien",
+	"Tangan terapis menekan punggung klien",
+	"Wanita berbaring tenang di meja pijat",
+];
 const services = copy.services.items.map((service, index) => ({
 	...service,
 	imageSrc: serviceImagePaths[index],
+	imageAlt: serviceImageAlts[index],
 	tariff: getMustikaTariff(service.title, bookingHref),
 }));
 const previewService = services[0];
@@ -203,8 +210,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 				</div>
 				<figure class="ledger-intro-media" data-reveal>
 					<img
-						src="/images/mustika/hero-exit-traditional.webp"
-						alt="Klien sedang pijat dengan wajah tenang"
+						src="/images/mustika/hero-02-candle-massage.webp"
+						alt="Klien berbaring tenang di meja pijat Mustika"
 						width="1000"
 						height="1250"
 						sizes="(max-width: 760px) 100vw, 30vw"
@@ -234,7 +241,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 						<figure class="service-row-media">
 							<img
 								src={service.imageSrc}
-								alt={`Suasana ${service.title}`}
+								alt={service.imageAlt}
 								width="900"
 								height="1125"
 								sizes="(max-width: 760px) 116px, 220px"
@@ -287,7 +294,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 						<img
 							data-service-preview-image
 							src={previewService.imageSrc}
-							alt={`Detail suasana ${previewService.title}`}
+							alt={previewService.imageAlt}
 							width="900"
 							height="1125"
 							loading="lazy"
@@ -387,7 +394,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	<section class="ledger-book" id="book" aria-labelledby="book-title">
 		<div class="book-visual" data-reveal data-book-visual aria-hidden="true">
-			<img src="/images/mustika/booking-amber-linen.webp" alt="" width="1000" height="1250" sizes="(max-width: 760px) 70vw, 34rem" loading="lazy" decoding="async" />
+			<img src="/images/mustika/mustika-aroma.webp" alt="" width="1000" height="1250" sizes="(max-width: 760px) 70vw, 34rem" loading="lazy" decoding="async" />
 			<span class="book-visual-wash"></span>
 		</div>
 		<div class="shell book-layout">
@@ -1065,10 +1072,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.experience-heading {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(220px, 0.45fr);
-		gap: 2rem;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.85rem;
 		align-items: start;
 		margin-block: clamp(3rem, 6vw, 6rem);
+		max-width: 42rem;
 	}
 
 	.experience-heading h2 {
@@ -1083,13 +1091,11 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.experience-heading > p {
-		max-width: 31ch;
-		justify-self: end;
-		margin-top: clamp(0.8rem, 1.6vw, 1.5rem);
-		border-left: 1px solid rgba(248, 244, 236, 0.28);
-		padding-left: clamp(1rem, 2vw, 1.7rem);
-		color: rgba(248, 244, 236, 0.72);
-		font-size: 0.91rem;
+		max-width: 46ch;
+		margin-top: 0;
+		color: rgba(248, 244, 236, 0.82);
+		font-size: 1.05rem;
+		line-height: 1.45;
 	}
 
 	.journey-track {
@@ -1986,8 +1992,9 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.mustika-ledger .experience-heading {
-		grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.42fr);
+		grid-template-columns: minmax(0, 1fr);
 		margin-block: clamp(3rem, 6vw, 5.5rem);
+		max-width: 42rem;
 	}
 
 	.mustika-ledger .journey-track h3 {
