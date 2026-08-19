@@ -14,6 +14,7 @@ assert.match(
 	"postbuild must resolve the existing SESSION namespace before Cloudflare's default deploy stage",
 );
 assert.doesNotMatch(helperSource, /"--json"/, "Wrangler v4 namespace list does not accept --json");
+assert.match(helperSource, /stripDynamicWorkers/, "postbuild must drop Worker Loader / Dynamic Workers before deploy");
 
 const fixtureDir = await mkdtemp(join(tmpdir(), "mustika-cloudflare-binding-"));
 const fixtureConfig = join(fixtureDir, "wrangler.json");
@@ -25,7 +26,12 @@ await writeFile(
 	JSON.stringify({
 		name: "my-marketing-site",
 		kv_namespaces: [{ binding: "SESSION" }],
-		previews: { kv_namespaces: [{ binding: "SESSION" }] },
+		worker_loaders: [{ binding: "LOADER" }],
+		durable_objects: { bindings: [{ name: "PluginBridge", class_name: "PluginBridge" }] },
+		previews: {
+			kv_namespaces: [{ binding: "SESSION" }],
+			worker_loaders: [{ binding: "LOADER" }],
+		},
 	}),
 );
 
@@ -44,6 +50,9 @@ assert.equal(result.status, 0, result.stderr || result.stdout);
 const patchedConfig = JSON.parse(await readFile(fixtureConfig, "utf8"));
 assert.equal(patchedConfig.kv_namespaces[0].id, namespaceId);
 assert.equal(patchedConfig.previews.kv_namespaces[0].id, namespaceId);
+assert.equal(patchedConfig.worker_loaders, undefined);
+assert.equal(patchedConfig.durable_objects, undefined);
+assert.equal(patchedConfig.previews.worker_loaders, undefined);
 
 await writeFile(
 	mockWrangler,
@@ -79,5 +88,6 @@ assert.equal(automaticResult.status, 0, automaticResult.stderr || automaticResul
 const automaticallyPatchedConfig = JSON.parse(await readFile(fixtureConfig, "utf8"));
 assert.equal(automaticallyPatchedConfig.kv_namespaces[0].id, namespaceId);
 assert.equal(automaticallyPatchedConfig.previews.kv_namespaces[0].id, namespaceId);
+assert.equal(automaticallyPatchedConfig.worker_loaders, undefined);
 
 console.log("Cloudflare SESSION binding regression test passed.");

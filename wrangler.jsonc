@@ -20,6 +20,8 @@
 	"triggers": {
 		"crons": ["*/5 * * * *"],
 	},
+	// Never add worker_loaders / PluginBridge here. Dynamic Workers need a
+	// paid Cloudflare plan and will fail deploy on the free plan.
 	// Workers Logs: persist invocation + console logs to the Cloudflare dashboard
 	"observability": {
 		"logs": {

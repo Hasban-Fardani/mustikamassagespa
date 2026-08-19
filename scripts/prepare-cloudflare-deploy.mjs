@@ -104,6 +104,20 @@ const setSessionBinding = (bindings, id) => {
 	return list;
 };
 
+const stripDynamicWorkers = (config) => {
+	delete config.worker_loaders;
+	if (Array.isArray(config.durable_objects?.bindings)) {
+		config.durable_objects.bindings = config.durable_objects.bindings.filter(
+			(binding) => binding?.class_name !== "PluginBridge" && binding?.name !== "PluginBridge",
+		);
+		if (config.durable_objects.bindings.length === 0) delete config.durable_objects;
+	}
+	if (Array.isArray(config.unsafe?.bindings)) {
+		config.unsafe.bindings = config.unsafe.bindings.filter((binding) => binding?.type !== "worker-loader");
+		if (config.unsafe.bindings.length === 0) delete config.unsafe.bindings;
+	}
+};
+
 const main = async () => {
 	const [configSource, packageSource] = await Promise.all([
 		readConfigWhenReady(configPath),
@@ -111,6 +125,8 @@ const main = async () => {
 	]);
 	const config = JSON.parse(configSource);
 	const packageJson = JSON.parse(packageSource);
+	stripDynamicWorkers(config);
+	if (config.previews) stripDynamicWorkers(config.previews);
 
 	// The Astro adapter does not carry `observability` over from the root
 	// wrangler config, so mirror it here to keep Workers Logs enabled on deploy.
