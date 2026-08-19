@@ -9,6 +9,7 @@ import {
 	readMustikaString,
 } from "../lib/mustika-content";
 import { MUSTIKA_SEO } from "../lib/mustika-seo";
+import { getMustikaTariff } from "../lib/mustika-rates";
 
 const { entry: pricing, error, cacheHint } = await getEmDashEntry("pages", "pricing");
 
@@ -54,17 +55,21 @@ const listSubheadline = readMustikaString(
 const fallbackRituals = [
 	{ title: "Traditional Massage", description: "Pijat tradisional untuk melepas pegal setelah hari yang panjang." },
 	{ title: "Aromatherapy Massage", description: "Sentuhan lembut dengan aroma yang membantu suasana terasa lebih tenang." },
-	{ title: "Full Body Massage", description: "Pijat seluruh tubuh ketika rasanya semua bagian perlu diperhatikan." },
+	{ title: "Full Body Massage", description: "Pijat seluruh tubuh plus scrub. Satu sesi 120 menit, dari kepala sampai telapak kaki." },
 	{ title: "Wellness Therapy", description: "Sesi yang disesuaikan dengan kebutuhan tubuh." },
 ];
 const rawRituals = readMustikaRecords(servicesNode?.features);
-const rituals = rawRituals.length
+const rituals = (rawRituals.length
 	? rawRituals.map((ritual, index) => ({
 			number: String(index + 1).padStart(2, "0"),
 			title: readMustikaString(ritual.title, fallbackRituals[index]?.title || "Massage & wellness"),
 			description: readMustikaString(ritual.description, fallbackRituals[index]?.description || ""),
 		}))
-	: fallbackRituals.map((ritual, index) => ({ ...ritual, number: String(index + 1).padStart(2, "0") }));
+	: fallbackRituals.map((ritual, index) => ({ ...ritual, number: String(index + 1).padStart(2, "0") }))
+).map((ritual) => ({
+	...ritual,
+	tariff: getMustikaTariff(ritual.title, bookingHref),
+}));
 ---
 
 <Base
@@ -95,7 +100,20 @@ const rituals = rawRituals.length
 							<span>{ritual.number}</span>
 							<h3>{ritual.title}</h3>
 							<p>{ritual.description}</p>
-							<a href={bookingHref} target="_blank" rel="noopener noreferrer" aria-label={`Tanya admin, ${ritual.title}`}>Tanya admin <span aria-hidden="true">↗</span></a>
+							{ritual.tariff.consultOnly ? (
+								<a href={ritual.tariff.consultHref} target="_blank" rel="noopener noreferrer" aria-label={`Tanya admin, ${ritual.title}`}>Kontak kami <span aria-hidden="true">↗</span></a>
+							) : (
+								<ul class="ritual-rates">
+									{ritual.tariff.rates.map((rate) => (
+										<li>
+											<a href={rate.href} target="_blank" rel="noopener noreferrer" aria-label={`Booking ${ritual.title} ${rate.minutes} menit, ${rate.priceLabel}`}>
+												<span>{rate.minutes} menit</span>
+												<strong>{rate.priceLabel}</strong>
+											</a>
+										</li>
+									))}
+								</ul>
+							)}
 						</article>
 					))}
 				</div>
@@ -208,18 +226,60 @@ const rituals = rawRituals.length
 		font-size: 0.9rem;
 	}
 
-	.ritual-options a {
+	.ritual-rates {
+		display: grid;
+		gap: 0.45rem;
+		width: min(100%, 16rem);
+		margin: 1.6rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.ritual-rates a,
+	.ritual-options article > a {
+		display: grid;
+		grid-template-columns: 5.5rem 1fr;
+		align-items: baseline;
+		width: 100%;
+		margin-top: 0;
+		padding-bottom: 0.2rem;
+		border-bottom: 0;
+		color: var(--forest);
+		font-size: inherit;
+		font-weight: 500;
+		letter-spacing: 0;
+		text-transform: none;
+	}
+
+	.ritual-options article > a {
 		width: fit-content;
-		margin-top: 2rem;
+		margin-top: 1.6rem;
+		grid-template-columns: auto auto;
+		column-gap: 0.5rem;
 		padding-bottom: 0.35rem;
 		border-bottom: 1px solid currentColor;
-		color: var(--forest);
 		font-size: 0.8rem;
 		font-weight: 700;
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
 	}
 
+	.ritual-rates span {
+		color: var(--color-muted);
+		font-size: 0.78rem;
+	}
+
+	.ritual-rates strong {
+		color: var(--gold-ink);
+		font-family: var(--font-heading);
+		font-size: 1.15rem;
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.03em;
+		text-align: right;
+	}
+
+	.ritual-rates a:hover strong,
 	.ritual-options a:hover {
 		color: var(--gold);
 	}
