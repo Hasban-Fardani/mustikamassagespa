@@ -3,6 +3,7 @@ import { getEmDashEntry, getMenu, getSiteSettings } from "emdash";
 import { getSeoMeta } from "emdash/seo";
 import Base from "../layouts/Base.astro";
 import { findMustikaCmsNode, getMustikaCmsNodes, readMustikaString } from "../lib/mustika-content";
+import { MUSTIKA_COPY } from "../lib/mustika-copy";
 import { MUSTIKA_SEO } from "../lib/mustika-seo";
 
 const [{ entry: contact, error, cacheHint }, settings, supportMenu] = await Promise.all([
@@ -36,15 +37,13 @@ const whatsappItem = supportMenu?.items.find((item) => /wa\.me/i.test(item.url))
 const phoneItem = supportMenu?.items.find((item) => /^tel:/i.test(item.url));
 const whatsappNumber = whatsappItem?.url.match(/wa\.me\/(\d+)/i)?.[1] || "6281222739180";
 const whatsappDisplay = phoneItem?.label.replace(/^Telepon\s+/i, "") || "0812 2273 9180";
-const bookingHref = readMustikaString(heroNode?.primaryCtaUrl, `https://wa.me/${whatsappNumber}`);
-const heroHeadline = readMustikaString(heroNode?.headline, "Mari beri tubuh waktu untuk");
-const heroEmphasis = readMustikaString(heroNode?.emphasis, "beristirahat.");
-const heroSubheadline = readMustikaString(
-	heroNode?.subheadline,
-	"Chat WhatsApp Mustika. Ceritakan kebutuhan dan waktu yang diinginkan; admin akan membantu mengecek jadwal.",
-);
-const heroCtaLabel = readMustikaString(heroNode?.primaryCtaLabel, "Chat langsung via WhatsApp");
-const heroLocation = readMustikaString(heroNode?.location, "Bandung, Jawa Barat");
+const copy = MUSTIKA_COPY.contactPage;
+const bookingHref = readMustikaString(heroNode?.primaryCtaUrl, `https://wa.me/${whatsappNumber}?text=Halo%20Mustika%2C%20mau%20booking%20pijat.`);
+const heroHeadline = copy.headline;
+const heroEmphasis = copy.emphasis;
+const heroSubheadline = copy.subheadline;
+const heroCtaLabel = copy.cta;
+const heroLocation = copy.asideNote;
 ---
 
 <Base
@@ -64,9 +63,9 @@ const heroLocation = readMustikaString(heroNode?.location, "Bandung, Jawa Barat"
 					<a class="btn btn-primary btn-lg" href={bookingHref} target="_blank" rel="noopener noreferrer">{heroCtaLabel} <span aria-hidden="true">↗</span></a>
 				</div>
 				<div class="booking-aside">
-					<span class="booking-aside-label">Nomor booking</span>
+					<span class="booking-aside-label">{copy.asideLabel}</span>
 					<a href={`tel:+${whatsappNumber}`} class="booking-phone">{whatsappDisplay}</a>
-					<span class="booking-aside-note">{heroLocation}<br />Detail lokasi dikonfirmasi saat booking</span>
+					<span class="booking-aside-note">{heroLocation}</span>
 				</div>
 			</div>
 		</section>
@@ -74,8 +73,8 @@ const heroLocation = readMustikaString(heroNode?.location, "Bandung, Jawa Barat"
 		<section class="booking-form-section" aria-labelledby="booking-form-title">
 			<div class="container booking-grid">
 				<div>
-					<h2 id="booking-form-title">Siapkan sesi yang tepat.</h2>
-					<p class="booking-note">Form ini akan membuka WhatsApp dengan pesan yang sudah disusun. Tidak ada data yang disimpan di website.</p>
+					<h2 id="booking-form-title">{copy.formTitle}</h2>
+					<p class="booking-note">{copy.formNote}</p>
 				</div>
 				<form class="booking-form" data-booking-form data-booking-number={whatsappNumber}>
 					<label>
@@ -83,7 +82,7 @@ const heroLocation = readMustikaString(heroNode?.location, "Bandung, Jawa Barat"
 						<input name="name" type="text" autocomplete="name" placeholder="Nama lengkap" required />
 					</label>
 					<label>
-						<span>Pilihan ritual</span>
+						<span>{copy.serviceLabel}</span>
 						<select name="service" required>
 							<option value="">Pilih layanan</option>
 							<option>Traditional Massage</option>
@@ -107,7 +106,7 @@ const heroLocation = readMustikaString(heroNode?.location, "Bandung, Jawa Barat"
 						<textarea name="note" rows="4" placeholder="Contoh: ingin fokus di bahu dan punggung"></textarea>
 					</label>
 					<button class="btn btn-primary btn-lg" type="submit">Kirim ke WhatsApp <span aria-hidden="true">↗</span></button>
-					<p class="booking-form-hint">Setelah menekan tombol, WhatsApp Mustika akan terbuka.</p>
+					<p class="booking-form-hint">{copy.hint}</p>
 				<noscript><p class="booking-form-hint">JavaScript tidak aktif. Silakan chat langsung ke <a href={bookingHref}>{whatsappDisplay}</a>.</p></noscript>
 				</form>
 			</div>
@@ -123,7 +122,7 @@ const heroLocation = readMustikaString(heroNode?.location, "Bandung, Jawa Barat"
 		event.preventDefault();
 		const data = new FormData(bookingForm);
 		const lines = [
-			"Halo Mustika, saya ingin booking sesi massage.",
+			"Halo Mustika, mau booking pijat.",
 			`Nama: ${data.get("name") || "-"}`,
 			`Layanan: ${data.get("service") || "-"}`,
 			`Tanggal: ${data.get("date") || "Fleksibel"}`,

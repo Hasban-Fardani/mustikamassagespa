@@ -3,19 +3,23 @@
 	"version": "1",
 	"meta": {
 		"name": "Mustika Massage Spa",
-		"description": "Pijat, refleksi, dan wellness di Bandung",
+		"description": "Pijat di Bandung untuk umum dan keluarga",
 		"author": "Mustika Massage Spa"
 	},
 	"settings": {
 		"title": "Mustika Massage Spa",
-		"tagline": "Pijat, refleksi, dan wellness di Bandung untuk pelanggan umum dan keluarga. Cek layanan dan jadwal lewat WhatsApp."
+		"tagline": "Pijat di Bandung untuk umum dan keluarga. Harga nett. Booking lewat WhatsApp."
 	},
 	"collections": [
 		{
 			"slug": "pages",
 			"label": "Halaman",
 			"labelSingular": "Halaman",
-			"supports": ["drafts", "revisions", "seo"],
+			"supports": [
+				"drafts",
+				"revisions",
+				"seo"
+			],
 			"fields": [
 				{
 					"slug": "title",
@@ -36,29 +40,73 @@
 			"name": "primary",
 			"label": "Navigasi Utama",
 			"items": [
-				{ "type": "custom", "label": "Ritual", "url": "/#rituals" },
-				{ "type": "custom", "label": "Pengalaman", "url": "/#experience" },
-				{ "type": "custom", "label": "Mengapa Mustika", "url": "/#standards" },
-				{ "type": "custom", "label": "FAQ", "url": "/#faq" }
+				{
+					"type": "custom",
+					"label": "Layanan",
+					"url": "/#rituals"
+				},
+				{
+					"type": "custom",
+					"label": "Cara kerja",
+					"url": "/#experience"
+				},
+				{
+					"type": "custom",
+					"label": "Standar",
+					"url": "/#standards"
+				},
+				{
+					"type": "custom",
+					"label": "FAQ",
+					"url": "/#faq"
+				}
 			]
 		},
 		{
 			"name": "footer_product",
 			"label": "Layanan",
 			"items": [
-				{ "type": "custom", "label": "Pijat tradisional", "url": "/pricing" },
-				{ "type": "custom", "label": "Pijat aromaterapi", "url": "/pricing" },
-				{ "type": "custom", "label": "Pijat seluruh tubuh", "url": "/pricing" },
-				{ "type": "custom", "label": "Wellness therapy", "url": "/pricing" }
+				{
+					"type": "custom",
+					"label": "Pijat tradisional",
+					"url": "/pricing"
+				},
+				{
+					"type": "custom",
+					"label": "Pijat aromaterapi",
+					"url": "/pricing"
+				},
+				{
+					"type": "custom",
+					"label": "Pijat seluruh tubuh",
+					"url": "/pricing"
+				},
+				{
+					"type": "custom",
+					"label": "Wellness therapy",
+					"url": "/pricing"
+				}
 			]
 		},
 		{
 			"name": "footer_company",
 			"label": "Tentang Mustika",
 			"items": [
-				{ "type": "custom", "label": "Pengalaman Mustika", "url": "/#experience" },
-				{ "type": "custom", "label": "Standar layanan", "url": "/#standards" },
-				{ "type": "custom", "label": "Pertanyaan umum", "url": "/#faq" }
+				{
+					"type": "custom",
+					"label": "Cara kerja",
+					"url": "/#experience"
+				},
+				{
+					"type": "custom",
+					"label": "Standar kami",
+					"url": "/#standards"
+				},
+				{
+					"type": "custom",
+					"label": "Pertanyaan umum",
+					"url": "/#faq"
+				}
 			]
 		},
 		{
@@ -67,11 +115,19 @@
 			"items": [
 				{
 					"type": "custom",
-					"label": "Chat via WhatsApp",
-					"url": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage."
+					"label": "Chat WhatsApp",
+					"url": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20booking%20pijat."
 				},
-				{ "type": "custom", "label": "Telepon 0812 2273 9180", "url": "tel:+6281222739180" },
-				{ "type": "custom", "label": "Lokasi Bandung", "url": "/contact" }
+				{
+					"type": "custom",
+					"label": "Telepon 0812 2273 9180",
+					"url": "tel:+6281222739180"
+				},
+				{
+					"type": "custom",
+					"label": "Lokasi Bandung",
+					"url": "/contact"
+				}
 			]
 		}
 	],
@@ -87,12 +143,12 @@
 						{
 							"_type": "marketing.hero",
 							"_key": "home-hero",
-							"headline": "Bahu yang kaku sejak pagi,",
-							"emphasis": "mata yang lelah sejak siang.",
-							"subheadline": "Letakkan keduanya di meja kami. Minyak hangat, tekanan yang menemukan simpulnya, dan ruang yang tidak meminta Anda bicara.",
-							"primaryCtaLabel": "Booking via WhatsApp",
-							"primaryCtaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
-							"secondaryCtaLabel": "Lihat ritual kami",
+							"headline": "Pegal dari pagi?",
+							"emphasis": "Sini dipijat.",
+							"subheadline": "Mustika di Bandung. Pijat tradisional, aromaterapi, atau full body plus scrub. Harga nett. Booking lewat WhatsApp.",
+							"primaryCtaLabel": "Chat WhatsApp",
+							"primaryCtaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20booking%20pijat.",
+							"secondaryCtaLabel": "Lihat layanan",
 							"secondaryCtaUrl": "#rituals",
 							"location": "Bandung, Jawa Barat",
 							"audienceLabel": "Untuk pelanggan umum dan keluarga"
@@ -100,118 +156,126 @@
 						{
 							"_type": "mustika.intro",
 							"_key": "home-intro",
-							"headline": "Pintu menutup,",
-							"emphasis": "kota mengecil.",
-							"body": "Aromaterapi menyapa lebih dulu sebelum Anda duduk. Handuk hangat menunggu di meja, cahaya amber diredam pelan — sampai bahu Anda turun dengan sendirinya, tanpa diminta.",
-							"audience": "Punggung kaku setelah seharian di kursi\nMata perih menatap layar sejak pagi\nButuh diam dulu sebelum pulang ke rutinitas",
-							"linkLabel": "Lihat pilihan ritual",
+							"headline": "Masuk dulu.",
+							"emphasis": "Nanti tenang sendiri.",
+							"body": "Baunya minyak yang ketemu lebih dulu. Sprei bersih, lampu tidak silau. Terapis tanya pegalnya di mana, baru mulai.",
+							"audience": "Habis seharian duduk di depan laptop\nAtau bawa keluarga, ikut pijat juga boleh",
+							"linkLabel": "Lihat layanan",
 							"linkUrl": "#rituals"
 						},
 						{
 							"_type": "marketing.features",
 							"_key": "home-rituals",
-							"headline": "Bayangkan tangan yang tahu",
-"emphasis": "ke mana harus menekan.",
-							"subheadline": "Beri tahu bagian tubuh yang paling membutuhkan perhatian.",
+							"headline": "Pilih yang cocok",
+							"emphasis": "sama pegalnya.",
+							"subheadline": "Pilih yang cocok sama pegalnya.",
 							"features": [
 								{
 									"icon": "heart",
 									"title": "Traditional Massage",
-									"tag": "Untuk pegal yang menumpuk",
-									"description": "Tekanan mantap dari punggung hingga telapak kaki, mengurai simpul yang mengeras sepanjang minggu."
+									"tag": "Paling sering dipilih",
+									"description": "Pijat dari punggung sampai kaki. Tekanannya bisa dikerasin kalau perlu."
 								},
 								{
 									"icon": "star",
 									"title": "Aromatherapy Massage",
-									"tag": "Untuk pikiran yang berisik",
-									"description": "Minyak hangat dan gerakan lambat; aromanya tinggal lebih lama di ingatan daripada di kulit."
+									"tag": "Kalau mau yang lebih pelan",
+									"description": "Pakai minyak wangi, geraknya pelan. Enak kalau kepala lagi ramai."
 								},
 								{
 									"icon": "users",
 									"title": "Full Body Massage",
-									"tag": "Untuk lelah yang menyeluruh",
-									"description": "Pijat seluruh tubuh plus scrub. Satu sesi 120 menit, dari kepala sampai telapak kaki."
+									"tag": "Pijat plus scrub, 2 jam",
+									"description": "Seluruh badan dipijat, plus scrub. Satu sesi 120 menit."
 								},
 								{
 									"icon": "clock",
 									"title": "Wellness Therapy",
-									"tag": "Mengikuti kondisi hari ini",
-									"description": "Tekanan, minyak, dan durasi disesuaikan dengan apa yang tubuh Anda bawa hari ini."
+									"tag": "Tidak ada paket kaku",
+									"description": "Ceritakan kondisinya. Terapis yang nyesuaiin tekanan, minyak, dan durasi."
 								}
 							]
 						},
 						{
 							"_type": "mustika.experience",
 							"_key": "home-experience",
-							"headline": "Anda datang membawa beban,",
-							"emphasis": "pulang tanpa merasakannya.",
-							"body": "Tidak ada formulir panjang. Ceritakan, berbaring, lalu beri tubuh Anda waktu.",
+							"headline": "Datang, cerita,",
+							"emphasis": "lalu berbaring.",
+							"body": "Tidak ada formulir panjang. Bilang pegalnya di mana, kami yang atur sisanya.",
 							"steps": [
 								{
 									"number": "01",
-									"title": "Ceritakan di mana pegalnya",
-									"text": "Ceritakan bagian tubuh yang terasa paling membutuhkan perhatian."
+									"title": "Bilang pegalnya di mana",
+									"text": "Cukup \"bahu kiri\" atau \"kaki semua\". Tidak usah panjang-panjang."
 								},
 								{
 									"number": "02",
-									"title": "Kami sesuaikan sesinya",
-									"text": "Terapis membantu menyesuaikan pilihan perawatan dengan kebutuhan."
+									"title": "Terapis yang atur",
+									"text": "Meja dihangatkan, minyak dipilih, tekanan dicoba dulu."
 								},
 								{
 									"number": "03",
-									"title": "Beri tubuh waktu setelahnya",
-									"text": "Selesai sesi, beri tubuh waktu untuk beristirahat sebelum kembali beraktivitas."
+									"title": "Jangan buru-buru bangun",
+									"text": "Habis pijat biasanya ada teh. Duduk dulu."
 								}
 							]
 						},
 						{
 							"_type": "mustika.standards",
 							"_key": "home-standards",
-							"headline": "Yang kami jaga",
-"emphasis": "di setiap sesi.",
-							"body": "Sprei berganti setiap sesi. Minyak yang tidak lengket. Ruang yang dijaga tetap sunyi — kalau Anda tertidur, itu pujian bagi kami.",
-							"quote": "Kalau tekanannya kurang pas, tinggal bilang. Sesi ini milik Anda, bukan daftar menu.",
+							"headline": "Standar kami",
+							"emphasis": "tiap orang sama.",
+							"body": "Sprei ganti tiap orang. Minyak tidak lengket. Ruang dijaga sunyi. Kalau ketiduran, biarin.",
+							"quote": "Kalau kurang enak tekanannya, bilang. Jangan ditahan.",
 							"items": [
-								{ "text": "Terapis berpengalaman dan terlatih" },
-								{ "text": "Sprei dan handuk baru setiap sesi" },
-								{ "text": "Minyak hangat, bukan dingin dari kulkas" },
-								{ "text": "Ruang sunyi, jauh dari deru jalan" }
+								{
+									"text": "Terapis berpengalaman dan terlatih"
+								},
+								{
+									"text": "Sprei dan handuk baru setiap sesi"
+								},
+								{
+									"text": "Minyak hangat, bukan dingin dari kulkas"
+								},
+								{
+									"text": "Ruang sunyi, jauh dari deru jalan"
+								}
 							]
 						},
 						{
 							"_type": "marketing.faq",
 							"_key": "home-faq",
-							"headline": "Yang biasanya ditanyakan.",
-							"body": "Belum menemukan jawabannya? Admin Mustika menjawab lewat WhatsApp.",
-							"ctaLabel": "Tanya admin Mustika",
-							"ctaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
+							"headline": "Yang sering ditanya",
+							"body": "Kalau belum ketemu jawabannya, chat aja.",
+							"ctaLabel": "Chat admin",
+							"ctaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20booking%20pijat.",
 							"items": [
 								{
-									"question": "Bagaimana cara booking sesi?",
-									"answer": "Kirim pesan ke WhatsApp Mustika di 0812 2273 9180. Sertakan layanan dan waktu yang Anda inginkan; admin akan mengonfirmasi ketersediaannya."
+									"question": "Bookingnya lewat mana?",
+									"answer": "WhatsApp 0812 2273 9180. Tulis layanan sama jam yang mau. Nanti kami balas kalau slotnya ada."
 								},
 								{
-									"question": "Apakah Mustika menerima pelanggan umum dan keluarga?",
-									"answer": "Ya. Mustika melayani pelanggan umum maupun keluarga. Sampaikan kebutuhan khusus saat booking agar kami bisa membantu menyiapkan sesi yang sesuai."
+									"question": "Boleh bawa keluarga?",
+									"answer": "Boleh. Bilang aja pas chat, biar kami siapkan."
 								},
 								{
-									"question": "Sesi apa saja yang bisa dipilih?",
-									"answer": "Tersedia pijat tradisional, pijat aromaterapi, pijat seluruh tubuh, dan wellness therapy. Jika masih ragu, admin bisa membantu memilihkan sesi."
+									"question": "Pijatnya ada apa aja?",
+									"answer": "Tradisional, aromaterapi, full body plus scrub, sama wellness. Harga nett ada di daftar layanan. Kalau bingung, tanya kami."
 								},
 								{
-									"question": "Di mana lokasi Mustika?",
-									"answer": "Mustika Massage Spa berada di Bandung, Jawa Barat. Minta detail alamat dan arah perjalanan melalui WhatsApp saat booking."
+									"question": "Alamatnya di mana?",
+									"answer": "Di Bandung. Alamat lengkap kami kirim pas booking, biar tidak nyasar."
 								}
 							]
 						},
 						{
 							"_type": "mustika.booking",
 							"_key": "home-booking",
-							"headline": "Kirim satu pesan.",
-"emphasis": "Sisanya biarkan pada kami.",
-							"body": "Pilih sesi dan waktunya lewat WhatsApp. Setelah itu Anda berbaring, ruang menjadi sunyi, dan hari yang berat perlahan meninggalkan tubuh.",
-							"ctaLabel": "Mulai booking",
-							"ctaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
+							"headline": "Mau booking?",
+							"emphasis": "WhatsApp aja.",
+							"body": "Tulis layanan dan jam yang mau. Nanti kami cek slotnya.",
+							"ctaLabel": "Chat WhatsApp",
+							"ctaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20booking%20pijat.",
 							"phone": "0812 2273 9180"
 						}
 					]
@@ -222,47 +286,47 @@
 				"slug": "pricing",
 				"status": "published",
 				"data": {
-					"title": "Ritual Perawatan",
+					"title": "Harga layanan",
 					"content": [
 						{
 							"_type": "marketing.hero",
 							"_key": "ritual-hero",
-							"headline": "Pilih sesi yang sesuai",
-							"emphasis": "untuk hari ini.",
-							"subheadline": "Belum yakin harus memilih yang mana? Ceritakan kebutuhan lewat WhatsApp. Admin membantu mengecek pilihan dan jadwal.",
-							"primaryCtaLabel": "Tanya via WhatsApp",
-							"primaryCtaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20tanya%20tentang%20layanan%20massage.",
+							"headline": "Harga pijat",
+							"emphasis": "semua nett.",
+							"subheadline": "Pilih durasi, atau chat kalau masih bingung.",
+							"primaryCtaLabel": "Chat WhatsApp",
+							"primaryCtaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20tanya%20harga%20pijat.",
 							"centered": true
 						},
 						{
 							"_type": "marketing.features",
 							"_key": "ritual-options",
-							"headline": "Pilihan perawatan",
-							"subheadline": "Mulai dari bagian tubuh yang paling ingin diistirahatkan.",
+							"headline": "Daftar layanan",
+							"subheadline": "Klik harga untuk langsung chat WhatsApp.",
 							"features": [
 								{
 									"icon": "heart",
 									"title": "Traditional Massage",
-									"tag": "",
-									"description": "Tekanan mantap dari punggung hingga telapak kaki, mengurai simpul yang mengeras sepanjang minggu."
+									"tag": "Paling sering dipilih",
+									"description": "Pijat dari punggung sampai kaki. Tekanannya bisa dikerasin kalau perlu."
 								},
 								{
 									"icon": "star",
 									"title": "Aromatherapy Massage",
-									"tag": "",
-									"description": "Minyak hangat dan gerakan lambat; aromanya tinggal lebih lama di ingatan daripada di kulit."
+									"tag": "Kalau mau yang lebih pelan",
+									"description": "Pakai minyak wangi, geraknya pelan. Enak kalau kepala lagi ramai."
 								},
 								{
 									"icon": "users",
 									"title": "Full Body Massage",
-									"tag": "",
-									"description": "Pijat seluruh tubuh plus scrub. Satu sesi 120 menit, dari kepala sampai telapak kaki."
+									"tag": "Pijat plus scrub, 2 jam",
+									"description": "Seluruh badan dipijat, plus scrub. Satu sesi 120 menit."
 								},
 								{
 									"icon": "clock",
 									"title": "Wellness Therapy",
-									"tag": "",
-									"description": "Tekanan, minyak, dan durasi disesuaikan dengan apa yang tubuh Anda bawa hari ini."
+									"tag": "Tidak ada paket kaku",
+									"description": "Ceritakan kondisinya. Terapis yang nyesuaiin tekanan, minyak, dan durasi."
 								}
 							]
 						}
@@ -274,16 +338,16 @@
 				"slug": "contact",
 				"status": "published",
 				"data": {
-					"title": "Booking Mustika",
+					"title": "Booking",
 					"content": [
 						{
 							"_type": "marketing.hero",
 							"_key": "contact-hero",
-							"headline": "Mari beri tubuh waktu untuk",
-							"emphasis": "beristirahat.",
-							"subheadline": "Chat WhatsApp Mustika. Ceritakan kebutuhan dan waktu yang diinginkan; admin akan membantu mengecek jadwal.",
-							"primaryCtaLabel": "Chat langsung via WhatsApp",
-							"primaryCtaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.",
+							"headline": "Mau booking?",
+							"emphasis": "Chat kami.",
+							"subheadline": "Tulis nama, layanan, dan jam. Nanti WhatsApp kebuka.",
+							"primaryCtaLabel": "Buka WhatsApp",
+							"primaryCtaUrl": "https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20booking%20pijat.",
 							"location": "Bandung, Jawa Barat",
 							"centered": true
 						}

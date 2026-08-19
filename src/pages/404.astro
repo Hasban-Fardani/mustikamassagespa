@@ -1,15 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
+import { MUSTIKA_COPY } from "../lib/mustika-copy";
 ---
 
-	<Base title="Halaman tidak ditemukan">
+	<Base title={MUSTIKA_COPY.notFound.title}>
 	<div class="not-found">
 		<div class="not-found-code">404</div>
-		<h1>Ruang ini belum ditemukan.</h1>
-		<p>Mungkin tautannya berubah. Mari kembali ke halaman Mustika.</p>
+		<h1>{MUSTIKA_COPY.notFound.headline}</h1>
+		<p>{MUSTIKA_COPY.notFound.body}</p>
 		<div class="not-found-actions">
-			<a href="/" class="btn btn-primary btn-lg">Kembali ke beranda</a>
-			<a href="/contact" class="btn btn-secondary btn-lg">Booking via WhatsApp</a>
+			<a href="/" class="btn btn-primary btn-lg">{MUSTIKA_COPY.notFound.home}</a>
+			<a href="/contact" class="btn btn-secondary btn-lg">{MUSTIKA_COPY.notFound.book}</a>
 		</div>
 	</div>
 </Base>

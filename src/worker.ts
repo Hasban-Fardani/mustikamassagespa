@@ -1,7 +1,7 @@
 // Worker entry: Astro fetch plus EmDash scheduled() for the Cron Trigger
 // in wrangler.jsonc. Do not re-export PluginBridge — that Worker Loader
 // binding is a paid Dynamic Workers feature and fails on the free plan.
-// @ts-expect-error resolved against this app's Astro build
+// @ts-ignore resolved against this app's Astro build
 import astroHandler from "@astrojs/cloudflare/entrypoints/server";
 import { createApp } from "astro/app/entrypoint";
 import { runScheduledTasks } from "emdash/middleware";

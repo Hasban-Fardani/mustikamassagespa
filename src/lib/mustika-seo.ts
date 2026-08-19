@@ -1,27 +1,25 @@
-export const MUSTIKA_SITE_DESCRIPTION =
-	"Pijat, refleksi, dan wellness di Bandung untuk pelanggan umum dan keluarga. Cek layanan dan jadwal lewat WhatsApp.";
+import { MUSTIKA_COPY } from "./mustika-copy";
+
+export const MUSTIKA_SITE_DESCRIPTION = MUSTIKA_COPY.seo.siteDescription;
 
 export const MUSTIKA_SEO = {
 	home: {
-		title: "Mustika Massage Spa Bandung | Pijat & Wellness",
-		description:
-			"Pijat profesional, refleksi, dan wellness di Bandung untuk pelanggan umum dan keluarga. Kenali layanan Mustika dan booking melalui WhatsApp.",
+		title: MUSTIKA_COPY.seo.homeTitle,
+		description: MUSTIKA_COPY.seo.homeDescription,
 	},
 	pricing: {
-		title: "Layanan Pijat & Wellness Bandung | Mustika",
-		description:
-			"Lihat pilihan pijat dan wellness Mustika di Bandung. Tanyakan layanan yang sesuai melalui WhatsApp.",
+		title: MUSTIKA_COPY.seo.pricingTitle,
+		description: MUSTIKA_COPY.seo.pricingDescription,
 	},
 	contact: {
-		title: "Booking Pijat & Wellness Bandung | Mustika",
-		description:
-			"Booking pijat dan wellness Mustika di Bandung melalui WhatsApp. Sampaikan kebutuhan dan waktu yang Anda inginkan.",
+		title: MUSTIKA_COPY.seo.contactTitle,
+		description: MUSTIKA_COPY.seo.contactDescription,
 	},
 } as const;
 
 export const MUSTIKA_PHONE = "+6281222739180";
 export const MUSTIKA_WHATSAPP_URL =
-	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.";
+	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20booking%20pijat.";
 
 export function toAbsoluteUrl(value: string, baseUrl: URL) {
 	return new URL(value, baseUrl).href;

@@ -1,11 +1,6 @@
 ---
-import {
-	findMustikaCmsNode,
-	getMustikaCmsNodes,
-	readMustikaRecords,
-	readMustikaString,
-	readMustikaStringList,
-} from "../lib/mustika-content";
+import { MUSTIKA_COPY } from "../lib/mustika-copy";
+import { findMustikaCmsNode, getMustikaCmsNodes, readMustikaString } from "../lib/mustika-content";
 import { getMustikaTariff } from "../lib/mustika-rates";
 
 interface Props {
@@ -17,213 +12,96 @@ interface Props {
 }
 
 const { page } = Astro.props;
+const copy = MUSTIKA_COPY;
 
 const fallbackBookingHref =
-	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20booking%20sesi%20massage.";
+	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20booking%20pijat.";
 const fallbackBookingNumber = "0812 2273 9180";
-
-const fallbackServices = [
-	{
-		title: "Traditional Massage",
-		description: "Tekanan mantap dari punggung hingga telapak kaki, mengurai simpul yang mengeras sepanjang minggu.",
-		tag: "Untuk pegal yang menumpuk",
-	},
-	{
-		title: "Aromatherapy Massage",
-		description: "Minyak hangat dan gerakan lambat; aromanya tinggal lebih lama di ingatan daripada di kulit.",
-		tag: "Untuk pikiran yang berisik",
-	},
-	{
-		title: "Full Body Massage",
-		description: "Pijat seluruh tubuh plus scrub. Satu sesi 120 menit, dari kepala sampai telapak kaki.",
-		tag: "Untuk lelah yang menyeluruh",
-	},
-	{
-		title: "Wellness Therapy",
-		description: "Tekanan, minyak, dan durasi disesuaikan dengan apa yang tubuh Anda bawa hari ini.",
-		tag: "Mengikuti kondisi hari ini",
-	},
-];
-
-const fallbackExperienceSteps = [
-	{
-		title: "Ceritakan di mana pegalnya",
-		text: "Cukup satu kalimat: “bahu ini.” Terapis mengerti sisanya.",
-	},
-	{
-		title: "Kami sesuaikan sesinya",
-		text: "Meja dihangatkan, minyak dipilih, tekanan dicocokkan dengan tubuh Anda.",
-	},
-	{
-		title: "Beri tubuh waktu setelahnya",
-		text: "Teh hangat di ruang tunggu. Tidak ada yang mengejar-ngejar Anda bangun.",
-	},
-];
-
-const fallbackStandards = [
-	"Terapis berpengalaman dan terlatih",
-	"Sprei dan handuk baru setiap sesi",
-	"Minyak hangat, bukan dingin dari kulkas",
-	"Ruang sunyi, jauh dari deru jalan",
-];
-
-const fallbackFaqs = [
-	{
-		question: "Bagaimana cara booking sesi?",
-		answer: "Kirim pesan ke WhatsApp Mustika di 0812 2273 9180. Sertakan layanan dan waktu yang Anda inginkan; admin akan mengonfirmasi ketersediaannya.",
-	},
-	{
-		question: "Apakah Mustika menerima pelanggan umum dan keluarga?",
-		answer: "Ya. Mustika melayani pelanggan umum maupun keluarga. Sampaikan kebutuhan khusus saat booking agar kami bisa membantu menyiapkan sesi yang sesuai.",
-	},
-	{
-		question: "Sesi apa saja yang bisa dipilih?",
-		answer: "Tersedia pijat tradisional, pijat aromaterapi, pijat seluruh tubuh, dan wellness therapy. Jika masih ragu, admin bisa membantu memilihkan sesi.",
-	},
-	{
-		question: "Di mana lokasi Mustika?",
-		answer: "Mustika Massage Spa berada di Bandung, Jawa Barat. Minta detail alamat dan arah perjalanan melalui WhatsApp saat booking.",
-	},
-];
 
 const nodes = getMustikaCmsNodes(page?.data?.content);
 const findNode = (...types: string[]) => findMustikaCmsNode(nodes, ...types);
-const readString = readMustikaString;
-const readStringList = readMustikaStringList;
-
 const heroNode = findNode("mustika.hero", "marketing.hero");
-const introNode = findNode("mustika.intro");
-const servicesNode = findNode("mustika.services", "marketing.features");
-const experienceNode = findNode("mustika.experience");
-const standardsNode = findNode("mustika.standards");
-const faqNode = findNode("mustika.faq", "marketing.faq");
 const bookingNode = findNode("mustika.booking");
 
-const heroHeadline = readString(heroNode?.headline, "Bahu yang kaku sejak pagi,");
-const heroEmphasis = readString(heroNode?.emphasis, "mata yang lelah sejak siang.");
-const heroSubheadline = readString(
-	heroNode?.subheadline,
-	"Letakkan keduanya di meja kami. Minyak hangat, tekanan yang menemukan simpulnya, dan ruang yang tidak meminta Anda bicara.",
-);
-const bookingHref = readString(heroNode?.primaryCtaUrl, fallbackBookingHref);
-const bookingLabel = readString(heroNode?.primaryCtaLabel, "Booking via WhatsApp");
-const heroSecondaryLabel = readString(heroNode?.secondaryCtaLabel, "Lihat ritual kami");
-const heroSecondaryUrl = readString(heroNode?.secondaryCtaUrl, "#rituals");
-const bookingNumber = readString(bookingNode?.phone, fallbackBookingNumber);
+const bookingHref = readMustikaString(heroNode?.primaryCtaUrl, fallbackBookingHref);
+const bookingNumber = readMustikaString(bookingNode?.phone, fallbackBookingNumber);
+const heroSecondaryUrl = readMustikaString(heroNode?.secondaryCtaUrl, "#rituals");
+const introLinkUrl = "#rituals";
+const faqCtaUrl = readMustikaString(findNode("mustika.faq", "marketing.faq")?.ctaUrl, bookingHref);
+const bookingCtaUrl = readMustikaString(bookingNode?.ctaUrl, bookingHref);
 
+const heroHeadline = copy.hero.headline;
+const heroEmphasis = copy.hero.emphasis;
+const heroSubheadline = copy.hero.subheadline;
+const bookingLabel = copy.hero.primaryCta;
+const heroSecondaryLabel = copy.hero.secondaryCta;
+
+const heroSlideMeta = copy.heroSlides;
 const heroSlides = [
 	{
 		desktopSrc: "/images/mustika/hero-01-amber-spa.webp",
 		mobileSrc: "/images/mustika/hero-01-amber-spa-720.webp",
-		label: "Suasana relaksasi",
-		alt: "Wanita dengan wajah tenang menikmati perawatan spa",
+		...heroSlideMeta[0],
 	},
 	{
 		desktopSrc: "/images/mustika/hero-02-candle-massage.webp",
 		mobileSrc: "/images/mustika/hero-02-candle-massage-720.webp",
-		label: "Ritual perawatan",
-		alt: "Terapis mengaplikasikan perawatan wajah pada klien yang bersantai",
+		...heroSlideMeta[1],
 	},
 	{
 		desktopSrc: "/images/mustika/mustika-space.webp",
 		mobileSrc: "/images/mustika/mustika-space-720.webp",
-		label: "Ruang perawatan",
-		alt: "Ruang perawatan Mustika yang tenang dan bersih",
+		...heroSlideMeta[2],
 	},
 	{
 		desktopSrc: "/images/mustika/hero-04-traditional-care.webp",
 		mobileSrc: "/images/mustika/hero-04-traditional-care-720.webp",
-		label: "Sentuhan tradisional",
-		alt: "Wanita berbaring nyaman menerima pijat wajah yang menenangkan",
+		...heroSlideMeta[3],
 	},
 ];
 
-const introHeadline = readString(introNode?.headline, "Pintu menutup,");
-const introEmphasis = readString(introNode?.emphasis, "kota mengecil.");
-const introBody = readString(
-	introNode?.body,
-	"Aromaterapi menyapa lebih dulu sebelum Anda duduk. Handuk hangat menunggu di meja, cahaya amber diredam pelan — sampai bahu Anda turun dengan sendirinya, tanpa diminta.",
-);
-const introAudience = readStringList(introNode?.audience, [
-	"Punggung kaku setelah seharian di kursi",
-	"Mata perih menatap layar sejak pagi",
-	"Butuh diam dulu sebelum pulang ke rutinitas",
-]);
-const introLinkLabel = readString(introNode?.linkLabel, "Lihat pilihan ritual");
-const introLinkUrl = readString(introNode?.linkUrl, "#rituals");
+const introHeadline = copy.intro.headline;
+const introEmphasis = copy.intro.emphasis;
+const introBody = copy.intro.body;
+const introAudience = [...copy.intro.audience];
+const introLinkLabel = copy.intro.linkLabel;
 
-const rawServices = readMustikaRecords(servicesNode?.features);
 const serviceImagePaths = [
 	"/images/mustika/service-traditional.webp",
 	"/images/mustika/service-aromatherapy.webp",
 	"/images/mustika/service-full-body.webp",
 	"/images/mustika/service-wellness.webp",
 ];
-const services = (rawServices.length
-	? rawServices.map((service, index) => ({
-			title: readString(service.title, fallbackServices[index]?.title || "Massage & wellness"),
-			description: readString(service.description),
-			tag: readString(service.tag, fallbackServices[index]?.tag || "Untuk kebutuhan tubuh"),
-			imageSrc: serviceImagePaths[index % serviceImagePaths.length],
-		}))
-	: fallbackServices.map((service, index) => ({
-			...service,
-			imageSrc: serviceImagePaths[index],
-		}))
-).map((service) => ({
+const services = copy.services.items.map((service, index) => ({
 	...service,
+	imageSrc: serviceImagePaths[index],
 	tariff: getMustikaTariff(service.title, bookingHref),
 }));
-const previewService = services[0] ?? fallbackServices[0];
+const previewService = services[0];
 
-const experienceHeadline = readString(experienceNode?.headline, "Anda datang membawa beban,");
-const experienceEmphasis = readString(experienceNode?.emphasis, "pulang tanpa merasakannya.");
-const experienceBody = readString(
-	experienceNode?.body,
-	"Tidak ada formulir panjang. Ceritakan, berbaring, lalu beri tubuh Anda waktu.",
-);
-const rawExperienceSteps = readMustikaRecords(experienceNode?.steps);
-const experienceSteps = rawExperienceSteps.length
-	? rawExperienceSteps.map((step) => ({
-			title: readString(step.title),
-			text: readString(step.text),
-		}))
-	: fallbackExperienceSteps;
+const experienceHeadline = copy.experience.headline;
+const experienceEmphasis = copy.experience.emphasis;
+const experienceBody = copy.experience.body;
+const experienceSteps = copy.experience.steps;
 
-const standardsHeadline = readString(standardsNode?.headline, "Yang kami jaga");
-const standardsEmphasis = readString(standardsNode?.emphasis, "di setiap sesi.");
-const standardsBody = readString(
-	standardsNode?.body,
-	"Sprei berganti setiap sesi. Minyak yang tidak lengket. Ruang yang dijaga tetap sunyi — kalau Anda tertidur, itu pujian bagi kami.",
-);
-const standardsQuote = readString(
-	standardsNode?.quote,
-	"Kalau tekanannya kurang pas, tinggal bilang. Sesi ini milik Anda, bukan daftar menu.",
-);
-const standards = readStringList(standardsNode?.items, fallbackStandards);
+const standardsHeadline = copy.standards.headline;
+const standardsEmphasis = copy.standards.emphasis;
+const standardsBody = copy.standards.body;
+const standardsQuote = copy.standards.quote;
+const standards = [...copy.standards.items];
 
-const rawFaqs = readMustikaRecords(faqNode?.items);
-const faqs = rawFaqs.length
-	? rawFaqs.map((faq) => ({ question: readString(faq.question), answer: readString(faq.answer) }))
-	: fallbackFaqs;
-const faqHeadline = readString(faqNode?.headline, "Yang biasanya ditanyakan.");
-const faqBody = readString(
-	faqNode?.body,
-	"Belum menemukan jawabannya? Admin Mustika menjawab lewat WhatsApp.",
-);
-const faqCtaLabel = readString(faqNode?.ctaLabel, "Tanya admin Mustika");
-const faqCtaUrl = readString(faqNode?.ctaUrl, bookingHref);
+const faqs = copy.faq.items;
+const faqHeadline = copy.faq.headline;
+const faqBody = copy.faq.body;
+const faqCtaLabel = copy.faq.cta;
 
-const bookingHeadline = readString(bookingNode?.headline, "Kirim satu pesan.");
-const bookingEmphasis = readString(bookingNode?.emphasis, "Sisanya biarkan pada kami.");
-const bookingBody = readString(
-	bookingNode?.body,
-	"Pilih sesi dan waktunya lewat WhatsApp. Setelah itu Anda berbaring, ruang menjadi sunyi, dan hari yang berat perlahan meninggalkan tubuh.",
-);
-const bookingCtaLabel = readString(bookingNode?.ctaLabel, "Booking via WhatsApp");
-const bookingCtaUrl = readString(bookingNode?.ctaUrl, bookingHref);
+const bookingHeadline = copy.booking.headline;
+const bookingEmphasis = copy.booking.emphasis;
+const bookingBody = copy.booking.body;
+const bookingCtaLabel = copy.booking.cta;
 
 const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
+
 ---
 
 <div class="mustika-page mustika-ledger">
@@ -270,7 +148,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 					</div>
 				</div>
 
-				<figure class="hero-visual" data-hero-stage aria-label="Galeri suasana pijat dan wellness">
+				<figure class="hero-visual" data-hero-stage aria-label="Foto pijat Mustika">
 					<div class="hero-visual-frame" data-hero-paper>
 						<div class="hero-visual-meta">
 							<span class="sr-only-slide-status" data-hero-counter aria-live="polite">{heroSlides[0].label}</span>
@@ -285,7 +163,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 							tabindex="0"
 							role="group"
 							aria-roledescription="carousel"
-							aria-label="Empat suasana spa"
+							aria-label="Foto pijat"
 						>
 							{heroSlides.map((slide, index) => (
 								<picture
@@ -328,7 +206,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 				<figure class="ledger-intro-media" data-reveal>
 					<img
 						src="/images/mustika/hero-exit-traditional.webp"
-						alt="Klien bersantai dengan wajah tenang saat sesi perawatan"
+						alt="Klien sedang pijat dengan wajah tenang"
 						width="1000"
 						height="1250"
 						sizes="(max-width: 760px) 100vw, 30vw"
@@ -343,7 +221,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	<section class="ledger-rituals section" id="rituals" aria-labelledby="rituals-title">
 		<div class="shell">
 			<div class="rituals-heading">
-				<h2 id="rituals-title" data-word-reveal>{readString(servicesNode?.headline, "Bayangkan tangan yang tahu")} <em>{readString(servicesNode?.emphasis, "ke mana harus menekan.")}</em></h2>
+				<h2 id="rituals-title" data-word-reveal>{copy.services.headline} <em>{copy.services.emphasis}</em></h2>
 			</div>
 
 			<div class="service-ledger" data-service-list>
@@ -425,8 +303,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 				</div>
 			</div>
 			<div class="ritual-footer" data-reveal>
-				<span>Harga nett. Belum yakin pilih yang mana? Ceritakan pegalnya — admin bantu tentukan.</span>
-				<a class="ledger-inline-link ledger-inline-link-light" href={bookingHref} target="_blank" rel="noopener noreferrer"><span>Tanya admin Mustika</span><span aria-hidden="true">↗</span></a>
+				<span>{copy.services.footer}</span>
+				<a class="ledger-inline-link ledger-inline-link-light" href={bookingHref} target="_blank" rel="noopener noreferrer"><span>{copy.services.footerCta}</span><span aria-hidden="true">↗</span></a>
 			</div>
 		</div>
 	</section>
@@ -516,8 +394,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		</div>
 		<div class="shell book-layout">
 			<div class="book-index" data-reveal>
-					<span>Booking Mustika</span>
-				<span>Mustika / Bandung</span>
+					<span>{copy.booking.indexLabel}</span>
+				<span>{copy.booking.placeLabel}</span>
 			</div>
 			<div class="book-copy">
 				<h2 id="book-title" data-word-reveal>{bookingHeadline} <em>{bookingEmphasis}</em></h2>

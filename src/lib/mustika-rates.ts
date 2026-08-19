@@ -57,7 +57,7 @@ function tariffKeyForTitle(title: string) {
 export function getMustikaTariff(title: string, bookingHref: string): MustikaTariff {
 	const key = tariffKeyForTitle(title);
 	const consultHref = mustikaWhatsAppHref(
-		`Halo Mustika, saya ingin tanya ${title}.`,
+		`Halo Mustika, mau tanya ${title}.`,
 		bookingHref,
 	);
 	const spec = TARIFFS_BY_KEY[key] ?? "consult";
@@ -73,7 +73,7 @@ export function getMustikaTariff(title: string, bookingHref: string): MustikaTar
 			...rate,
 			priceLabel: formatMustikaPrice(rate.amountIdr),
 			href: mustikaWhatsAppHref(
-				`Halo Mustika, saya ingin booking ${title} ${rate.minutes} menit.`,
+				`Halo Mustika, mau booking ${title} ${rate.minutes} menit.`,
 				bookingHref,
 			),
 		})),

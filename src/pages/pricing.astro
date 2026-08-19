@@ -2,19 +2,15 @@
 import { getEmDashEntry, getSiteSettings } from "emdash";
 import { getSeoMeta } from "emdash/seo";
 import Base from "../layouts/Base.astro";
-import {
-	findMustikaCmsNode,
-	getMustikaCmsNodes,
-	readMustikaRecords,
-	readMustikaString,
-} from "../lib/mustika-content";
+import { findMustikaCmsNode, getMustikaCmsNodes, readMustikaString } from "../lib/mustika-content";
+import { MUSTIKA_COPY } from "../lib/mustika-copy";
 import { MUSTIKA_SEO } from "../lib/mustika-seo";
 import { getMustikaTariff } from "../lib/mustika-rates";
 
 const { entry: pricing, error, cacheHint } = await getEmDashEntry("pages", "pricing");
 
 if (error) {
-	return new Response("Unable to load Mustika rituals.", { status: 500 });
+	return new Response("Unable to load Mustika services.", { status: 500 });
 }
 
 if (!pricing) {
@@ -35,46 +31,21 @@ const seo = getSeoMeta(pricing, {
 
 const nodes = getMustikaCmsNodes(pricing.data.content);
 const heroNode = findMustikaCmsNode(nodes, "mustika.hero", "marketing.hero");
-const servicesNode = findMustikaCmsNode(nodes, "mustika.services", "marketing.features");
 const bookingHref = readMustikaString(
 	heroNode?.primaryCtaUrl,
-	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20saya%20ingin%20tanya%20tentang%20layanan%20massage.",
+	"https://wa.me/6281222739180?text=Halo%20Mustika%2C%20mau%20tanya%20harga%20pijat.",
 );
-const heroHeadline = readMustikaString(heroNode?.headline, "Pilih sesi yang sesuai");
-const heroEmphasis = readMustikaString(heroNode?.emphasis, "untuk hari ini.");
-const heroSubheadline = readMustikaString(
-	heroNode?.subheadline,
-	"Belum yakin harus memilih yang mana? Ceritakan kebutuhan lewat WhatsApp. Admin membantu mengecek pilihan dan jadwal.",
-);
-const listHeadline = readMustikaString(servicesNode?.headline, "Pilihan perawatan");
-const listEmphasis = readMustikaString(servicesNode?.emphasis);
-const listSubheadline = readMustikaString(
-	servicesNode?.subheadline,
-	"Mulai dari bagian tubuh yang paling ingin diistirahatkan.",
-);
-const fallbackRituals = [
-	{ title: "Traditional Massage", description: "Pijat tradisional untuk melepas pegal setelah hari yang panjang." },
-	{ title: "Aromatherapy Massage", description: "Sentuhan lembut dengan aroma yang membantu suasana terasa lebih tenang." },
-	{ title: "Full Body Massage", description: "Pijat seluruh tubuh plus scrub. Satu sesi 120 menit, dari kepala sampai telapak kaki." },
-	{ title: "Wellness Therapy", description: "Sesi yang disesuaikan dengan kebutuhan tubuh." },
-];
-const rawRituals = readMustikaRecords(servicesNode?.features);
-const rituals = (rawRituals.length
-	? rawRituals.map((ritual, index) => ({
-			number: String(index + 1).padStart(2, "0"),
-			title: readMustikaString(ritual.title, fallbackRituals[index]?.title || "Massage & wellness"),
-			description: readMustikaString(ritual.description, fallbackRituals[index]?.description || ""),
-		}))
-	: fallbackRituals.map((ritual, index) => ({ ...ritual, number: String(index + 1).padStart(2, "0") }))
-).map((ritual) => ({
-	...ritual,
+const copy = MUSTIKA_COPY.pricingPage;
+const rituals = MUSTIKA_COPY.services.items.map((ritual, index) => ({
+	number: String(index + 1).padStart(2, "0"),
+	title: ritual.title,
+	description: ritual.description,
 	tariff: getMustikaTariff(ritual.title, bookingHref),
 }));
 ---
-
 <Base
-	title={pricing.data.title}
-	pageTitle={pricing.data.title}
+	title={copy.title}
+	pageTitle={copy.title}
 	description={seo.description ?? undefined}
 	image={seo.ogImage ?? "/images/mustika/mustika-hero.webp"}
 	seo={seo}
@@ -83,16 +54,16 @@ const rituals = (rawRituals.length
 	<div class="ritual-page">
 		<section class="ritual-hero" aria-labelledby="ritual-title">
 			<div class="container ritual-hero-inner">
-				<h1 id="ritual-title">{heroHeadline} <em>{heroEmphasis}</em></h1>
-				<p>{heroSubheadline}</p>
-				<a class="btn btn-primary btn-lg" href={bookingHref} target="_blank" rel="noopener noreferrer">Tanya via WhatsApp <span aria-hidden="true">↗</span></a>
+				<h1 id="ritual-title">{copy.headline} <em>{copy.emphasis}</em></h1>
+				<p>{copy.subheadline}</p>
+				<a class="btn btn-primary btn-lg" href={bookingHref} target="_blank" rel="noopener noreferrer">{copy.cta} <span aria-hidden="true">↗</span></a>
 			</div>
 		</section>
 		<section class="ritual-list-section" aria-labelledby="ritual-list-title">
 			<div class="container">
 				<div class="ritual-list-heading">
-					<h2 id="ritual-list-title">{listHeadline}{listEmphasis && <> <em>{listEmphasis}</em></>}</h2>
-					<p>{listSubheadline}</p>
+					<h2 id="ritual-list-title">{copy.listHeadline}</h2>
+					<p>{copy.listSubheadline}</p>
 				</div>
 				<div class="ritual-options">
 					{rituals.map((ritual) => (
@@ -101,7 +72,7 @@ const rituals = (rawRituals.length
 							<h3>{ritual.title}</h3>
 							<p>{ritual.description}</p>
 							{ritual.tariff.consultOnly ? (
-								<a href={ritual.tariff.consultHref} target="_blank" rel="noopener noreferrer" aria-label={`Tanya admin, ${ritual.title}`}>Kontak kami <span aria-hidden="true">↗</span></a>
+								<a href={ritual.tariff.consultHref} target="_blank" rel="noopener noreferrer" aria-label={`Tanya ${ritual.title} via WhatsApp`}>Kontak kami <span aria-hidden="true">↗</span></a>
 							) : (
 								<ul class="ritual-rates">
 									{ritual.tariff.rates.map((rate) => (
