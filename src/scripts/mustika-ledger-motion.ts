@@ -254,14 +254,18 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 		if (counter) counter.textContent = `${slideLabel} (${formatIndex(index + 1)} dari ${total})`;
 	};
 
+	const slideFocus = (image: HTMLElement | null) => {
+		const slide = image?.closest<HTMLElement>("[data-hero-slide]");
+		return slide?.dataset.focus || "50% 38%";
+	};
+
 	const startKenBurns = (image: HTMLElement | null) => {
 		kenBurns?.kill();
 		kenBurns = null;
 		if (!gsap || reducedMotion || !image || !isVisible || document.hidden) return;
-		gsap.set(image, { scale: 1.04, yPercent: 0, transformOrigin: "50% 22%" });
+		gsap.set(image, { scale: 1.02, xPercent: 0, yPercent: 0, transformOrigin: slideFocus(image) });
 		kenBurns = gsap.to(image, {
-			scale: 1.14,
-			yPercent: -5.5,
+			scale: 1.06,
 			duration: 9.4,
 			ease: "none",
 			overwrite: "auto",
@@ -362,9 +366,7 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 			timeline.to(
 				outgoingImage,
 				{
-					scale: 1.16,
-					xPercent: axis === "x" ? direction * -5 : 0,
-					yPercent: axis === "y" ? direction * -6 : 2,
+					scale: 1.05,
 					duration: 1.12,
 					ease: "power2.inOut",
 				},
@@ -375,11 +377,12 @@ function enableHeroSlider(gsap?: GsapModule["default"]) {
 			timeline.fromTo(
 				incomingImage,
 				{
-					scale: 1.28,
-					xPercent: axis === "x" ? direction * 6 : 0,
-					yPercent: axis === "y" ? direction * 8 : 0,
+					scale: 1.06,
+					xPercent: 0,
+					yPercent: 0,
+					transformOrigin: slideFocus(incomingImage),
 				},
-				{ scale: 1.04, xPercent: 0, yPercent: 0, duration: 1.38, ease: "power3.out" },
+				{ scale: 1.02, xPercent: 0, yPercent: 0, duration: 1.38, ease: "power3.out" },
 				0.02,
 			);
 		}

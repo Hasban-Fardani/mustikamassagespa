@@ -39,23 +39,27 @@ const heroSecondaryLabel = copy.hero.secondaryCta;
 const heroSlideMeta = copy.heroSlides;
 const heroSlides = [
 	{
-		desktopSrc: "/images/mustika/hero-01-amber-spa.webp",
-		mobileSrc: "/images/mustika/hero-01-amber-spa-720.webp",
+		desktopSrc: "/images/mustika/service-traditional.webp?v=20260826-green-uniform",
+		mobileSrc: "/images/mustika/service-traditional-720.webp?v=20260826-green-uniform",
+		focus: "48% 36%",
 		...heroSlideMeta[0],
 	},
 	{
 		desktopSrc: "/images/mustika/hero-02-candle-massage.webp",
 		mobileSrc: "/images/mustika/hero-02-candle-massage-720.webp",
+		focus: "50% 28%",
 		...heroSlideMeta[1],
 	},
 	{
 		desktopSrc: "/images/mustika/hero-03-facial-calm.webp",
 		mobileSrc: "/images/mustika/hero-03-facial-calm-720.webp",
+		focus: "68% 42%",
 		...heroSlideMeta[2],
 	},
 	{
 		desktopSrc: "/images/mustika/hero-04-traditional-care.webp",
 		mobileSrc: "/images/mustika/hero-04-traditional-care-720.webp",
+		focus: "50% 40%",
 		...heroSlideMeta[3],
 	},
 ];
@@ -171,6 +175,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 									data-hero-slide
 									data-active={index === 0 ? "true" : "false"}
 									data-label={slide.label}
+									data-focus={slide.focus}
+									style={`--hero-focus: ${slide.focus}`}
 									aria-hidden={index === 0 ? "false" : "true"}
 								>
 									<source media="(max-width: 760px)" srcset={slide.mobileSrc} />
@@ -178,8 +184,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 										src={slide.desktopSrc}
 										alt={slide.alt}
 										width="1200"
-										height="900"
-										sizes="(max-width: 760px) calc(100vw - 60px), 560px"
+										height="1500"
+										sizes="100vw"
 										loading={index === 0 ? "eager" : "lazy"}
 										fetchpriority={index === 0 ? "high" : "auto"}
 										decoding="async"
@@ -739,8 +745,7 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 
 	.hero-visual-image img {
 		object-fit: cover;
-		object-position: 50% 22%;
-		transform: scale(1.04);
+		object-position: var(--hero-focus, 50% 38%);
 		will-change: transform;
 	}
 
@@ -1803,8 +1808,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 		inset: 0;
 		z-index: 2;
 		background:
-			linear-gradient(90deg, rgba(28, 18, 12, 0.72) 0%, rgba(28, 18, 12, 0.28) 36%, transparent 66%),
-			linear-gradient(180deg, transparent 38%, rgba(18, 12, 8, 0.52) 100%);
+			linear-gradient(90deg, rgba(22, 16, 12, 0.52) 0%, rgba(22, 16, 12, 0.18) 34%, transparent 62%),
+			linear-gradient(180deg, transparent 48%, rgba(18, 12, 8, 0.36) 100%);
 		content: "";
 		pointer-events: none;
 	}
@@ -1828,9 +1833,8 @@ const splitWords = (value: string) => value.split(/\s+/).filter(Boolean);
 	}
 
 	.mustika-ledger .hero-visual-image img {
-		object-position: 50% 24%;
-		transform: scale(1.02);
-		filter: saturate(1.16) contrast(1.08) sepia(0.08);
+		object-position: var(--hero-focus, 50% 38%);
+		filter: saturate(1.04) contrast(1.02);
 	}
 
 
